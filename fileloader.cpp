@@ -16,6 +16,7 @@ FileLoader::FileLoader(QString path){
                     bareData.append(QPair<qreal, QPair<qreal, qreal>>(args.at(2).toDouble(), QPair<qreal, qreal>(args.at(3).toDouble(), args.at(3).toDouble())));
                     data.append(QPair<qreal, QPair<qreal, qreal>>(args.at(2).toDouble(), QPair<qreal, qreal>(args.at(6).toDouble(), args.at(6).toDouble())));
                 }else{
+
                     zero.append(QPair<qreal, QPair<qreal, qreal>>(args.at(2).toDouble(), QPair<qreal, qreal>(args.at(4).toDouble(), args.at(8).toDouble())));
                     bareData.append(QPair<qreal, QPair<qreal, qreal>>(args.at(2).toDouble(), QPair<qreal, qreal>(args.at(3).toDouble(), args.at(7).toDouble())));
                     data.append(QPair<qreal, QPair<qreal, qreal>>(args.at(2).toDouble(), QPair<qreal, qreal>(args.at(6).toDouble(), args.at(10).toDouble())));

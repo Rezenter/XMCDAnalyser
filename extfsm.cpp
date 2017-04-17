@@ -24,7 +24,7 @@ ExtFSM::ExtFSM(QObject *parent)
   {
       Q_UNUSED(parent);
 
-      return 5;
+      return 6;
   }
 
   QVariant ExtFSM::data(const QModelIndex &index, int role) const
@@ -56,12 +56,15 @@ ExtFSM::ExtFSM(QObject *parent)
                   return tr("sample");
 
               case 2:
-                  return tr("rating");
+                  return tr("geometry");
 
               case 3:
-                  return tr("comment");
+                  return tr("rating");
 
               case 4:
+                  return tr("comment");
+
+              case 5:
                   return tr("date");
 
               default:
@@ -142,6 +145,9 @@ ExtFSM::ExtFSM(QObject *parent)
             case 4:
                 qSort(dataList.begin(), dataList.end(), less4);
                 break;
+            case 5:
+                qSort(dataList.begin(), dataList.end(), less5);
+                break;
         }
     }else{
         switch(column){
@@ -159,6 +165,9 @@ ExtFSM::ExtFSM(QObject *parent)
                 break;
             case 4:
                 qSort(dataList.begin(), dataList.end(), greater4);
+                break;
+            case 5:
+                qSort(dataList.begin(), dataList.end(), greater5);
                 break;
         }
     }
@@ -178,11 +187,15 @@ bool ExtFSM::less2(QList<QString> a, QList<QString> b){
 }
 
 bool ExtFSM::less3(QList<QString> a, QList<QString> b){
-    return a.at(3) < b.at(3);
+    return a.at(3).toDouble() < b.at(3).toDouble();
 }
 
 bool ExtFSM::less4(QList<QString> a, QList<QString> b){
     return a.at(4) < b.at(4);
+}
+
+bool ExtFSM::less5(QList<QString> a, QList<QString> b){
+    return a.at(5) < b.at(5);
 }
 
 bool ExtFSM::greater0(QList<QString> a, QList<QString> b){
@@ -198,10 +211,14 @@ bool ExtFSM::greater2(QList<QString> a, QList<QString> b){
 }
 
 bool ExtFSM::greater3(QList<QString> a, QList<QString> b){
-    return a.at(3) > b.at(3);
+    return a.at(3).toDouble() > b.at(3).toDouble();
 }
 
 bool ExtFSM::greater4(QList<QString> a, QList<QString> b){
     return a.at(4) > b.at(4);
+}
+
+bool ExtFSM::greater5(QList<QString> a, QList<QString> b){
+    return a.at(5) > b.at(5);
 }
 

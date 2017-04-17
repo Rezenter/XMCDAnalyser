@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "ui_mainwindow.h"
 #include <QGenericMatrix>
 #include <QMainWindow>
 #include <QRegExpValidator>
@@ -17,6 +18,7 @@
 #include <QItemSelection>
 #include "fileloader.h"
 #include <QtMath>
+#include <QHash>
 
 namespace Ui {
 class MainWindow;
@@ -31,7 +33,6 @@ public:
     ~MainWindow();
 
 public slots:
-
 
 private:
     Ui::MainWindow *ui;
@@ -74,38 +75,70 @@ private:
     QtCharts::QChartView *chartView;
     QtCharts::QChartView *diffView;
     void resizeEvent(QResizeEvent*);
-    FileLoader *dataLoader;
-    QString filePath;
+    FileLoader *data1Loader;
+    FileLoader *data2Loader;
+    QString file1Path;
+    QString file2Path;
     QVector<QPair<qreal, QPair<qreal, qreal>>> data;
     QVector<QPair<qreal, QPair<qreal, qreal>>> bareData;
     QPair<int, int> lInd;
     QPair<int, int> rInd;
-    QString fileName;
+    QString file1Name;
+    QString file2Name;
     QFile *outFile;
     QTextStream *outStream;
-    bool mul = true;
     qreal a;
     qreal b;
     QtCharts::QLineSeries *stepsSeries;
-    qreal Nh = 2.49;
-    qreal Pc = 0.83;
-    qreal mOrb = 0;
-    qreal msEff = 0;
-    qreal muB = 1;
+    qreal mOrb1 = 0;
+    qreal msEff1 = 0;
+    qreal mOrb2 = 0;
+    qreal msEff2 = 0;
+    qreal muB[4] = {9.274009994*pow(10,-24), 1, 5.7883818012*pow(10, -5), 9.274009994*pow(10, -21)};
+    QString units[4] = {"J/T", "µβ", "eV/T", "erg/G"};
+    QString sample = "null";
+    QString geom = "null";
+    bool loaded1 = false;
+    bool loaded2 = false;
+    bool calc1 = false;
+    bool calc2 = false;
+    bool changed1 = true;
+    bool changed2 = true;
+    qreal teta1;
+    qreal teta2;
+    qreal angle0 = 0;
+    qreal angle1 = 55;
+    qreal angle2 = 65;
+    qreal ms;
+    qreal mt;
+    qreal mop;
+    qreal moo;
+    QHash<QString,qreal> *state;
+    qreal lChopPrev;
+    qreal rChopPrev;
+    qreal lLinearPrev;
+    qreal rLinearPrev;
+    qreal dividerPrev;
+    qreal smoothPrev;
+
 
 private slots:
     void refreshButton();
     void driveChanged(int);
     void open(QModelIndex);
     void load(QModelIndex);
+    void reopen();
     void load();
     QModelIndex selected(QModelIndex);
     void reCalc();
     void findMax();
     void exportCharts();
-    void fullNorm();
     void lChanged();
     void bg();
+    void fileSelect();
+    void forget1();
+    void forget2();
+    void reCalcBoth();
 };
 
 #endif // MAINWINDOW_H

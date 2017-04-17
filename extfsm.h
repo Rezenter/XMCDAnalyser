@@ -24,11 +24,13 @@ class ExtFSM : public QAbstractTableModel
      static bool less2(QList<QString>, QList<QString>);
      static bool less3(QList<QString>, QList<QString>);
      static bool less4(QList<QString>, QList<QString>);
+     static bool less5(QList<QString>, QList<QString>);
      static bool less0(QList<QString>, QList<QString>);
      static bool greater1(QList<QString>, QList<QString>);
      static bool greater2(QList<QString>, QList<QString>);
      static bool greater3(QList<QString>, QList<QString>);
      static bool greater4(QList<QString>, QList<QString>);
+     static bool greater5(QList<QString>, QList<QString>);
      static bool greater0(QList<QString>, QList<QString>);
 
 
