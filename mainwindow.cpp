@@ -7,6 +7,13 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+
+
+    /*To-do list:
+        * what data use to calculate angle? Currently program uses modyfied data and it works bad.
+        * carefully delete everything in destructor
+    */
+
     ui->setupUi(this);
 
     settings = new QSettings(QApplication::applicationDirPath() + "/settings.ini", QSettings::IniFormat);
@@ -58,16 +65,21 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->fileGroup, static_cast<void(QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked), this, &MainWindow::fileSelect);
     QObject::connect(ui->forget1Button, &QPushButton::pressed, this, &MainWindow::forget1);
     QObject::connect(ui->forget2Button, &QPushButton::pressed, this, &MainWindow::forget2);
-    QObject::connect(ui->magSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &MainWindow::reCalc);
+    QObject::connect(ui->pSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &MainWindow::reCalc);
     QObject::connect(ui->nSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &MainWindow::reCalc);
     QObject::connect(ui->unitBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &MainWindow::reCalcBoth);
     QObject::connect(ui->filterGroup, static_cast<void(QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked), this, &MainWindow::reopen);
+    QObject::connect(ui->angleGroup, static_cast<void(QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked), this, &MainWindow::reCalc);
+    QObject::connect(ui->levelSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &MainWindow::reCalc);
+    QObject::connect(ui->tabWidget, static_cast<void(QTabWidget::*)(int)>(&QTabWidget::currentChanged), this, &MainWindow::myResize);
+    QObject::connect(ui->levelBox, &QCheckBox::clicked, this, &MainWindow::reCalc);
+    QObject::connect(ui->swapButton, &QPushButton::pressed, this, &MainWindow::swap);
     buildFileTree();
     loadSettings();
     refresh();
 }
 
-MainWindow::~MainWindow()
+MainWindow::~MainWindow()// recheck the system
 {
     saveSettings();
     delete model;
@@ -90,11 +102,25 @@ MainWindow::~MainWindow()
     delete settings;
 }
 
+void MainWindow::myResize(){
+    chartView->resize(ui->chartWidget->size());
+    diffView->resize(ui->diffWidget->size());
+}
+
+void MainWindow::swap(){
+    if(ui->file1Box->isChecked()){
+        ui->file2Box->setChecked(true);
+    }else{
+        ui->file1Box->setChecked(true);
+    }
+    fileSelect();
+}
+
 void MainWindow::loadSettings(){
     settings->beginGroup("gui");
     resize(settings->value("windowSize", QSize(800, 600)).toSize());
     move(settings->value("windowPosition", QPoint(0, 0)).toPoint());
-    setWindowTitle(settings->value("windowTitle", "XMCDAnalyser(corrupted .ini)").toString());
+    setWindowTitle(settings->value("windowTitle", "XMCDAnalyzer(corrupted .ini)").toString());
     drive = (settings->value("lastDrive", "C:/").toString());
     model->setRootPath(drive);
     settings->beginGroup("fileTree");
@@ -118,9 +144,17 @@ void MainWindow::loadSettings(){
         //ui->dividerSpinBox->setValue(settings->value("dividerPos", 700). toDouble());
     settings->endGroup();
     settings->beginGroup("diffChart");
+        if(settings->value("angle1", true).toBool()){
+            ui->angle1Box->setChecked(true);
+        }else{
+            ui->angle2Box->setChecked(true);
+        }
         ui->diffWidget->resize(settings->value("lastSize", QSize(800, 600)).toSize());
     settings->endGroup();
     settings->endGroup();
+    ui->levelSpinBox->setEnabled(false);
+    ui->levelBox->setEnabled(false);
+    myResize();
 }
 
 void MainWindow::saveSettings(){
@@ -147,6 +181,7 @@ void MainWindow::saveSettings(){
         settings->setValue("lastSize", ui->chartWidget->size());
     settings->endGroup();
     settings->beginGroup("diffChart");
+        settings->setValue("angle1", ui->angle1Box->isChecked());
         settings->setValue("lastSize", ui->diffWidget->size());
     settings->endGroup();
     settings->endGroup();
@@ -199,7 +234,6 @@ void MainWindow::open(QModelIndex i){
     if(model->fileInfo(i).suffix().length() != 0){
         if(ui->file1Box->isChecked()){
             file1Path = model->fileInfo(i).path();
-            //only files in the SAME folder
             file2Path = model->fileInfo(i).path();
         }
         table->removeAll();
@@ -209,6 +243,14 @@ void MainWindow::open(QModelIndex i){
         for (int i = 0; i < numRows; i++) {
             QModelIndex childIndex = model->index(i, 0, parentIndex);
             QString tmp = model->filePath(childIndex);
+            QFile* currentFile = new QFile(tmp);
+            currentFile->open(QIODevice::ReadOnly);
+            QString line = QTextStream(currentFile).readLine();
+            currentFile->close();
+            bool sameEnergy = true;
+            if(ui->energyBox->isChecked() && (energy != line.split("	").first())){
+                sameEnergy = false;
+            }
             tmp.chop(3);
             par = new QSettings(tmp + "par", QSettings::IniFormat);
             tmp = model->fileName(childIndex);
@@ -222,7 +264,7 @@ void MainWindow::open(QModelIndex i){
             if(ui->geomBox->isChecked() && ((par->value("angle", "-1").toString() == "-1") || (par->value("angle", "-1").toString() == "") || (par->value("angle", "noInfo").toString() == geom))){
                 sameGeom = false;
             }
-            if(((loaded1) && sameSample && sameGeom) || ui->file1Box->isChecked()){
+            if(((loaded1) && sameSample && sameGeom && sameEnergy) || ui->file1Box->isChecked()){
                 table->insertRow(row, QModelIndex());
                 QModelIndex index = table->index(row, 0, QModelIndex());
                 table->setData(index, model->fileName(childIndex), Qt::EditRole);
@@ -259,7 +301,13 @@ void MainWindow::load(QModelIndex index){
         index = table->index(index.row(), 0);
         file1Name = table->data(index, Qt::DisplayRole).toString();
         ui->file1Label->setText(file1Name);
-        //insert wrong format check here
+        QFile* currentFile = new QFile(file1Path + "/" + file1Name);
+        currentFile->open(QIODevice::ReadOnly);
+        stream = new QTextStream(currentFile);
+        QString line = stream->readLine();
+        currentFile->close();
+        energy = line.split("	").first();
+        //insert wrong file format check here
         data1Loader = new FileLoader(file1Path + "/" + file1Name);
         index = table->index(index.row(), 2);
         teta1 = table->data(index, Qt::DisplayRole).toDouble();
@@ -275,6 +323,7 @@ void MainWindow::load(QModelIndex index){
                 teta1 = angle2;
                 break;
         }
+        teta1 = teta1*M_PI/180;
         ui->calculateBox->setChecked(false);
         ui->integrateBox->setChecked(false);
         ui->steppedBackgroundBox->setChecked(false);
@@ -308,6 +357,7 @@ void MainWindow::load(QModelIndex index){
                 teta2 = angle2;
                 break;
         }
+        teta2 = teta2*M_PI/180;
         ui->calculateBox->setChecked(false);
         ui->integrateBox->setChecked(false);
         ui->steppedBackgroundBox->setChecked(false);
@@ -347,7 +397,7 @@ void MainWindow::resizeEvent(QResizeEvent* event){
     diffView->resize(ui->diffWidget->size());
 }
 
-void MainWindow::reCalc(){
+void MainWindow::reCalc(){ //almost everything calculates here
     if((ui->file1Box->isChecked() && loaded1) || (ui->file2Box->isChecked() && loaded2)){
         if(ui->rawBox->isChecked() || ui->zeroBox->isChecked()){
         ui->linearBox->setChecked(false);
@@ -363,6 +413,7 @@ void MainWindow::reCalc(){
         data = data2Loader->getData();
         bareData = data2Loader->getBareData();
     }
+    ui->llSpinBox->setMinimum(data.at(2).first - data.first().first);
     if(chart->axes().contains(axisX)){
         chart->removeAxis(axisX);
     }
@@ -587,6 +638,13 @@ void MainWindow::reCalc(){
     if(data.length() != 0 && !(ui->rawBox->isChecked() || ui->zeroBox->isChecked())){
         lNorm = new QtCharts::QLineSeries();
         rNorm = new QtCharts::QLineSeries();
+        if(ui->file1Box->isChecked()){
+            limits1 = QPair<qreal, qreal>(data.first().first, data.last().first);
+            tmp1Data = data;
+        }else{
+            limits2 = QPair<qreal, qreal>(data.first().first, data.last().first);
+            tmp2Data = data;
+        }
         foreach(pair, data){
             rNorm->append(pair.first, pair.second.second);
             lNorm->append(pair.first, pair.second.first);
@@ -787,33 +845,80 @@ void MainWindow::reCalc(){
             }
         }
     }else{
+        ui->calculateBox->setChecked(false);
         if(ui->file1Box->isChecked()){
-            if(!(ui->sum1Label->text() == "Unknown")){
-                ui->sum1Label->setText(ui->sum1Label->text() + " outdated");
-                ui->l31Label->setText(ui->l31Label->text() + " outdated");
-                ui->l21Label->setText(ui->l21Label->text() + " outdated");
-                ui->msEff1Label->setText(ui->msEff1Label->text() + " outdated");
-                ui->mOrb1Label->setText(ui->mOrb1Label->text() + " outdated");
-                ui->msLabel->setText(ui->msLabel->text() + " outdated");
-                ui->mTLabel->setText(ui->mTLabel->text() + " outdated");
-                ui->mOrbOLabel->setText(ui->mOrbOLabel->text() + " outdated");
-                ui->mOrbPLabel->setText(ui->mOrbPLabel->text() + " outdated");
-                calc1 = false;
-            }
+            ui->sum1Label->setText("Unknown");
+            ui->l31Label->setText("Unknown");
+            ui->l21Label->setText("Unknown");
+            ui->msEff1Label->setText("Unknown");
+            ui->mOrb1Label->setText("Unknown");
+            ui->msLabel->setText("Unknown");
+            ui->mTLabel->setText("Unknown");
+            ui->mOrbOLabel->setText("Unknown");
+            ui->mOrbPLabel->setText("Unknown");
+            calc1 = false;
         }else{
-            if(!(ui->sum2Label->text() == "Unknown")){
-                ui->sum2Label->setText(ui->sum2Label->text() + " outdated");
-                ui->l32Label->setText(ui->l32Label->text() + " outdated");
-                ui->l22Label->setText(ui->l22Label->text() + " outdated");
-                ui->msEff2Label->setText(ui->msEff2Label->text() + " outdated");
-                ui->mOrb2Label->setText(ui->mOrb2Label->text() + " outdated");
-                ui->msLabel->setText(ui->msLabel->text() + " outdated");
-                ui->mTLabel->setText(ui->mTLabel->text() + " outdated");
-                ui->mOrbOLabel->setText(ui->mOrbOLabel->text() + " outdated");
-                ui->mOrbPLabel->setText(ui->mOrbPLabel->text() + " outdated");
-                calc2 = false;
-            }
+            ui->sum2Label->setText("Unknown");
+            ui->l32Label->setText("Unknown");
+            ui->l22Label->setText("Unknown");
+            ui->msEff2Label->setText("Unknown");
+            ui->mOrb2Label->setText("Unknown");
+            ui->msLabel->setText("Unknown");
+            ui->mTLabel->setText("Unknown");
+            ui->mOrbOLabel->setText("Unknown");
+            ui->mOrbPLabel->setText("Unknown");
+            calc2 = false;
         }
+    }
+    if(chart->series().contains(level)){
+        chart->removeSeries(level);
+    }
+    if(loaded1 && loaded2){
+        if(ui->levelSpinBox->value() < limits1.first - eps || ui->levelSpinBox->value() < limits2.first - eps || ui->levelSpinBox->value() > limits1.second || ui->levelSpinBox->value() > limits2.second){
+            ui->levelSpinBox->setValue(qMin(limits1.second, limits2.second));
+        }
+        ui->levelSpinBox->setMaximum(qMin(limits1.second, limits2.second));
+        ui->levelSpinBox->setMinimum(qMax(limits1.first, limits2.first));
+        int i1 = 0;
+        int i2 = 0;
+        while(tmp1Data.at(i1).first < ui->levelSpinBox->value()){
+            i1++;
+        }
+        while(tmp2Data.at(i2).first < ui->levelSpinBox->value()){
+            i2++;
+        }
+        QPair<qreal, qreal> intens = QPair<qreal, qreal>((data1Loader->getData().at(i1).second.first + data1Loader->getData().at(i1).second.second)/2, (data2Loader->getData().at(i2).second.first + data2Loader->getData().at(i2).second.second)/2);
+        ui->levelBox->setEnabled(true);
+        ui->levelSpinBox->setEnabled(true);
+        ui->swapButton->setEnabled(true);
+        if(ui->levelBox->isChecked()){
+            level = new QtCharts::QLineSeries();
+            if(ui->file1Box->isChecked()){
+                level->append(data.at(i1).first, axisY->min());
+                level->append(data.at(i1).first, axisY->max());
+            }else{
+                level->append(data.at(i2).first, axisY->min());
+                level->append(data.at(i2).first, axisY->max());
+            }
+            chart->addSeries(level);
+            level->attachAxis(axisY);
+            level->attachAxis(axisX);
+        }
+        if(ui->angle1Box->isChecked()){
+            phi1 = M_PI/2;
+            phi2 = qAcos(intens.second/intens.first);
+            ui->angle2CalcLable->setText("Unknown");
+            ui->angle1CalcLable->setText(QString::number(phi2*180/M_PI));
+        }else{
+            phi1 = qAcos(intens.first/intens.second);
+            ui->angle1CalcLable->setText("Unknown");
+            ui->angle2CalcLable->setText(QString::number(phi1*180/M_PI));
+            phi2 = M_PI/2;
+        }
+    }else{
+        ui->levelBox->setEnabled(false);
+        ui->levelSpinBox->setEnabled(false);
+        ui->swapButton->setEnabled(false);
     }
     if(ui->calculateBox->isChecked()){
         if(!calc1){
@@ -828,32 +933,14 @@ void MainWindow::reCalc(){
                     if(teta2 == -1){
                         ui->errorLable->setText("unknown angle 2");
                     }else{
-                        //Different magn angles needed
-                        qreal phi = ui->magSpinBox->value();
-                        mt = (0.2857142857*(-msEff2*cos(teta1 - phi) + msEff1*cos(teta2 - phi)))/(2*cos(teta2 -phi)*cos(teta1)*cos(phi) - cos(teta2 - phi)*sin(teta1)*sin(phi) - 2*cos(teta2)*cos(phi)*cos(teta1 - phi) + sin(teta2)*sin(phi)*cos(teta1-phi));
-                        ui->mTLabel->setText(QString::number(mt));
-                        ms = (2*cos(teta1)*cos(phi)*msEff2 - sin(teta1)*sin(phi)*msEff2 -2*msEff1*cos(teta2)*cos(phi)+msEff1*sin(teta2)*sin(phi))/(2*cos(teta2 -phi)*cos(teta1)*cos(phi) - cos(teta2 - phi)*sin(teta1)*sin(phi) - 2*cos(teta2)*cos(phi)*cos(teta1 - phi) + sin(teta2)*sin(phi)*cos(teta1-phi));
-                        ui->msLabel->setText(QString::number(ms));
-                        if(teta1 != 0 && teta2 != 0){
-                            mop = 0.5*((mOrb1*sin(teta1)) + (mOrb2*sin(teta2)));
-                        }else{
-                            if(teta1 != 0){
-                                mop = mOrb1*sin(teta1);
-                            }else{
-                                mop = mOrb2*sin(teta2);
-                            }
-                        }
-                        ui->mOrbPLabel->setText(QString::number(mop));
-                        if(teta1 != 0 && teta2 != 0){
-                            moo = qSqrt((qPow((mOrb1 + mOrb2)/2, 2) - (qPow(mop, 2))));
-                        }else{
-                            if(teta1 != 0){
-                                moo = qSqrt((qPow(mOrb1, 2) - (qPow(mop, 2))));
-                            }else{
-                                moo = qSqrt((qPow(mOrb2, 2) - (qPow(mop, 2))));
-                            }
-                        }
+                        moo = -(mOrb1*qSin(teta2)*qSin(phi2) - qSin(teta1)*qSin(phi1)*mOrb2)/(qSin(teta1)*qSin(phi1)*qCos(teta2)*qCos(phi2) - qSin(teta2)*qSin(phi2)*qCos(teta1)*qCos(phi1));//fixed
                         ui->mOrbOLabel->setText(QString::number(moo));
+                        mop = (-mOrb2*qCos(teta1)*qCos(phi1) + mOrb1*qCos(teta2)*qCos(phi2))/(qSin(teta1)*qSin(phi1)*qCos(teta2)*qCos(phi2) - qSin(teta2)*qSin(phi2)*qCos(teta1)*qCos(phi1));//fixed
+                        ui->mOrbPLabel->setText(QString::number(mop));
+                        ms = ((2)*qCos(teta1)*qCos(phi1)*msEff2 - qSin(teta1)*qSin(phi1)*msEff2 - 2*msEff1*qCos(teta2)*qCos(phi2) + msEff1*qSin(teta2)*qSin(phi2))/((2)*qCos(phi2 - teta2)*qCos(teta1)*qCos(phi1) - qCos(phi2 - teta2)*qSin(teta1)*qSin(phi1) - 2*qCos(teta2)*qCos(phi2)*qCos(phi1 - teta1) + qSin(teta2)*qSin(phi2)*qCos(phi1- teta1));//fixed
+                        ui->msLabel->setText(QString::number(ms));
+                        mt = -0.2857142857*(msEff2*qCos(phi1 - teta1) - msEff1*qCos(phi2 - teta2))/((2)*qCos(phi2 - teta2)*qCos(teta1)*qCos(phi1) - qCos(phi2 - teta2)*qSin(teta1)*qSin(phi1) - 2*qCos(teta2)*qCos(phi2)*qCos(phi1 - teta1) + qSin(teta2)*qSin(phi2)*qCos(phi1- teta1)); //fixed
+                        ui->mTLabel->setText(QString::number(mt));
                     }
                 }
             }
@@ -893,7 +980,6 @@ void MainWindow::exportCharts(){
         *outStream << "fillet mult = " << ui->filletSpinBox->value() << "\n";
         *outStream << "polarisation coeff = Pc = " << ui->pSpinBox->value() << "\n";
         *outStream << "Nh = " << ui->nSpinBox->value() << "\n";
-        *outStream << "Magn. angle = " << ui->magSpinBox->value() << "\n\n";
 
     ui->file2Box->setChecked(true);
     *outStream << "file2 = " << file2Path << "/" << ui->file2Label->text() << "\n\n";
@@ -918,7 +1004,6 @@ void MainWindow::exportCharts(){
     *outStream << "fillet mult = " << ui->filletSpinBox->value() << "\n";
     *outStream << "polarisation coeff = Pc = " << ui->pSpinBox->value() << "\n";
     *outStream << "Nh = " << ui->nSpinBox->value() << "\n";
-    *outStream << "Magn. angle = " << ui->magSpinBox->value() << "\n\n";
     if(first){
         ui->file1Box->setChecked(true);
     }
@@ -1097,6 +1182,13 @@ void MainWindow::bg(){
 
 void MainWindow::fileSelect(){
     if(loaded1){
+        if(ui->file1Box->isChecked()){
+            chart->setTitle("XAS file 1");
+            diff->setTitle("XMCD file 1");
+        }else{
+            chart->setTitle("XAS file 2");
+            diff->setTitle("XMCD file 2");
+        }
         open(ui->fileTree->currentIndex());
         qreal tmp = state->value("linL", 0);
         state->insert("linL", ui->llSpinBox->value());
@@ -1106,7 +1198,6 @@ void MainWindow::fileSelect(){
         ui->rlSpinBox->setValue(tmp);
         tmp = state->value("div", 0);
         state->insert("div", ui->dividerSpinBox->value());
-        //ui->dividerSpinBox->setValue(tmp); //wtf
         tmp = state->value("chopL", 0);
         state->insert("chopL", ui->bSpinBox->value());
         ui->bSpinBox->setValue(tmp);
@@ -1116,37 +1207,37 @@ void MainWindow::fileSelect(){
         tmp = state->value("smooth", 10);
         state->insert("smooth", ui->filletSpinBox->value());
         ui->filletSpinBox->setValue(tmp);
-        bool raw = state->value("raw", 0);
+        bool raw = state->value("raw", 0) == 1;
         if(ui->rawBox->isChecked()){
             state->insert("raw", 1);
         }else{
             state->insert("raw", 0);
         }
-        bool zero = state->value("zero", 0);
+        bool zero = state->value("zero", 0) == 1;
         if(ui->zeroBox->isChecked()){
             state->insert("zero", 1);
         }else{
             state->insert("zero", 0);
         }
-        bool norm = state->value("norm", 1); //default
+        bool norm = state->value("norm", 1) == 1; //default
         if(ui->normBox->isChecked()){
             state->insert("norm", 1);
         }else{
             state->insert("norm", 0);
         }
-        bool plus = state->value("plus", 0);
+        bool plus = state->value("plus", 0) == 1;
         if(ui->stepBox->isChecked()){
             state->insert("plus", 1);
         }else{
             state->insert("plus", 0);
         }
-        bool mul = state->value("mul", 0);
+        bool mul = state->value("mul", 0) == 1;
         if(ui->mulBox->isChecked()){
             state->insert("mul", 1);
         }else{
             state->insert("mul", 0);
         }
-        bool one = state->value("one", 0);
+        bool one = state->value("one", 0) == 1;
         if(ui->oneBox->isChecked()){
             state->insert("one", 1);
         }else{
@@ -1159,25 +1250,25 @@ void MainWindow::fileSelect(){
             state->insert("max", 0);
         }
         ui->maxBox->setChecked(1 == tmp);
-        bool lin = state->value("lin", 0);
+        bool lin = state->value("lin", 0) == 1;
         if(ui->linearBackgroundBox->isChecked()){
             state->insert("lin", 1);
         }else{
             state->insert("lin", 0);
         }
-        bool stepped = state->value("stepped", 0);
+        bool st = state->value("st", 0) == 1;
         if(ui->steppedBackgroundBox->isChecked()){
-            state->insert("stepped", 1);
+            state->insert("st", 1);
         }else{
-            state->insert("stpped", 0);
+            state->insert("st", 0);
         }
-        bool diff = state->value("diff", 0);
+        bool diff = state->value("diff", 0) == 1;
         if(ui->diffBox->isChecked()){
             state->insert("diff", 1);
         }else{
             state->insert("diff", 0);
         }
-        bool integr = state->value("integr", 0);
+        bool integr = state->value("integr", 0) == 1;
         if(ui->integrateBox->isChecked()){
             state->insert("integr", 1);
         }else{
@@ -1197,16 +1288,16 @@ void MainWindow::fileSelect(){
             state->insert("maxShow", 0);
         }
         ui->dividerBox->setChecked(1 == tmp);
-        ui->rawBox->setChecked(1 == raw);
-        ui->zeroBox->setChecked(1 == zero);
-        ui->normBox->setChecked(1 == norm);
-        ui->stepBox->setChecked(1 == plus);
-        ui->mulBox->setChecked(1 == mul);
-        ui->oneBox->setChecked(1 == one);
-        ui->zeroBox->setChecked(1 == lin);
-        ui->steppedBackgroundBox->setChecked(1 == stepped);
-        ui->diffBox->setChecked(1 == diff);
-        ui->integrateBox->setChecked(1 == integr);
+        ui->rawBox->setChecked(raw);
+        ui->zeroBox->setChecked(zero);
+        ui->normBox->setChecked(norm);
+        ui->stepBox->setChecked(plus);
+        ui->mulBox->setChecked(mul);
+        ui->oneBox->setChecked(one);
+        ui->linearBackgroundBox->setChecked(lin);
+        ui->steppedBackgroundBox->setChecked(st);
+        ui->diffBox->setChecked(diff);
+        ui->integrateBox->setChecked(integr);
         reCalc();
     }else{
         ui->file1Box->setChecked(true);
@@ -1273,4 +1364,5 @@ void MainWindow::reCalcBoth(){
         ui->file1Box->setChecked(true);
         reCalc();
     }
+    reCalc();
 }

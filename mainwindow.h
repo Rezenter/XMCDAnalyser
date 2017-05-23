@@ -58,6 +58,7 @@ private:
     QtCharts::QLineSeries *lIntervals;
     QtCharts::QLineSeries *ll;
     QtCharts::QLineSeries *rl;
+    QtCharts::QLineSeries *level;
     QString path = QCoreApplication::applicationDirPath();
     QFile *save;
     QTextStream *stream;
@@ -96,8 +97,9 @@ private:
     qreal msEff2 = 0;
     qreal muB[4] = {9.274009994*pow(10,-24), 1, 5.7883818012*pow(10, -5), 9.274009994*pow(10, -21)};
     QString units[4] = {"J/T", "µβ", "eV/T", "erg/G"};
-    QString sample = "null";
-    QString geom = "null";
+    QString sample = "not found";
+    QString geom = "not found";
+    QString energy = "not found";
     bool loaded1 = false;
     bool loaded2 = false;
     bool calc1 = false;
@@ -120,6 +122,14 @@ private:
     qreal rLinearPrev;
     qreal dividerPrev;
     qreal smoothPrev;
+    qreal phi1;
+    qreal phi2;
+    QPair<qreal, qreal> intens;
+    QPair<qreal, qreal> limits1;
+    QPair<qreal, qreal> limits2;
+    QVector<QPair<qreal, QPair<qreal, qreal>>> tmp1Data;
+    QVector<QPair<qreal, QPair<qreal, qreal>>> tmp2Data;
+    qreal eps = 0.01;
 
 
 private slots:
@@ -139,6 +149,8 @@ private slots:
     void forget1();
     void forget2();
     void reCalcBoth();
+    void myResize();
+    void swap();
 };
 
 #endif // MAINWINDOW_H
