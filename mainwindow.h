@@ -36,6 +36,16 @@ public slots:
 
 private:
     Ui::MainWindow *ui;
+    void loadSettings();
+    void saveSettings();
+    void refresh();
+    void buildFileTree();
+    void resizeEvent(QResizeEvent*);
+    void saveSession();
+    QtCharts::QChartView *chartView;
+    QtCharts::QChartView *diffView;
+    QtCharts::QChart *chart;
+    QtCharts::QChart *diff;
     QtCharts::QLineSeries *l;
     QtCharts::QLineSeries *r;
     QtCharts::QLineSeries *lNorm;
@@ -45,8 +55,6 @@ private:
     QtCharts::QLineSeries *diffS;
     QtCharts::QLineSeries *lMax;
     QtCharts::QLineSeries *rMax;
-    QtCharts::QChart *chart;
-    QtCharts::QChart *diff;
     QtCharts::QValueAxis *axisX;
     QtCharts::QValueAxis *axisY;
     QtCharts::QValueAxis *diffY;
@@ -64,28 +72,27 @@ private:
     QTextStream *stream;
     QSettings *settings;
     QSettings *par;
-    void loadSettings();
-    void saveSettings();
-    void refresh();
     QStorageInfo storage = QStorageInfo::root();
-    void buildFileTree();
     QFileSystemModel *model = new QFileSystemModel();
     ExtFSM *table = new ExtFSM(this);
     QString drive;
     QModelIndex currentSelection;
-    QtCharts::QChartView *chartView;
-    QtCharts::QChartView *diffView;
-    void resizeEvent(QResizeEvent*);
-    FileLoader *data1Loader;
-    FileLoader *data2Loader;
     QString file1Path;
+    QString file1Name;
+    FileLoader *data1Loader;
+    qreal teta1;
+    QPair<qreal, qreal> limits1;
+    QVector<QPair<qreal, QPair<qreal, qreal>>> tmp1Data;
     QString file2Path;
+    QString file2Name;
+    FileLoader *data2Loader;
+    qreal teta2;
+    QPair<qreal, qreal> limits2;
+    QVector<QPair<qreal, QPair<qreal, qreal>>> tmp2Data;
     QVector<QPair<qreal, QPair<qreal, qreal>>> data;
     QVector<QPair<qreal, QPair<qreal, qreal>>> bareData;
     QPair<int, int> lInd;
     QPair<int, int> rInd;
-    QString file1Name;
-    QString file2Name;
     QFile *outFile;
     QTextStream *outStream;
     qreal a;
@@ -104,10 +111,6 @@ private:
     bool loaded2 = false;
     bool calc1 = false;
     bool calc2 = false;
-    bool changed1 = true;
-    bool changed2 = true;
-    qreal teta1;
-    qreal teta2;
     qreal angle0 = 0;
     qreal angle1 = 55;
     qreal angle2 = 65;
@@ -124,12 +127,9 @@ private:
     qreal smoothPrev;
     qreal phi1;
     qreal phi2;
-    QPair<qreal, qreal> intens;
-    QPair<qreal, qreal> limits1;
-    QPair<qreal, qreal> limits2;
-    QVector<QPair<qreal, QPair<qreal, qreal>>> tmp1Data;
-    QVector<QPair<qreal, QPair<qreal, qreal>>> tmp2Data;
     qreal eps = 0.01;
+    QPair<qreal, qreal> intens;
+    QSettings *session;
 
 
 private slots:
@@ -151,6 +151,7 @@ private slots:
     void reCalcBoth();
     void myResize();
     void swap();
+    void loadSession();
 };
 
 #endif // MAINWINDOW_H

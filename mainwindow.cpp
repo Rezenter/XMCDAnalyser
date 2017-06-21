@@ -10,7 +10,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     /*To-do list:
-        * what data use to calculate angle? Currently program uses modyfied data and it works bad.
         * carefully delete everything in destructor
     */
 
@@ -74,6 +73,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->tabWidget, static_cast<void(QTabWidget::*)(int)>(&QTabWidget::currentChanged), this, &MainWindow::myResize);
     QObject::connect(ui->levelBox, &QCheckBox::clicked, this, &MainWindow::reCalc);
     QObject::connect(ui->swapButton, &QPushButton::pressed, this, &MainWindow::swap);
+    QObject::connect(ui->sessionButton, &QPushButton::pressed, this, &MainWindow::loadSession);
     buildFileTree();
     loadSettings();
     refresh();
@@ -674,7 +674,6 @@ void MainWindow::reCalc(){ //almost everything calculates here
     if(chart->series().contains(rz)){
         chart->removeSeries(rz);
     }
-
     if(data.length() != 0 && ui->zeroBox->checkState() == 2){
         lz = new QtCharts::QLineSeries();
         rz = new QtCharts::QLineSeries();
@@ -881,11 +880,17 @@ void MainWindow::reCalc(){ //almost everything calculates here
         ui->levelSpinBox->setMinimum(qMax(limits1.first, limits2.first));
         int i1 = 0;
         int i2 = 0;
-        while(tmp1Data.at(i1).first < ui->levelSpinBox->value()){
+        while(tmp1Data.at(i1).first <= ui->levelSpinBox->value()- eps){
             i1++;
         }
-        while(tmp2Data.at(i2).first < ui->levelSpinBox->value()){
+        while(tmp2Data.at(i2).first <= ui->levelSpinBox->value() - eps){
             i2++;
+        }
+        if(i2 > tmp2Data.length()){
+            i2 = tmp2Data.length();
+        }
+        if(i1 > tmp1Data.length()){
+            i1 = tmp1Data.length();
         }
         QPair<qreal, qreal> intens = QPair<qreal, qreal>((data1Loader->getData().at(i1).second.first + data1Loader->getData().at(i1).second.second)/2, (data2Loader->getData().at(i2).second.first + data2Loader->getData().at(i2).second.second)/2);
         ui->levelBox->setEnabled(true);
@@ -969,7 +974,11 @@ void MainWindow::exportCharts(){
             if(ui->mulBox->isChecked()){
                 *outStream << "r * constant";
             }else{
-                *outStream << "none";
+                if(ui->oneBox->isChecked()){
+                    *outStream << "from zero to 100";
+                }else{
+                    *outStream << "none";
+                }
             }
         }
         *outStream << "\n";
@@ -979,6 +988,11 @@ void MainWindow::exportCharts(){
         *outStream << "linear coeff : l = " << ui->lkLabel->text() << " r = " << ui->rkLabel->text() << "\n";
         *outStream << "fillet mult = " << ui->filletSpinBox->value() << "\n";
         *outStream << "polarisation coeff = Pc = " << ui->pSpinBox->value() << "\n";
+        if(ui->angle1Box->isChecked()){
+            *outStream << "in-plane magnetisation";
+        }else{
+            *outStream << "magnetisation angle = " << ui->angle1CalcLable->text() << " @" << ui->levelSpinBox->value();
+        }
         *outStream << "Nh = " << ui->nSpinBox->value() << "\n";
 
     ui->file2Box->setChecked(true);
@@ -993,7 +1007,11 @@ void MainWindow::exportCharts(){
         if(ui->mulBox->isChecked()){
             *outStream << "r * constant";
         }else{
-            *outStream << "none";
+            if(ui->oneBox->isChecked()){
+                *outStream << "from zero to 100";
+            }else{
+                *outStream << "none";
+            }
         }
     }
     *outStream << "\n";
@@ -1003,6 +1021,11 @@ void MainWindow::exportCharts(){
     *outStream << "linear coeff : l = " << ui->lkLabel->text() << " r = " << ui->rkLabel->text() << "\n";
     *outStream << "fillet mult = " << ui->filletSpinBox->value() << "\n";
     *outStream << "polarisation coeff = Pc = " << ui->pSpinBox->value() << "\n";
+    if(ui->angle2Box->isChecked()){
+        *outStream << "in-plane magnetisation";
+    }else{
+        *outStream << "magnetisation angle = " << ui->angle2CalcLable->text() << " @" << ui->levelSpinBox->value();
+    }
     *outStream << "Nh = " << ui->nSpinBox->value() << "\n";
     if(first){
         ui->file1Box->setChecked(true);
@@ -1037,18 +1060,19 @@ void MainWindow::exportCharts(){
     for(int k = 0; k < 3; k++){
         QString temp = ui->exportLine->text();
         temp.chop(4);
+        temp += "_output";
         switch (k) {
             case 0:
                 break;
             case 1:
                 outFile->close();
-                outFile = new QFile(temp + "_1.txt");
+                outFile = new QFile(temp + "_file_1.txt");
                 outFile->open(QIODevice::WriteOnly);
                 outStream = new QTextStream(outFile);
                 break;
             case 2:
                 outFile->close();
-                outFile = new QFile(temp + "_2.txt");
+                outFile = new QFile(temp + "_file_2.txt");
                 outFile->open(QIODevice::WriteOnly);
                 outStream = new QTextStream(outFile);
                 break;
@@ -1062,13 +1086,16 @@ void MainWindow::exportCharts(){
         *outStream << "l";
         *outStream << "r";
     }
-    if(ui->normBox->isChecked()){
+    if(ui->normBox->isChecked() || ui->stepBox->isChecked() || ui->mulBox->isChecked() || ui->oneBox->isChecked()){
         *outStream << "lN";
         *outStream << "rN";
     }
     if(ui->maxBox->isChecked()){
         *outStream << "l Max";
         *outStream << "r Max";
+    }
+    if(ui->steppedBackgroundBox->isChecked()){
+        *outStream << "st. back.";
     }
     if(ui->diffBox->isChecked()){
         *outStream << "diff";
@@ -1080,6 +1107,8 @@ void MainWindow::exportCharts(){
     }else{
         data = data2Loader->getData();
     }
+    qreal m1 = ((data.last().second.first - data.first().second.first)*2/3)/(2*qAcos(0));
+    qreal m2 = ((data.last().second.first - data.first().second.first)/3)/(2*qAcos(0));
     for(int j = 0; j < data.length(); j++){
         *outStream  << qSetFieldWidth(10) << left << data.at(j).first;
         *outStream << qSetFieldWidth(14) << left;
@@ -1087,7 +1116,7 @@ void MainWindow::exportCharts(){
             *outStream << bareData.at(j).second.first;
             *outStream << bareData.at(j).second.second;
         }
-        if(ui->normBox->isChecked()){
+        if(ui->normBox->isChecked() || ui->stepBox->isChecked() || ui->mulBox->isChecked() || ui->oneBox->isChecked()){
             *outStream << data.at(j).second.first;
             *outStream << data.at(j).second.second;
         }
@@ -1102,6 +1131,9 @@ void MainWindow::exportCharts(){
             }else{
                 *outStream << 0;
             }
+        }
+        if(ui->steppedBackgroundBox->isChecked()){
+            *outStream << data.first().second.first + m1 * (qAcos(0) + qAtan(ui->filletSpinBox->value()*(data.at(j).first - data.at(lInd.first).first))) + m2 * (qAcos(0) + qAtan(ui->filletSpinBox->value()*(data.at(j).first - data.at(lInd.second).first)));
         }
         if(ui->diffBox->isChecked()){
             *outStream << (data.at(j).second.first - data.at(j).second.second);
@@ -1365,4 +1397,51 @@ void MainWindow::reCalcBoth(){
         reCalc();
     }
     reCalc();
+}
+
+void MainWindow::loadSession(){
+    data1Loader = new FileLoader(file1Path + "/" + file1Name);
+}
+
+void MainWindow::saveSession(){
+    session->beginGroup("commen");
+        session->setValue("path", path);
+        session->setValue("sample", sample);
+        session->setValue("geom", geom);
+        session->setValue("energy", energy);
+        //add prev gui buttons
+        session->beginGroup("prev");
+            session->setValue("lChop", lChopPrev);
+            session->setValue("rChop", rChopPrev);
+            session->setValue("lLinear", lLinearPrev);
+            session->setValue("rLinear", rLinearPrev);
+            session->setValue("divider", dividerPrev);
+            session->setValue("smooth", smoothPrev);
+        session->endGroup();
+        //fix + add next
+        session->beginGroup("current");
+            session->setValue("lChop", lChopPrev);
+            session->setValue("rChop", rChopPrev);
+            session->setValue("lLinear", lLinearPrev);
+            session->setValue("rLinear", rLinearPrev);
+            session->setValue("divider", dividerPrev);
+            session->setValue("smooth", smoothPrev);
+        session->endGroup();
+    session->endGroup();
+    session->beginGroup("file1");
+        session->setValue("loaded", loaded1);
+        session->setValue("filePath", file1Path);
+        session->setValue("filename", file1Name);
+        session->setValue("teta", teta1);
+        //fix
+        //session->setValue("limits", limits1);
+    session->endGroup();
+    session->beginGroup("file2");
+        session->setValue("loaded", loaded2);
+        session->setValue("filePath", file2Path);
+        session->setValue("filename", file2Name);
+        session->setValue("teta", teta2);
+        //ssh
+        //session->setValue("limits", limits2);
+    session->endGroup();
 }
