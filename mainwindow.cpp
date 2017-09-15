@@ -11,12 +11,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
     /*To-do list:
         * carefully delete everything in destructor
+        * prevent crash
     */
 
     ui->setupUi(this);
-
+    session = new QSettings(QApplication::applicationDirPath() + "/session.ini", QSettings::IniFormat);
+    session->setValue("exePath", path);
     settings = new QSettings(QApplication::applicationDirPath() + "/settings.ini", QSettings::IniFormat);
-    par = new QSettings(QApplication::applicationDirPath() + "/settings.ini", QSettings::IniFormat);
+    par = new QSettings(QApplication::applicationDirPath() + "/par.ini", QSettings::IniFormat);//wtf
     ui->tabWidget->setCurrentIndex(0);
     chart = new QtCharts::QChart();
     diff = new QtCharts::QChart();
@@ -77,11 +79,18 @@ MainWindow::MainWindow(QWidget *parent) :
     buildFileTree();
     loadSettings();
     refresh();
+    if(!session->value("normalExit", true).toBool()){
+        loadSession();
+    }
+    session->setValue("normalExit", false);
 }
 
 MainWindow::~MainWindow()// recheck the system
 {
+    //session->setValue("normalExit", true);//debug
+    delete session;
     saveSettings();
+    delete settings;
     delete model;
     QtCharts::QAbstractSeries *delTmp;
     foreach(delTmp, chart->series()){
@@ -99,7 +108,6 @@ MainWindow::~MainWindow()// recheck the system
     delete state;
     delete ui;
     delete par;
-    delete settings;
 }
 
 void MainWindow::myResize(){
@@ -294,7 +302,7 @@ void MainWindow::open(QModelIndex i){
 void MainWindow::load(QModelIndex index){
     index = table->index(index.row(), 1);
     sample = table->data(index, Qt::DisplayRole).toString();
-    ui->exportLine->setText(file1Path + "/" + sample + ".txt");
+    ui->exportLine->setText(file1Path + "/" + sample + "_output");
     if(ui->file1Box->isChecked()){
         index = table->index(index.row(), 2);
         geom = table->data(index, Qt::DisplayRole).toString();
@@ -374,11 +382,6 @@ void MainWindow::load(QModelIndex index){
         loaded2 = true;
     }
     reCalc();
-    lLinearPrev = ui->llSpinBox->value();
-    rLinearPrev = ui->rlSpinBox->value();
-    dividerPrev = ui->dividerSpinBox->value();
-    lChopPrev = ui->bSpinBox->value();
-    rChopPrev = ui->tSpinBox->value();
     chart->legend()->hide();
     diff->legend()->hide();
 }
@@ -397,7 +400,8 @@ void MainWindow::resizeEvent(QResizeEvent* event){
     diffView->resize(ui->diffWidget->size());
 }
 
-void MainWindow::reCalc(){ //almost everything calculates here
+void MainWindow::reCalc(){
+    qDebug() << "reCalc";
     if((ui->file1Box->isChecked() && loaded1) || (ui->file2Box->isChecked() && loaded2)){
         if(ui->rawBox->isChecked() || ui->zeroBox->isChecked()){
         ui->linearBox->setChecked(false);
@@ -845,16 +849,17 @@ void MainWindow::reCalc(){ //almost everything calculates here
         }
     }else{
         ui->calculateBox->setChecked(false);
+        ui->msLabel->setText("Unknown");
+        ui->mTLabel->setText("Unknown");
+        ui->mOrbOLabel->setText("Unknown");
+        ui->mOrbPLabel->setText("Unknown");
+        ui->mOrbLabel->setText("Unknown");
         if(ui->file1Box->isChecked()){
             ui->sum1Label->setText("Unknown");
             ui->l31Label->setText("Unknown");
             ui->l21Label->setText("Unknown");
             ui->msEff1Label->setText("Unknown");
             ui->mOrb1Label->setText("Unknown");
-            ui->msLabel->setText("Unknown");
-            ui->mTLabel->setText("Unknown");
-            ui->mOrbOLabel->setText("Unknown");
-            ui->mOrbPLabel->setText("Unknown");
             calc1 = false;
         }else{
             ui->sum2Label->setText("Unknown");
@@ -862,10 +867,6 @@ void MainWindow::reCalc(){ //almost everything calculates here
             ui->l22Label->setText("Unknown");
             ui->msEff2Label->setText("Unknown");
             ui->mOrb2Label->setText("Unknown");
-            ui->msLabel->setText("Unknown");
-            ui->mTLabel->setText("Unknown");
-            ui->mOrbOLabel->setText("Unknown");
-            ui->mOrbPLabel->setText("Unknown");
             calc2 = false;
         }
     }
@@ -942,6 +943,7 @@ void MainWindow::reCalc(){ //almost everything calculates here
                         ui->mOrbOLabel->setText(QString::number(moo));
                         mop = (-mOrb2*qCos(teta1)*qCos(phi1) + mOrb1*qCos(teta2)*qCos(phi2))/(qSin(teta1)*qSin(phi1)*qCos(teta2)*qCos(phi2) - qSin(teta2)*qSin(phi2)*qCos(teta1)*qCos(phi1));//fixed
                         ui->mOrbPLabel->setText(QString::number(mop));
+                        ui->mOrbLabel->setText(QString::number(qSqrt(qPow(moo, 2) + qPow(mop, 2))));
                         ms = ((2)*qCos(teta1)*qCos(phi1)*msEff2 - qSin(teta1)*qSin(phi1)*msEff2 - 2*msEff1*qCos(teta2)*qCos(phi2) + msEff1*qSin(teta2)*qSin(phi2))/((2)*qCos(phi2 - teta2)*qCos(teta1)*qCos(phi1) - qCos(phi2 - teta2)*qSin(teta1)*qSin(phi1) - 2*qCos(teta2)*qCos(phi2)*qCos(phi1 - teta1) + qSin(teta2)*qSin(phi2)*qCos(phi1- teta1));//fixed
                         ui->msLabel->setText(QString::number(ms));
                         mt = -0.2857142857*(msEff2*qCos(phi1 - teta1) - msEff1*qCos(phi2 - teta2))/((2)*qCos(phi2 - teta2)*qCos(teta1)*qCos(phi1) - qCos(phi2 - teta2)*qSin(teta1)*qSin(phi1) - 2*qCos(teta2)*qCos(phi2)*qCos(phi1 - teta1) + qSin(teta2)*qSin(phi2)*qCos(phi1- teta1)); //fixed
@@ -955,195 +957,296 @@ void MainWindow::reCalc(){ //almost everything calculates here
         chart->removeAllSeries();
         diff->removeAllSeries();
     }
+    saveSession();
 }
 
 void MainWindow::exportCharts(){
-    outFile = new QFile(ui->exportLine->text());
-    outFile->open(QIODevice::WriteOnly);
-    outStream = new QTextStream(outFile);
-    bool first = ui->file1Box->isChecked();
-    *outStream << "file1 = " << file1Path << "/" << ui->file1Label->text() << "\n\n";
-    *outStream << "processing params :" << "\n";
-    ui->file1Box->setChecked(true);
-        *outStream << "lChopLength = " << ui->bSpinBox->value() << "\n";
-        *outStream << "rChopLength = " << ui->tSpinBox->value() << "\n";
-        *outStream << "normalisation type = ";
-        if(ui->stepBox->isChecked()){
-            *outStream << "r + constant step";
-        }else{
-            if(ui->mulBox->isChecked()){
-                *outStream << "r * constant";
+    QString exPath = ui->exportLine->text();
+    switch (exportState) {
+    case 0: //check files
+        if(!loaded1 && !loaded2){
+            exportState = 100;
+        }
+        is1 = ui->file1Box->isChecked();
+        exportState++;
+        exportCharts();
+        break;
+
+    case 1: //export 1 file
+        qDebug() << exPath;
+        if(!QDir(exPath).exists()){
+            QDir().mkdir(exPath);
+        }
+        outFile = new QFile(exPath + "/common.txt");
+        outFile->open(QIODevice::WriteOnly);
+        outStream = new QTextStream(outFile);
+        if(!ui->file1Box->isChecked() && loaded1){
+            swap();
+        }
+        expSession = new QSettings(exPath + "/session.ini", QSettings::IniFormat);
+        expSession->beginGroup("file1");
+        if(loaded1){
+            expSession->setValue("path", file1Path + "/");
+            expSession->setValue("name", ui->file1Label->text());
+            expSession->beginGroup("buttons");
+                expSession->setValue("raw", ui->rawBox->isChecked());
+                expSession->setValue("iZero", ui->zeroBox->isChecked());
+                expSession->setValue("norm", ui->normBox->isChecked());
+                expSession->setValue("normS", ui->stepBox->isChecked());
+                expSession->setValue("normM", ui->mulBox->isChecked());
+                expSession->setValue("norm0", ui->oneBox->isChecked());
+                expSession->setValue("maxSep", ui->dividerBox->isChecked());
+                expSession->setValue("maxVal", ui->dividerSpinBox->value());
+                expSession->setValue("maxShow", ui->maxBox->isChecked());
+                expSession->setValue("lLinear", ui->llSpinBox->value());
+                expSession->setValue("rLinear", ui->rlSpinBox->value());
+                expSession->setValue("LinearShow", ui->linearBox->isChecked());
+                expSession->setValue("lCrop", ui->bSpinBox->value());
+                expSession->setValue("rCrop", ui->tSpinBox->value());
+                expSession->setValue("linearBg", ui->linearBackgroundBox->isChecked());
+                expSession->setValue("stepSmooth", ui->filletSpinBox->value());
+                expSession->setValue("steppedBg", ui->steppedBackgroundBox->isChecked());
+                expSession->setValue("XMCD", ui->diffBox->isChecked());
+                expSession->setValue("integr", ui->rawBox->isChecked());
+            expSession->endGroup();
+            *outStream << "file1 = " << file1Path << "/" << ui->file1Label->text() << "\n\n";
+            *outStream << "theta = " << teta1*180/M_PI << "\n";
+            *outStream << "lChopLength = " << ui->bSpinBox->value() << "\n";
+            *outStream << "rChopLength = " << ui->tSpinBox->value() << "\n";
+            *outStream << "normalisation type = ";
+            if(ui->stepBox->isChecked()){
+                *outStream << "r + constant step";
             }else{
-                if(ui->oneBox->isChecked()){
-                    *outStream << "from zero to 100";
+                if(ui->mulBox->isChecked()){
+                    *outStream << "r * constant";
                 }else{
-                    *outStream << "none";
+                    if(ui->oneBox->isChecked()){
+                        *outStream << "from zero to 100";
+                    }else{
+                        *outStream << "none";
+                    }
                 }
             }
-        }
-        *outStream << "\n";
-        *outStream << "leftLinearisationInterval = " << ui->llSpinBox->value() << "\n";
-        *outStream << "rightLinearisationInterval = " << ui->rlSpinBox->value() << "\n";
-        *outStream << "dividerPos = " << ui->dividerSpinBox->value() << "\n" ;
-        *outStream << "linear coeff : l = " << ui->lkLabel->text() << " r = " << ui->rkLabel->text() << "\n";
-        *outStream << "fillet mult = " << ui->filletSpinBox->value() << "\n";
-        *outStream << "polarisation coeff = Pc = " << ui->pSpinBox->value() << "\n";
-        if(ui->angle1Box->isChecked()){
-            *outStream << "in-plane magnetisation";
-        }else{
-            *outStream << "magnetisation angle = " << ui->angle1CalcLable->text() << " @" << ui->levelSpinBox->value();
-        }
-        *outStream << "Nh = " << ui->nSpinBox->value() << "\n";
-
-    ui->file2Box->setChecked(true);
-    *outStream << "file2 = " << file2Path << "/" << ui->file2Label->text() << "\n\n";
-    *outStream << "processing params :" << "\n";
-    *outStream << "lChopLength = " << ui->bSpinBox->value() << "\n";
-    *outStream << "rChopLength = " << ui->tSpinBox->value() << "\n";
-    *outStream << "normalisation type = ";
-    if(ui->stepBox->isChecked()){
-        *outStream << "r + constant step";
-    }else{
-        if(ui->mulBox->isChecked()){
-            *outStream << "r * constant";
-        }else{
-            if(ui->oneBox->isChecked()){
-                *outStream << "from zero to 100";
+            *outStream << "\n";
+            *outStream << "leftLinearisationInterval = " << ui->llSpinBox->value() << "\n";
+            *outStream << "rightLinearisationInterval = " << ui->rlSpinBox->value() << "\n";
+            *outStream << "dividerPos = " << ui->dividerSpinBox->value() << "\n" ;
+            *outStream << "linear coeff : l = " << ui->lkLabel->text() << " r = " << ui->rkLabel->text() << "\n";
+            *outStream << "fillet mult = " << ui->filletSpinBox->value() << "\n";
+            if(ui->angle1Box->isChecked()){
+                *outStream << "in-plane magnetisation" << "\n";
             }else{
-                *outStream << "none";
+                *outStream << "magnetisation angle = " << ui->angle1CalcLable->text() << " @" << ui->levelSpinBox->value() << "\n";
             }
+            *outStream << "Al3+Al2 = " << ui->sum1Label->text() << "\n";
+            *outStream << "dAl3 = " << ui->l31Label->text() << "\n";
+            *outStream << "dAl2 = " << ui->l21Label->text() << "\n";
+            *outStream << "msEff = " << ui->msEff1Label->text() << "\n";
+            *outStream << "mOrb = " << ui->mOrb1Label->text() << "\n";
         }
-    }
-    *outStream << "\n";
-    *outStream << "leftLinearisationInterval = " << ui->llSpinBox->value() << "\n";
-    *outStream << "rightLinearisationInterval = " << ui->rlSpinBox->value() << "\n";
-    *outStream << "dividerPos = " << ui->dividerSpinBox->value() << "\n" ;
-    *outStream << "linear coeff : l = " << ui->lkLabel->text() << " r = " << ui->rkLabel->text() << "\n";
-    *outStream << "fillet mult = " << ui->filletSpinBox->value() << "\n";
-    *outStream << "polarisation coeff = Pc = " << ui->pSpinBox->value() << "\n";
-    if(ui->angle2Box->isChecked()){
-        *outStream << "in-plane magnetisation";
-    }else{
-        *outStream << "magnetisation angle = " << ui->angle2CalcLable->text() << " @" << ui->levelSpinBox->value();
-    }
-    *outStream << "Nh = " << ui->nSpinBox->value() << "\n";
-    if(first){
-        ui->file1Box->setChecked(true);
-    }
-    *outStream << "results:" << "\n";
-    *outStream << "first:" << "\n";
-    *outStream << "Al3 + Al2 = " << ui->sum1Label->text() << "\n";
-    *outStream << "dAl3 = " << ui->l31Label->text() << "\n";
-    *outStream << "dAl2 = " << ui->l21Label->text() << "\n";
-    *outStream << "msEff = " << msEff1 << " " << units[ui->unitBox->currentIndex()] << "\n";
-    *outStream << "mOrb = " << mOrb1 << " " << units[ui->unitBox->currentIndex()] << "\n";
-    *outStream << "second:" << "\n";
-    *outStream << "Al3 + Al2 = " << ui->sum2Label->text() << "\n";
-    *outStream << "dAl3 = " << ui->l32Label->text() << "\n";
-    *outStream << "dAl2 = " << ui->l22Label->text() << "\n";
-    *outStream << "msEff = " << msEff2 << " " << units[ui->unitBox->currentIndex()] << "\n";
-    *outStream << "mOrb = " << mOrb2 << " " << units[ui->unitBox->currentIndex()] << "\n";
-    *outStream << "final:" << "\n";
-    *outStream << "ms = " << ui->msLabel->text() << " " << units[ui->unitBox->currentIndex()] << "\n";
-    *outStream << "mT = " << ui->mTLabel->text() << " " << units[ui->unitBox->currentIndex()] << "\n";
-    *outStream << "mOrbOrt = " << ui->mOrbOLabel->text() << " " << units[ui->unitBox->currentIndex()] << "\n";
-    *outStream << "mOrbPar = " << ui->mOrbPLabel->text() << " " << units[ui->unitBox->currentIndex()] << "\n\n";
-    *outStream << "legend:" << "\n" ;
-    *outStream << "x = wavelength (column 2 in original file)" << "\n" ;
-    *outStream << "l = l bare data (column 3 in original file)" << "\n" ;
-    *outStream << "r = r bare data (column 7 in original file)" << "\n" ;
-    *outStream << "lN = normalised, maybe stepped down data (column 6 in original file)" << "\n" ;
-    *outStream << "rN = normalised, maybe stepped down data (column 10 in original file)" << "\n" ;
-    *outStream << "l Max = l maximums" << "\n" ;
-    *outStream << "r Max = r maximums" << "\n" ;
-    *outStream << "diff = rN - lN"  << "\n\n";
-    for(int k = 0; k < 3; k++){
-        QString temp = ui->exportLine->text();
-        temp.chop(4);
-        temp += "_output";
-        switch (k) {
-            case 0:
-                break;
-            case 1:
-                outFile->close();
-                outFile = new QFile(temp + "_file_1.txt");
-                outFile->open(QIODevice::WriteOnly);
-                outStream = new QTextStream(outFile);
-                break;
-            case 2:
-                outFile->close();
-                outFile = new QFile(temp + "_file_2.txt");
-                outFile->open(QIODevice::WriteOnly);
-                outStream = new QTextStream(outFile);
-                break;
+        expSession->endGroup();
+        exportState++;
+        if(loaded2){
+            swap();
+            qDebug() << "swapTo2 emitted";
+        }else{
+            exportState++; //skip 2 file export
         }
-    for(int i = 1; i < 3; i++){
-        *outStream << "#" << i << "file\n";
-        *outStream << "#";
-        *outStream << qSetFieldWidth(9) << center << "x";
-        *outStream << qSetFieldWidth(14) << left;
-    if(ui->rawBox->isChecked()){
-        *outStream << "l";
-        *outStream << "r";
-    }
-    if(ui->normBox->isChecked() || ui->stepBox->isChecked() || ui->mulBox->isChecked() || ui->oneBox->isChecked()){
-        *outStream << "lN";
-        *outStream << "rN";
-    }
-    if(ui->maxBox->isChecked()){
-        *outStream << "l Max";
-        *outStream << "r Max";
-    }
-    if(ui->steppedBackgroundBox->isChecked()){
-        *outStream << "st. back.";
-    }
-    if(ui->diffBox->isChecked()){
-        *outStream << "diff";
-    }
-    *outStream << qSetFieldWidth(1) << "\n";
-
-    if(i == 1){
-        data = data1Loader->getData();
-    }else{
-        data = data2Loader->getData();
-    }
-    qreal m1 = ((data.last().second.first - data.first().second.first)*2/3)/(2*qAcos(0));
-    qreal m2 = ((data.last().second.first - data.first().second.first)/3)/(2*qAcos(0));
-    for(int j = 0; j < data.length(); j++){
-        *outStream  << qSetFieldWidth(10) << left << data.at(j).first;
-        *outStream << qSetFieldWidth(14) << left;
+        exportCharts();
+        break;
+    case 2: //export 2 file
+        expSession->beginGroup("file2");
+        if(loaded2){
+            expSession->setValue("path", file2Path + "/");
+            expSession->setValue("name", ui->file2Label->text());
+            expSession->beginGroup("buttons");
+                expSession->setValue("raw", ui->rawBox->isChecked());
+                expSession->setValue("iZero", ui->zeroBox->isChecked());
+                expSession->setValue("norm", ui->normBox->isChecked());
+                expSession->setValue("norm+", ui->stepBox->isChecked());
+                expSession->setValue("norm*", ui->mulBox->isChecked());
+                expSession->setValue("norm0", ui->oneBox->isChecked());
+                expSession->setValue("maxSep", ui->dividerBox->isChecked());
+                expSession->setValue("maxVal", ui->dividerSpinBox->value());
+                expSession->setValue("maxShow", ui->maxBox->isChecked());
+                expSession->setValue("lLinear", ui->llSpinBox->value());
+                expSession->setValue("rLinear", ui->rlSpinBox->value());
+                expSession->setValue("LinearShow", ui->linearBox->isChecked());
+                expSession->setValue("lCrop", ui->bSpinBox->value());
+                expSession->setValue("rCrop", ui->tSpinBox->value());
+                expSession->setValue("linearBg", ui->linearBackgroundBox->isChecked());
+                expSession->setValue("stepSmooth", ui->filletSpinBox->value());
+                expSession->setValue("steppedBg", ui->steppedBackgroundBox->isChecked());
+                expSession->setValue("XMCD", ui->diffBox->isChecked());
+                expSession->setValue("integr", ui->rawBox->isChecked());
+                expSession->setValue("calibr", ui->levelBox->isChecked());
+                expSession->setValue("calibrLevel", ui->levelSpinBox->value());
+                expSession->setValue("calc", ui->calculateBox->isChecked());
+            expSession->endGroup();
+            *outStream << "\nfile2 = " << file2Path << "/" << ui->file2Label->text() << "\n\n";
+            *outStream << "theta = " << teta2*180/M_PI << "\n";
+            *outStream << "lChopLength = " << ui->bSpinBox->value() << "\n";
+            *outStream << "rChopLength = " << ui->tSpinBox->value() << "\n";
+            *outStream << "normalisation type = ";
+            if(ui->stepBox->isChecked()){
+                *outStream << "r + constant step";
+            }else{
+                if(ui->mulBox->isChecked()){
+                    *outStream << "r * constant";
+                }else{
+                    if(ui->oneBox->isChecked()){
+                        *outStream << "from zero to 100";
+                    }else{
+                        *outStream << "none";
+                    }
+                }
+            }
+            *outStream << "\n";
+            *outStream << "leftLinearisationInterval = " << ui->llSpinBox->value() << "\n";
+            *outStream << "rightLinearisationInterval = " << ui->rlSpinBox->value() << "\n";
+            *outStream << "dividerPos = " << ui->dividerSpinBox->value() << "\n" ;
+            *outStream << "linear coeff : l = " << ui->lkLabel->text() << " r = " << ui->rkLabel->text() << "\n";
+            *outStream << "fillet mult = " << ui->filletSpinBox->value() << "\n";
+            if(ui->angle2Box->isChecked()){
+                *outStream << "in-plane magnetisation" << "\n";
+            }else{
+                *outStream << "magnetisation angle = " << ui->angle2CalcLable->text() << " @" << ui->levelSpinBox->value() << "\n";
+            }
+            *outStream << "Al3+Al2 = " << ui->sum2Label->text() << "\n";
+            *outStream << "dAl3 = " << ui->l32Label->text() << "\n";
+            *outStream << "dAl2 = " << ui->l22Label->text() << "\n";
+            *outStream << "msEff = " << ui->msEff2Label->text() << "\n";
+            *outStream << "mOrb = " << ui->mOrb2Label->text() << "\n";
+        }
+        expSession->endGroup();
+        exportState++;
+        exportCharts();
+        break;
+    case 3: //export common data and charts
+        *outStream << "\ncommon" << "\n";
+        *outStream << "calibrLevel" << ui->levelSpinBox->value() << "\n";
+        *outStream << "units " << ui->unitBox->currentText() << "\n";
+        *outStream << "Nh = " << ui->nSpinBox->value() << "\n";
+        *outStream << "polarisation coeff = Pc = " << ui->pSpinBox->value() << "\n";
+        *outStream << "ms = " << ui->msLabel->text() << " " << units[ui->unitBox->currentIndex()] << "\n";
+        *outStream << "mT = " << ui->mTLabel->text() << " " << units[ui->unitBox->currentIndex()] << "\n";
+        *outStream << "mOrbOrt = " << ui->mOrbOLabel->text() << " " << units[ui->unitBox->currentIndex()] << "\n";
+        *outStream << "mOrbPar = " << ui->mOrbPLabel->text() << " " << units[ui->unitBox->currentIndex()] << "\n";
+        *outStream << "mOrb = " << ui->mOrbLabel->text() << " " << units[ui->unitBox->currentIndex()] << "\n\n";
+        *outStream << "legend:" << "\n" ;
+        *outStream << "x = wavelength (column 2 in original file)" << "\n" ;
+        *outStream << "l = l bare data (column 3 in original file)" << "\n" ;
+        *outStream << "r = r bare data (column 7 in original file)" << "\n" ;
+        *outStream << "lN = normalised, maybe stepped down data (column 6 in original file)" << "\n" ;
+        *outStream << "rN = normalised, maybe stepped down data (column 10 in original file)" << "\n" ;
+        *outStream << "l Max = l maximums" << "\n" ;
+        *outStream << "r Max = r maximums" << "\n" ;
+        *outStream << "diff = rN - lN"  << "\n\n";
+        for(int k = 0; k < 3; k++){
+            if(k == 1 && !loaded1){
+                k++;
+            }
+            if(k == 2 && !loaded2){
+                break;
+            }
+            switch (k) {
+                case 1:
+                    outFile->close();
+                    outFile = new QFile(exPath + "/file_1.txt");
+                    qDebug() << exPath + "/file_1.txt";
+                    outFile->open(QIODevice::WriteOnly);
+                    outStream = new QTextStream(outFile);
+                    break;
+                case 2:
+                    outFile->close();
+                    outFile = new QFile(exPath + "/file_2.txt");
+                    outFile->open(QIODevice::WriteOnly);
+                    outStream = new QTextStream(outFile);
+                    break;
+            }
+        for(int i = 1; i < 3; i++){
+            if(i == 1 && !loaded1){
+                i++;
+            }
+            if(i == 2 && !loaded2){
+                break;
+            }
+            *outStream << "#" << i << "file\n";
+            *outStream << "#";
+            *outStream << qSetFieldWidth(9) << center << "x";
+            *outStream << qSetFieldWidth(14) << left;
         if(ui->rawBox->isChecked()){
-            *outStream << bareData.at(j).second.first;
-            *outStream << bareData.at(j).second.second;
+            *outStream << "l";
+            *outStream << "r";
         }
         if(ui->normBox->isChecked() || ui->stepBox->isChecked() || ui->mulBox->isChecked() || ui->oneBox->isChecked()){
-            *outStream << data.at(j).second.first;
-            *outStream << data.at(j).second.second;
+            *outStream << "lN";
+            *outStream << "rN";
         }
         if(ui->maxBox->isChecked()){
-            if(lInd.first == j || lInd.second == j){
-                *outStream << data.at(j).second.first;
-            }else{
-                *outStream << 0;
-            }
-            if(rInd.first == j || rInd.second == j){
-                *outStream << data.at(j).second.second;
-            }else{
-                *outStream << 0;
-            }
+            *outStream << "l Max";
+            *outStream << "r Max";
         }
         if(ui->steppedBackgroundBox->isChecked()){
-            *outStream << data.first().second.first + m1 * (qAcos(0) + qAtan(ui->filletSpinBox->value()*(data.at(j).first - data.at(lInd.first).first))) + m2 * (qAcos(0) + qAtan(ui->filletSpinBox->value()*(data.at(j).first - data.at(lInd.second).first)));
+            *outStream << "st. back.";
         }
         if(ui->diffBox->isChecked()){
-            *outStream << (data.at(j).second.first - data.at(j).second.second);
+            *outStream << "diff";
         }
         *outStream << qSetFieldWidth(1) << "\n";
+
+        if(i == 1){
+            data = data1Loader->getData();
+        }else{
+            data = data2Loader->getData();
+        }
+        qreal m1 = ((data.last().second.first - data.first().second.first)*2/3)/(2*qAcos(0));
+        qreal m2 = ((data.last().second.first - data.first().second.first)/3)/(2*qAcos(0));
+        for(int j = 0; j < data.length(); j++){
+            *outStream  << qSetFieldWidth(10) << left << data.at(j).first;
+            *outStream << qSetFieldWidth(14) << left;
+            if(ui->rawBox->isChecked()){
+                *outStream << bareData.at(j).second.first;
+                *outStream << bareData.at(j).second.second;
+            }
+            if(ui->normBox->isChecked() || ui->stepBox->isChecked() || ui->mulBox->isChecked() || ui->oneBox->isChecked()){
+                *outStream << data.at(j).second.first;
+                *outStream << data.at(j).second.second;
+            }
+            if(ui->maxBox->isChecked()){
+                if(lInd.first == j || lInd.second == j){
+                    *outStream << data.at(j).second.first;
+                }else{
+                    *outStream << 0;
+                }
+                if(rInd.first == j || rInd.second == j){
+                    *outStream << data.at(j).second.second;
+                }else{
+                    *outStream << 0;
+                }
+            }
+            if(ui->steppedBackgroundBox->isChecked()){
+                *outStream << data.first().second.first + m1 * (qAcos(0) + qAtan(ui->filletSpinBox->value()*(data.at(j).first - data.at(lInd.first).first))) + m2 * (qAcos(0) + qAtan(ui->filletSpinBox->value()*(data.at(j).first - data.at(lInd.second).first)));
+            }
+            if(ui->diffBox->isChecked()){
+                *outStream << (data.at(j).second.first - data.at(j).second.second);
+            }
+            *outStream << qSetFieldWidth(1) << "\n";
+        }
+        }
+        *outStream << qSetFieldWidth(4) << "\nEOF";
+        }
+        outFile->close();
+        exportState++;
+        exportCharts();
+        break;
+    default:
+        if(is1 != ui->file1Box->isChecked()){
+            swap();
+        }
+        exportState = 0; //exit
+        break;
     }
-    }
-    *outStream << qSetFieldWidth(4) << "\nEOF";
-    }
-    outFile->close();
 }
 
 void MainWindow::findMax(){
@@ -1200,6 +1303,7 @@ void MainWindow::lChanged(){
         ui->msLabel->setText("Unknown");
         ui->mOrbOLabel->setText("Unknown");
         ui->mOrbPLabel->setText("Unknown");
+        ui->mOrbLabel->setText("Unknown");
     }
     reCalc();
 }
@@ -1217,9 +1321,11 @@ void MainWindow::fileSelect(){
         if(ui->file1Box->isChecked()){
             chart->setTitle("XAS file 1");
             diff->setTitle("XMCD file 1");
+            //ui->file2Box->setChecked(true); ?
         }else{
             chart->setTitle("XAS file 2");
             diff->setTitle("XMCD file 2");
+            //ui->file1Box->setChecked(true); should i?
         }
         open(ui->fileTree->currentIndex());
         qreal tmp = state->value("linL", 0);
@@ -1230,6 +1336,7 @@ void MainWindow::fileSelect(){
         ui->rlSpinBox->setValue(tmp);
         tmp = state->value("div", 0);
         state->insert("div", ui->dividerSpinBox->value());
+        ui->dividerSpinBox->setValue(tmp);
         tmp = state->value("chopL", 0);
         state->insert("chopL", ui->bSpinBox->value());
         ui->bSpinBox->setValue(tmp);
@@ -1400,48 +1507,173 @@ void MainWindow::reCalcBoth(){
 }
 
 void MainWindow::loadSession(){
+    //fix
+    qDebug() << "loading";
+    bool firstFileSelected = false;
+    session->beginGroup("firstTab");
+        int tmp = ui->driveBox->findText(settings->value("drive", "").toString());
+        if(tmp != -1){
+            ui->driveBox->setCurrentIndex(tmp);
+        }
+        session->beginGroup("fileTree");
+            ui->fileTree->setCurrentIndex(model->index(session->value("path", "").toString()));
+            session->beginGroup("filters");
+                ui->sampleBox->setChecked(session->value("sample", true).toBool());
+                ui->energyBox->setChecked(session->value("energy", true).toBool());
+                ui->geomBox->setChecked(session->value("geometry", true).toBool());
+            session->endGroup();
+        session->endGroup();
+        firstFileSelected = session->value("firstSelected", true).toBool();
+    session->endGroup();
+    session->beginGroup("common");
+        if(session->value("loaded", false).toBool()){
+            sample = session->value("sample", "unknown").toString();
+            geom = session->value("geom", "unknown").toString();
+            energy = session->value("energy", "unknown").toString();
+            ui->calculateBox->setChecked(session->value("calcBox", false).toBool());
+            ui->levelBox->setChecked(session->value("levelBox", false).toBool());
+            ui->levelSpinBox->setValue(session->value("level", 0).toDouble());
+            if(session->value("firstInPlaneM", true).toBool()){
+                ui->angle1Box->setChecked(true);
+            }else{
+                ui->angle2Box->setChecked(true);
+            }
+            ui->pSpinBox->setValue(session->value("polarisation", 0.83).toDouble());
+            ui->nSpinBox->setValue(session->value("Nh", 2.49).toDouble());
+            ui->unitBox->setCurrentText(session->value("unit", "µβ").toString());
+            ui->tabWidget->setCurrentIndex(session->value("currentTab", 0).toInt());
+        }
+    session->endGroup();
+    session->beginGroup("file1");
+        if(session->value("loaded", false).toBool()){
+            //loaded1 = true;
+            file1Path = settings->value("filePath", "").toString();
+            file1Name = settings->value("filename", "").toString();
+            if(firstFileSelected){
+                //current
+            }else{
+                //prev
+            }
+            //load1
+            //ui->llSpinBox
+        }else{
+            loaded1 = false;
+        }
+        //add
+    session->endGroup();
+    session->beginGroup("file2");
+        if(session->value("loaded", false).toBool()){
+            //loaded2 = true;
+            file2Path = settings->value("filePath", "").toString();
+            file2Name = settings->value("filename", "").toString();
+            if(!firstFileSelected){
+                //current
+            }else{
+                //prev
+            }
+            //load2
+            //ui->llSpinBox
+        }else{
+            loaded1 = false;
+        }
+        //add
+    session->endGroup();
+    //firstFileSelected.
     data1Loader = new FileLoader(file1Path + "/" + file1Name);
 }
 
 void MainWindow::saveSession(){
-    session->beginGroup("commen");
-        session->setValue("path", path);
-        session->setValue("sample", sample);
-        session->setValue("geom", geom);
-        session->setValue("energy", energy);
-        //add prev gui buttons
-        session->beginGroup("prev");
-            session->setValue("lChop", lChopPrev);
-            session->setValue("rChop", rChopPrev);
-            session->setValue("lLinear", lLinearPrev);
-            session->setValue("rLinear", rLinearPrev);
-            session->setValue("divider", dividerPrev);
-            session->setValue("smooth", smoothPrev);
-        session->endGroup();
-        //fix + add next
-        session->beginGroup("current");
-            session->setValue("lChop", lChopPrev);
-            session->setValue("rChop", rChopPrev);
-            session->setValue("lLinear", lLinearPrev);
-            session->setValue("rLinear", rLinearPrev);
-            session->setValue("divider", dividerPrev);
-            session->setValue("smooth", smoothPrev);
+    session->beginGroup("firstTab");
+        session->setValue("drive", ui->driveBox->currentText());
+        session->setValue("firstSelected", ui->file1Box->isChecked());
+        session->beginGroup("fileTree");
+        session->remove("");
+            session->setValue("path", model->filePath(ui->fileTree->currentIndex()));
+            session->beginGroup("filters");
+                session->setValue("sample", ui->sampleBox->isChecked());
+                session->setValue("energy", ui->energyBox->isChecked());
+                session->setValue("geometry", ui->geomBox->isChecked());
+            session->endGroup();
         session->endGroup();
     session->endGroup();
+    session->beginGroup("common");
+        if(loaded1 || loaded2){
+            session->setValue("loaded", true);
+            session->setValue("sample", sample);
+            session->setValue("geom", geom);
+            session->setValue("energy", energy);
+            session->setValue("calcBox", ui->calculateBox->isChecked());
+            session->setValue("levelBox", ui->levelBox->isChecked());
+            session->setValue("level", ui->levelSpinBox->value());
+            session->setValue("firstInPlaneM", ui->angle1Box->isChecked());
+            session->setValue("polarisation", ui->pSpinBox->value());
+            session->setValue("Nh", ui->nSpinBox->value());
+            session->setValue("unit", ui->unitBox->currentText());
+            session->setValue("currentTab", ui->tabWidget->currentIndex());
+        }else{
+            session->remove("");
+            session->setValue("loaded", false);
+        }
+    session->endGroup();
     session->beginGroup("file1");
-        session->setValue("loaded", loaded1);
-        session->setValue("filePath", file1Path);
-        session->setValue("filename", file1Name);
-        session->setValue("teta", teta1);
-        //fix
-        //session->setValue("limits", limits1);
+        if(loaded1){
+            if(!ui->file1Box->isChecked()){
+                swap();
+            }
+            session->setValue("loaded", loaded1);
+            session->setValue("filePath", file1Path);
+            session->setValue("filename", file1Name);
+            session->setValue("linL", ui->llSpinBox->value());
+            session->setValue("linR", ui->rlSpinBox->value());
+            session->setValue("div", ui->dividerSpinBox->value());
+            session->setValue("chopL", ui->bSpinBox->value());
+            session->setValue("chopR", ui->tSpinBox->value());
+            session->setValue("smooth", ui->filletSpinBox->value());
+            session->setValue("rawBox", ui->rawBox->isChecked());
+            session->setValue("zeroBox", ui->zeroBox->isChecked());
+            session->setValue("normBox", ui->normBox->isChecked());
+            session->setValue("plusBox", ui->stepBox->isChecked());
+            session->setValue("mulBox", ui->mulBox->isChecked());
+            session->setValue("oneBox", ui->oneBox->isChecked());
+            session->setValue("maxBox", ui->maxBox->isChecked());
+            session->setValue("linBBox", ui->linearBackgroundBox->isChecked());
+            session->setValue("stepBBox", ui->steppedBackgroundBox->isChecked());
+            session->setValue("diffBox", ui->diffBox->isChecked());
+            session->setValue("intBox", ui->integrateBox->isChecked());
+            session->setValue("linSBox", ui->linearBox->isChecked());
+            session->setValue("maxSBox", ui->dividerBox->isChecked());
+        }else{
+            session->remove("");
+            session->setValue("loaded", false);
+        }
     session->endGroup();
     session->beginGroup("file2");
         session->setValue("loaded", loaded2);
-        session->setValue("filePath", file2Path);
-        session->setValue("filename", file2Name);
-        session->setValue("teta", teta2);
-        //ssh
-        //session->setValue("limits", limits2);
+        if(loaded2){
+            session->setValue("filePath", file2Path);
+            session->setValue("filename", file2Name);
+            session->setValue("linL", ui->llSpinBox->value());
+            session->setValue("linR", ui->rlSpinBox->value());
+            session->setValue("div", ui->dividerSpinBox->value());
+            session->setValue("chopL", ui->bSpinBox->value());
+            session->setValue("chopR", ui->tSpinBox->value());
+            session->setValue("smooth", ui->filletSpinBox->value());
+            session->setValue("rawBox", ui->rawBox->isChecked());
+            session->setValue("zeroBox", ui->zeroBox->isChecked());
+            session->setValue("normBox", ui->normBox->isChecked());
+            session->setValue("plusBox", ui->stepBox->isChecked());
+            session->setValue("mulBox", ui->mulBox->isChecked());
+            session->setValue("oneBox", ui->oneBox->isChecked());
+            session->setValue("maxBox", ui->maxBox->isChecked());
+            session->setValue("linBBox", ui->linearBackgroundBox->isChecked());
+            session->setValue("stepBBox", ui->steppedBackgroundBox->isChecked());
+            session->setValue("diffBox", ui->diffBox->isChecked());
+            session->setValue("intBox", ui->integrateBox->isChecked());
+            session->setValue("linSBox", ui->linearBox->isChecked());
+            session->setValue("maxSBox", ui->dividerBox->isChecked());
+        }else{
+            session->remove("");
+            session->setValue("loaded", false);
+        }
     session->endGroup();
 }

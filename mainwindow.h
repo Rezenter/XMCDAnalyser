@@ -119,17 +119,14 @@ private:
     qreal mop;
     qreal moo;
     QHash<QString,qreal> *state;
-    qreal lChopPrev;
-    qreal rChopPrev;
-    qreal lLinearPrev;
-    qreal rLinearPrev;
-    qreal dividerPrev;
-    qreal smoothPrev;
     qreal phi1;
     qreal phi2;
     qreal eps = 0.01;
     QPair<qreal, qreal> intens;
     QSettings *session;
+    QSettings *expSession;
+    int exportState = 0;
+    bool is1;
 
 
 private slots:
@@ -149,7 +146,7 @@ private slots:
     void forget1();
     void forget2();
     void reCalcBoth();
-    void myResize();
+    void myResize();//?
     void swap();
     void loadSession();
 };

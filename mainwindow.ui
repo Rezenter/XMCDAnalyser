@@ -39,7 +39,7 @@
        <number>100000</number>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab">
        <property name="sizePolicy">
@@ -196,13 +196,13 @@
              </size>
             </property>
             <property name="toolTip">
-             <string>Files extension.</string>
+             <string>File extension.</string>
             </property>
             <property name="toolTipDuration">
              <number>100000</number>
             </property>
             <property name="text">
-             <string>*.txt</string>
+             <string>txt</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
@@ -1790,6 +1790,23 @@
              </item>
             </widget>
            </item>
+           <item row="7" column="2">
+            <widget class="QLabel" name="label_28">
+             <property name="toolTip">
+              <string>Orbital moment, calculatet from components.</string>
+             </property>
+             <property name="text">
+              <string>mOrb = </string>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="4">
+            <widget class="QLabel" name="mOrbLabel">
+             <property name="text">
+              <string>Unknown</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
         </item>
@@ -1804,17 +1821,6 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="backgroundGroup">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
-  <buttongroup name="angleGroup"/>
-  <buttongroup name="filterGroup">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
   <buttongroup name="elseGroup">
    <property name="exclusive">
     <bool>false</bool>
@@ -1828,6 +1834,17 @@
   <buttongroup name="fileGroup">
    <property name="exclusive">
     <bool>true</bool>
+   </property>
+  </buttongroup>
+  <buttongroup name="backgroundGroup">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
+  <buttongroup name="angleGroup"/>
+  <buttongroup name="filterGroup">
+   <property name="exclusive">
+    <bool>false</bool>
    </property>
   </buttongroup>
  </buttongroups>
