@@ -41,7 +41,7 @@ FileLoader::~FileLoader(){
 QVector<QPair<qreal, QPair<qreal, qreal>>> FileLoader::getData(){
     QVector<QPair<qreal, QPair<qreal, qreal>>> res;
     for(int i = li; i <= ri; i++){
-        res.append(data.at(i));
+        res.append(QPair<qreal, QPair<qreal, qreal>>(data.at(i).first + prevShift, data.at(i).second));
     }
     return res;
 }
@@ -49,7 +49,7 @@ QVector<QPair<qreal, QPair<qreal, qreal>>> FileLoader::getData(){
 QVector<QPair<qreal, QPair<qreal, qreal>>> FileLoader::getBareData(){
     QVector<QPair<qreal, QPair<qreal, qreal>>> res;
     for(int i = li; i <= ri; i++){
-        res.append(bareData.at(i));
+        res.append(QPair<qreal, QPair<qreal, qreal>>(bareData.at(i).first + prevShift, bareData.at(i).second));
     }
     return res;
 }
@@ -58,7 +58,8 @@ QPair<int, int> FileLoader::getLimits(){
     return QPair<int, int>(li, ri);
 }
 
-void FileLoader::setLimits(double l, double r){
+void FileLoader::setLimits(double l, double r, double shift){
+    prevShift = shift;
     this->r = r;
     this->l = l;
     QPair<qreal, QPair<qreal, qreal>> pair;
@@ -81,5 +82,9 @@ void FileLoader::setLimits(double l, double r){
 }
 
 QVector<QPair<qreal, QPair<qreal, qreal>>> FileLoader::getZero(){
-    return zero;
+    QVector<QPair<qreal, QPair<qreal, qreal>>> res;
+    for(int i = li; i <= ri; i++){
+        res.append(QPair<qreal, QPair<qreal, qreal>>(zero.at(i).first + prevShift, zero.at(i).second));
+    }
+    return res;
 }

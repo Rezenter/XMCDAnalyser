@@ -29,9 +29,30 @@ MainWindow::MainWindow(QWidget *parent) :
     chart->setTitle("XAS");
     diff->setTitle("XMCD");
     axisY = new QtCharts::QValueAxis();
+    axisY->setGridLineColor(QColor(150, 250 , 150));
+    axisY->setLinePenColor(QColor(0, 150 , 0));
+    axisY2 = new QtCharts::QValueAxis();
+    axisY2->setGridLineColor(QColor(150, 150 , 250));
+    axisY2->setLinePenColor(QColor(0, 0 , 150));
     diffY = new QtCharts::QValueAxis();
+    diffY->setMinorTickCount(2);
+    diffY->setTickCount(10);
+    diffY->setTitleText("Intensity XMCD, arb.u.");
+    axisX->setMinorTickCount(4);
+    axisX->setTickCount(20);
+    axisX->setTitleText("primary photons energy, eV");
+    diffX->setMinorTickCount(4);
+    diffX->setTickCount(20);
+    diffX->setTitleText("primary photons energy, eV");
+    axisY->setMinorTickCount(2);
+    axisY->setTickCount(10);
+    axisY->setTitleText("Intensity XAS, arb.u.");
+    axisY2->setMinorTickCount(2);
+    axisY2->setTickCount(11);
+    axisY2->setTitleText("Intensity XMCD, arb.u.");
     chartView = new QtCharts::QChartView(chart, ui->chartWidget);
     diffView = new QtCharts::QChartView(diff, ui->diffWidget);
+    diff->legend()->setAlignment(Qt::AlignLeft);
     chartView->setRenderHint(QPainter::Antialiasing);
     chartView->show();
     diffView->setRenderHint(QPainter::Antialiasing);
@@ -71,11 +92,14 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->unitBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &MainWindow::reCalcBoth);
     QObject::connect(ui->filterGroup, static_cast<void(QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked), this, &MainWindow::reopen);
     QObject::connect(ui->angleGroup, static_cast<void(QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked), this, &MainWindow::reCalc);
-    QObject::connect(ui->levelSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &MainWindow::reCalc);
     QObject::connect(ui->tabWidget, static_cast<void(QTabWidget::*)(int)>(&QTabWidget::currentChanged), this, &MainWindow::myResize);
     QObject::connect(ui->levelBox, &QCheckBox::clicked, this, &MainWindow::reCalc);
     QObject::connect(ui->swapButton, &QPushButton::pressed, this, &MainWindow::swap);
+    QObject::connect(ui->energyShiftSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &MainWindow::reCalcBoth);
     QObject::connect(ui->sessionButton, &QPushButton::pressed, this, &MainWindow::loadSession);
+    QObject::connect(ui->sumBox, &QCheckBox::clicked, this, &MainWindow::reCalc);
+    QObject::connect(ui->shadowSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &MainWindow::reCalc);
+    QObject::connect(ui->zeroShadowSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &MainWindow::reCalc);
     buildFileTree();
     loadSettings();
     refresh();
@@ -130,6 +154,11 @@ void MainWindow::loadSettings(){
     move(settings->value("windowPosition", QPoint(0, 0)).toPoint());
     setWindowTitle(settings->value("windowTitle", "XMCDAnalyzer(corrupted .ini)").toString());
     drive = (settings->value("lastDrive", "C:/").toString());
+    if(settings->value("useHolders", false).toBool()){
+        ui->holderButton->setChecked(true);
+    }else{
+        ui->angleButton->setChecked(true);
+    }
     model->setRootPath(drive);
     settings->beginGroup("fileTree");
         ui->fileTree->setCurrentIndex(model->index(settings->value("path", "C:/").toString()));
@@ -160,8 +189,8 @@ void MainWindow::loadSettings(){
         ui->diffWidget->resize(settings->value("lastSize", QSize(800, 600)).toSize());
     settings->endGroup();
     settings->endGroup();
-    ui->levelSpinBox->setEnabled(false);
-    ui->levelBox->setEnabled(false);
+    //ui->levelSpinBox->setEnabled(false);
+    //ui->levelBox->setEnabled(false);
     myResize();
 }
 
@@ -171,6 +200,7 @@ void MainWindow::saveSettings(){
     settings->setValue("windowPosition", this->pos());
     settings->setValue("windowTitle", this->windowTitle());
     settings->setValue("lastDrive", ui->driveBox->currentText());
+    settings->setValue("useHolders", ui->holderButton->isChecked());
     settings->beginGroup("fileTree");
         settings->setValue("path", model->filePath(ui->fileTree->currentIndex()));
         settings->setValue("nameWidth", ui->fileTree->columnWidth(0));
@@ -319,17 +349,19 @@ void MainWindow::load(QModelIndex index){
         data1Loader = new FileLoader(file1Path + "/" + file1Name);
         index = table->index(index.row(), 2);
         teta1 = table->data(index, Qt::DisplayRole).toDouble();
-        int t = teta1;
-        switch (t) {
-            case 0:
-                teta1 = angle0;
-                break;
-            case 1:
-                teta1 = angle1;
-                break;
-            case 2:
-                teta1 = angle2;
-                break;
+        if(ui->holderButton->isChecked()){
+            int t = teta1;
+            switch (t) {
+                case 0:
+                    teta1 = angle0;
+                    break;
+                case 1:
+                    teta1 = angle1;
+                    break;
+                case 2:
+                    teta1 = angle2;
+                    break;
+            }
         }
         teta1 = teta1*M_PI/180;
         ui->calculateBox->setChecked(false);
@@ -382,8 +414,8 @@ void MainWindow::load(QModelIndex index){
         loaded2 = true;
     }
     reCalc();
-    chart->legend()->hide();
-    diff->legend()->hide();
+    //chart->legend()->hide();
+    //diff->legend()->hide();
 }
 
 void MainWindow::load(){
@@ -401,21 +433,28 @@ void MainWindow::resizeEvent(QResizeEvent* event){
 }
 
 void MainWindow::reCalc(){
-    qDebug() << "reCalc";
+    /*qDebug() << "reCalc" << count;
+    count++;
+    */
     if((ui->file1Box->isChecked() && loaded1) || (ui->file2Box->isChecked() && loaded2)){
         if(ui->rawBox->isChecked() || ui->zeroBox->isChecked()){
         ui->linearBox->setChecked(false);
         ui->linearBackgroundBox->setChecked(false);
         ui->steppedBackgroundBox->setChecked(false);
     }
+    QVector<QPair<qreal, QPair<qreal, qreal>>> zeroData;
     if(ui->file1Box->isChecked()){
-        data1Loader->setLimits(ui->bSpinBox->value(), ui->tSpinBox->value());
-        data = data1Loader->getData();
+        data1Loader->setLimits(ui->bSpinBox->value(), ui->tSpinBox->value(), ui->energyShiftSpinBox->value()/2.0);
+        zeroData = data1Loader->getZero();
         bareData = data1Loader->getBareData();
     }else{
-        data2Loader->setLimits(ui->bSpinBox->value(), ui->tSpinBox->value());
-        data = data2Loader->getData();
+        data2Loader->setLimits(ui->bSpinBox->value(), ui->tSpinBox->value(), -ui->energyShiftSpinBox->value()/2.0);
+        zeroData = data2Loader->getZero();
         bareData = data2Loader->getBareData();
+    }
+    data.clear();
+    for(int i = 0; i < bareData.length(); i++){
+        data.append(QPair<qreal, QPair<qreal, qreal>>(bareData.at(i).first, QPair<qreal, qreal>((bareData.at(i).second.first - ui->shadowSpinBox->value()*1E-12)/(zeroData.at(i).second.first - ui->zeroShadowSpinBox->value()*1E-6), (bareData.at(i).second.second - ui->shadowSpinBox->value()*1E-12)/(zeroData.at(i).second.second - ui->zeroShadowSpinBox->value()*1E-12))));
     }
     ui->llSpinBox->setMinimum(data.at(2).first - data.first().first);
     if(chart->axes().contains(axisX)){
@@ -423,6 +462,9 @@ void MainWindow::reCalc(){
     }
     if(chart->axes().contains(axisY)){
         chart->removeAxis(axisY);
+    }
+    if(chart->axes().contains(axisY2)){
+        chart->removeAxis(axisY2);
     }
     if(diff->axes().contains(diffX)){
         diff->removeAxis(diffX);
@@ -435,7 +477,7 @@ void MainWindow::reCalc(){
     diffX->setMin(data.first().first);
     diffX->setMax(data.last().first);
     if(ui->dividerSpinBox->value() < axisX->min() || ui->dividerSpinBox->value() > axisX->max()){
-        ui->dividerSpinBox->setValue(axisX->min() + (axisX->max() - axisX->min())/2);
+        ui->dividerSpinBox->setValue(axisX->min() + (axisX->max() - axisX->min())/2.0);
     }
     if(chart->series().contains(lNorm)){
         chart->removeSeries(lNorm);
@@ -449,43 +491,34 @@ void MainWindow::reCalc(){
     if(chart->series().contains(r)){
         chart->removeSeries(r);
     }
-    qreal min = 100000000;
-    qreal max = -1;
-    if(chart->axes().contains(axisX)){
-        chart->removeAxis(axisX);
-    }
-    if(chart->axes().contains(axisY)){
-        chart->removeAxis(axisY);
-    }
-    if(diff->axes().contains(diffX)){
-        diff->removeAxis(diffX);
-    }
-    if(diff->axes().contains(diffY)){
-        diff->removeAxis(diffY);
-    }
+    qreal min = 1E12;
+    qreal max = -1E12;
     chart->addAxis(axisX, Qt::AlignBottom);
     chart->addAxis(axisY, Qt::AlignLeft);
+    chart->addAxis(axisY2, Qt::AlignRight);
     diff->addAxis(diffX, Qt::AlignBottom);
     diff->addAxis(diffY, Qt::AlignLeft);
     QPair<qreal, QPair<qreal, qreal>> pair;
-    if(bareData.length() != 0 && ui->rawBox->checkState() == 2){
+    if(bareData.length() != 0 && ui->rawBox->isChecked()){
         r = new QtCharts::QLineSeries();
         l = new QtCharts::QLineSeries();
-        int j = 1;
+        r->setName("Raw R");
+        l->setName("Raw L");
+        int j = 0;
         foreach(pair, bareData){
             l->append(pair.first, pair.second.first);
             r->append(pair.first, pair.second.second);
-            if(min > pair.second.first){
-                min = pair.second.first;
+            if(min > l->points().last().y()){
+                min = l->points().last().y();
             }
-            if(max < pair.second.first){
-                max = pair.second.first;
+            if(max < l->points().last().y()){
+                max = l->points().last().y();
             }
-            if(min > pair.second.second){
-                min = pair.second.second;
+            if(min > r->points().last().y()){
+                min = r->points().last().y();
             }
-            if(max < pair.second.second){
-                max = pair.second.second;
+            if(max < r->points().last().y()){
+                max = r->points().last().y();
             }
             j++;
         }
@@ -496,40 +529,21 @@ void MainWindow::reCalc(){
         l->attachAxis(axisY);
         r->attachAxis(axisY);
     }
-    qreal mult = 1;
+    qreal tmp1 = 1;
+    qreal tmp2 = 1;
     qreal step1 = 0;
     qreal step2 = 0;
-    qreal commonMult = 1;
     if(ui->stepBox->isChecked()){
         step2 = data.first().second.first - data.first().second.second;
-    }else{
-        if(ui->mulBox->isChecked()){
-            mult = data.first().second.first/data.first().second.second;
-        }else{
-            if(ui->oneBox->isChecked()){
-                foreach(pair, data){
-                    if(min > pair.second.first){
-                        min = pair.second.first;
-                    }
-                    if(max < pair.second.first){
-                        max = pair.second.first;
-                    }
-                    if(min > pair.second.second){
-                        min = pair.second.second;
-                    }
-                    if(max < pair.second.second){
-                        max = pair.second.second;
-                    }
-                }
-                commonMult = 100/(max - min);
-                step1 = -data.first().second.first*commonMult;
-                step2 = -data.first().second.second*commonMult;
-            }
-        }
+    }else if(ui->mulBox->isChecked()){
+        tmp1 = data.first().second.first/data.first().second.second;
+        tmp2 = data.last().second.first/data.last().second.second;
     }
-    if(ui->mulBox->isChecked() || ui->stepBox->isChecked() || ui->oneBox->isChecked()){
+    qreal a = (tmp2 - tmp1)/(data.last().first - data.first().first);
+    qreal b = tmp1 - (tmp2- tmp1)*data.first().first/(data.last().first - data.first().first);
+    if(ui->mulBox->isChecked() || ui->stepBox->isChecked()){
         for(int c = 0; c < data.length(); c++){
-            data.replace(c, QPair<qreal, QPair<qreal, qreal>>(data.at(c).first, QPair<qreal, qreal>(data.at(c).second.first*commonMult + step1, data.at(c).second.second * mult*commonMult + step2)));
+            data.replace(c, QPair<qreal, QPair<qreal, qreal>>(data.at(c).first, QPair<qreal, qreal>(data.at(c).second.first + step1, data.at(c).second.second * (a*data.at(c).first + b) + step2)));
         }
     }
     if(chart->series().contains(ll)){
@@ -543,6 +557,7 @@ void MainWindow::reCalc(){
     }
     if(ui->linearBox->isChecked() || ui->linearBackgroundBox->isChecked()){
         lIntervals = new QtCharts::QLineSeries();
+        lIntervals->setName("Lin. Interval");
         lIntervals->append(data.first().first + ui->llSpinBox->value(), axisY->max());
         lIntervals->append(data.first().first + ui->llSpinBox->value(), axisY->min() - 1);
         lIntervals->append(data.last().first - ui->rlSpinBox->value(), axisY->min() - 1);
@@ -564,16 +579,16 @@ void MainWindow::reCalc(){
             if(ui->llSpinBox->value() > 0 && pair.first < data.first().first + ui->llSpinBox->value()){
                 ln++;
                 xlSum += pair.first;
-                ylSum += (pair.second.first + pair.second.second)/2;
+                ylSum += (pair.second.first + pair.second.second)/2.0;
                 xxlSum += pow(pair.first, 2);
-                xylSum += pair.first*(pair.second.first + pair.second.second)/2;
+                xylSum += pair.first*(pair.second.first + pair.second.second)/2.0;
             }
             if(ui->rlSpinBox->value() > 0 && pair.first > data.last().first - ui->rlSpinBox->value()){
                 rn++;
                 xrSum += pair.first;
-                yrSum += (pair.second.first + pair.second.second)/2;
+                yrSum += (pair.second.first + pair.second.second)/2.0;
                 xxrSum += pow(pair.first, 2);
-                xyrSum += pair.first*(pair.second.first + pair.second.second)/2;
+                xyrSum += pair.first*(pair.second.first + pair.second.second)/2.0;
             }
         }
         qreal al;
@@ -584,6 +599,7 @@ void MainWindow::reCalc(){
             al = (ln*xylSum - xlSum*ylSum)/(ln*xxlSum - pow(xlSum, 2));
             bl = (ylSum - al*xlSum)/ln;
             ll = new QtCharts::QLineSeries();
+            ll->setName("L. Linearization");
             a = al;
             b = bl;
         }
@@ -591,6 +607,7 @@ void MainWindow::reCalc(){
             ar = (rn*xyrSum - xrSum*yrSum)/(rn*xxrSum - pow(xrSum, 2));
             br = (yrSum - ar*xrSum)/rn;
             rl = new QtCharts::QLineSeries();
+            rl->setName("R. Linearization");
         }
         for(int i = 0; i < data.length(); i++){
             if(ln > 1 && !ui->linearBackgroundBox->isChecked()){
@@ -623,31 +640,55 @@ void MainWindow::reCalc(){
             data.replace(c, QPair<qreal, QPair<qreal, qreal>>(data.at(c).first, QPair<qreal, qreal>(data.at(c).second.first - a*data.at(c).first - b, data.at(c).second.second - a*data.at(c).first - b)));
         }
     }
-    if(chart->series().contains(stepsSeries)){
-        chart->removeSeries(stepsSeries);
-    }
+    findMax();
     if(ui->steppedBackgroundBox->isChecked()){
         ui->linearBackgroundBox->setChecked(true);
-        stepsSeries = new QtCharts::QLineSeries();
-        qreal m1 = ((data.last().second.first - data.first().second.first)*2/3)/(2*qAcos(0));
-        qreal m2 = ((data.last().second.first - data.first().second.first)/3)/(2*qAcos(0));
-        for(int i = 0; i < data.length(); i++){
-            qreal tmp = data.first().second.first + m1 * (qAcos(0) + qAtan(ui->filletSpinBox->value()*(data.at(i).first - data.at(lInd.first).first))) + m2 * (qAcos(0) + qAtan(ui->filletSpinBox->value()*(data.at(i).first - data.at(lInd.second).first)));
-            stepsSeries->append(data.at(i).first, tmp);
+        if(chart->series().contains(rl)){
+            chart->removeSeries(rl);
         }
-        chart->addSeries(stepsSeries);
-        stepsSeries->attachAxis(axisY);
-        stepsSeries->attachAxis(axisX);
+        qreal m1 = ((data.last().second.first - data.first().second.first)*2.0/3.0)/(2.0*qAcos(0.0));
+        qreal m2 = ((data.last().second.first - data.first().second.first)/3.0)/(2.0*qAcos(0.0));
+        for(int i = 0; i < data.length(); i++){
+            qreal tmp = data.first().second.first + m1 * (qAcos(0.0) + qAtan(ui->filletSpinBox->value()*(data.at(i).first - data.at(lInd.first).first))) + m2 * (qAcos(0.0) + qAtan(ui->filletSpinBox->value()*(data.at(i).first - data.at(lInd.second).first)));
+            data.replace(i, QPair<qreal, QPair<qreal, qreal>>(data.at(i).first, QPair<qreal, qreal>(data.at(i).second.first - tmp, data.at(i).second.second - tmp)));
+        }
+    }
+    if(chart->series().contains(halfSum)){
+        chart->removeSeries(halfSum);
+    }
+    if(ui->sumBox->isChecked()){
+        halfSum = new QtCharts::QLineSeries();
+        halfSum->setName("Half-Sum");
+        qreal halfMax = 0;
+        for(int i = 0; i < data.length(); i++){
+            halfSum->append(data.at(i).first, (data.at(i).second.first + data.at(i).second.second)/2.0);
+            if(halfMax < halfSum->points().last().y()){
+                halfMax = halfSum->points().last().y();
+            }
+        }
+        for(int i = 0; i < data.length(); i++){
+            data.replace(i, QPair<qreal, QPair<qreal, qreal>>(data.at(i).first, QPair<qreal, qreal>(data.at(i).second.first/halfMax, data.at(i).second.second/halfMax)));
+            halfSum->replace(i, QPointF(halfSum->at(i).x(), halfSum->at(i).y()/halfMax));
+        }
+        halfSum->setColor(QColor(1, 1, 1));
+        chart->addSeries(halfSum);
+        halfSum->attachAxis(axisY);
+        halfSum->attachAxis(axisX);
+    }
+    if(ui->file1Box->isChecked()){
+        tmp1Data = data;
+    }else{
+        tmp2Data = data;
     }
     if(data.length() != 0 && !(ui->rawBox->isChecked() || ui->zeroBox->isChecked())){
         lNorm = new QtCharts::QLineSeries();
+        lNorm->setName("L. Normalized");
         rNorm = new QtCharts::QLineSeries();
+        rNorm->setName("R. Normalized");
         if(ui->file1Box->isChecked()){
             limits1 = QPair<qreal, qreal>(data.first().first, data.last().first);
-            tmp1Data = data;
         }else{
             limits2 = QPair<qreal, qreal>(data.first().first, data.last().first);
-            tmp2Data = data;
         }
         foreach(pair, data){
             rNorm->append(pair.first, pair.second.second);
@@ -678,9 +719,11 @@ void MainWindow::reCalc(){
     if(chart->series().contains(rz)){
         chart->removeSeries(rz);
     }
-    if(data.length() != 0 && ui->zeroBox->checkState() == 2){
+    if(data.length() != 0 && ui->zeroBox->isChecked()){
         lz = new QtCharts::QLineSeries();
+        lz->setName("L. I-zero");
         rz = new QtCharts::QLineSeries();
+        rz->setName("R. I-zero");
         QVector<QPair<qreal,QPair<qreal, qreal>>> zeroData;
         if(ui->file1Box->isChecked()){
             zeroData = data1Loader->getZero();
@@ -715,18 +758,9 @@ void MainWindow::reCalc(){
         rz->attachAxis(axisY);
         rz->attachAxis(axisX);
     }
-    axisX->setMinorTickCount(4);
-    axisX->setTickCount(20);
-    axisX->setTitleText("primary photons energy, eV");
-    diffX->setMinorTickCount(4);
-    diffX->setTickCount(20);
-    diffX->setTitleText("primary photons energy, eV");
+    findMax();
     axisY->setMin(min);
     axisY->setMax(max);
-    axisY->setMinorTickCount(2);
-    axisY->setTickCount(10);
-    axisY->setTitleText("Intensity");
-    findMax();
 
     if(chart->series().contains(lMax)){
         chart->removeSeries(lMax);
@@ -735,7 +769,9 @@ void MainWindow::reCalc(){
         chart->removeSeries(rMax);
     }
     rMax = new QtCharts::QLineSeries();
+    rMax->setName("R. Max");
     lMax = new QtCharts::QLineSeries();
+    lMax->setName("L. Max");
     if(ui->maxBox->isChecked()){
         lMax->append(data.at(lInd.first).first, data.at(lInd.first).second.first);
         lMax->append(data.at(lInd.first).first, axisY->min());
@@ -758,6 +794,7 @@ void MainWindow::reCalc(){
         chart->removeSeries(divider);
     }
     divider = new QtCharts::QLineSeries();
+    divider->setName("Max. Separator");
     if(ui->dividerBox->isChecked()){
         divider->append(ui->dividerSpinBox->value(), axisY->min());
         divider->append(ui->dividerSpinBox->value(), axisY->max());
@@ -768,30 +805,84 @@ void MainWindow::reCalc(){
     if(diff->series().contains(diffS)){
         diff->removeSeries(diffS);
     }
+    if(diff->series().contains(diffS2)){
+        diff->removeSeries(diffS2);
+    }
     if(diff->series().contains(l0)){
         diff->removeSeries(l0);
     }
-    diffY->setMinorTickCount(2);
-    diffY->setTickCount(10);
-    diffY->setTitleText("Intensity");
-    diffS = new QtCharts::QLineSeries();
-    l0 = new QtCharts::QLineSeries();
-    min = 1;
-    max = -1;
+    if(chart->series().contains(chartDiff)){
+        chart->removeSeries(chartDiff);
+    }
+    if(chart->series().contains(XMCDZero)){
+        chart->removeSeries(XMCDZero);
+    }
     if(ui->diffBox->isChecked()){
+        diffS = new QtCharts::QLineSeries();
+        diffS2 = new QtCharts::QLineSeries();
+        chartDiff = new QtCharts::QLineSeries();
+        XMCDZero = new QtCharts::QLineSeries();
+        XMCDZero->setName("XMCD Zero");
+        l0 = new QtCharts::QLineSeries();
+        l0->setName("0");
+        min = 1;
+        max = -1;
         qreal tmp;
-        foreach (pair, data) {
-            tmp = pair.second.second - pair.second.first;
-            if(tmp > max){
-                max = tmp;
-            }else{
-                if(tmp < min){
-                    min = tmp;
+        if(loaded1&&loaded2){
+            foreach (pair, tmp1Data) {
+                tmp = pair.second.second - pair.second.first;
+                if(tmp > max){
+                    max = tmp;
+                }else{
+                    if(tmp < min){
+                        min = tmp;
+                    }
+                }
+                diffS->append(pair.first, tmp);
+                if(ui->file1Box->isChecked()){
+                    chartDiff->append(pair.first, tmp);
+                }
+                l0->append(pair.first, 0);
+            }
+            diffS->setName("file 1");
+            foreach (pair, tmp2Data) {
+                tmp = pair.second.second - pair.second.first;
+                if(tmp > max){
+                    max = tmp;
+                }else{
+                    if(tmp < min){
+                        min = tmp;
+                    }
+                }
+                diffS2->append(pair.first, tmp);
+                if(ui->file2Box->isChecked()){
+                    chartDiff->append(pair.first, tmp);
                 }
             }
-            diffS->append(pair.first, tmp);
-            l0->append(pair.first, 0);
+            diffS2->setName("file 2");
+        }else{
+            foreach (pair, data) {
+                tmp = pair.second.second - pair.second.first;
+                if(tmp > max){
+                    max = tmp;
+                }else{
+                    if(tmp < min){
+                        min = tmp;
+                    }
+                }
+                diffS->append(pair.first, tmp);
+                chartDiff->append(pair.first, tmp);
+                l0->append(pair.first, 0);
+            }
+            if(ui->file1Box->isChecked()){
+                diffS->setName("file 1");
+            }else{
+                diffS->setName("file 2");
+            }
         }
+        chartDiff->setName("XMCD");
+        XMCDZero->append(axisX->min(), 0);
+        XMCDZero->append(axisX->max(), 0);
         diffY->setMin(min);
         diffY->setMax(max);
         diff->addSeries(diffS);
@@ -800,6 +891,17 @@ void MainWindow::reCalc(){
         l0->attachAxis(diffX);
         diffS->attachAxis(diffY);
         diffS->attachAxis(diffX);
+        diff->addSeries(diffS2);
+        diffS2->attachAxis(diffY);
+        diffS2->attachAxis(diffX);
+        chart->addSeries(chartDiff);
+        axisY2->setMin(min);
+        axisY2->setMax(max);
+        chartDiff->attachAxis(axisY2);
+        chartDiff->attachAxis(axisX);
+        chart->addSeries(XMCDZero);
+        XMCDZero->attachAxis(axisX);
+        XMCDZero->attachAxis(axisY2);
     }
     if(ui->integrateBox->isChecked()){
         if(!ui->steppedBackgroundBox->isChecked() || !ui->linearBackgroundBox->isChecked() || !ui->diffBox->isChecked()){
@@ -807,29 +909,28 @@ void MainWindow::reCalc(){
         }else{
             qreal summ = 0;
             for(int i = 0; i < data.length() - 1; i++){
-                summ += (data.at(i + 1).first - data.at(i).first)*(data.at(i + 1).second.first + data.at(i).second.first)/2;
-                summ += (data.at(i + 1).first - data.at(i).first)*(data.at(i + 1).second.second + data.at(i).second.second)/2;
-                summ -= (data.at(i + 1).first - data.at(i).first)*(stepsSeries->at(i).y() + stepsSeries->at(i + 1).y())/2;
+                summ += (data.at(i + 1).first - data.at(i).first)*(data.at(i + 1).second.first + data.at(i).second.first)/2.0;
+                summ += (data.at(i + 1).first - data.at(i).first)*(data.at(i + 1).second.second + data.at(i).second.second)/2.0;
             }
-            qreal localMin = 10000000000;
+            qreal localMin = 1E12;
             int localMinInd = 0;
             for(int i = lInd.first; i < lInd.second; i++){
-                if((data.at(i).second.first + data.at(i).second.second)/2 < localMin){
-                   localMin = (data.at(i).second.first + data.at(i).second.second)/2;
+                if((data.at(i).second.first + data.at(i).second.second)/2.0 < localMin){
+                   localMin = (data.at(i).second.first + data.at(i).second.second)/2.0;
                    localMinInd = i;
                 }
             }
             qreal dl3 = 0;
             for(int i = 0; i < localMinInd - 1; i++){
-                dl3 += (diffS->at(i + 1).x() - diffS->at(i).x())*(diffS->at(i + 1).y() + diffS->at(i).y())/2;
+                dl3 += (diffS->at(i + 1).x() - diffS->at(i).x())*(diffS->at(i + 1).y() + diffS->at(i).y())/2.0;
             }
             qreal dl2 = 0;
             for(int i = localMinInd; i < data.length() - 1; i++){
-                dl2 += (diffS->at(i + 1).x() - diffS->at(i).x())*(diffS->at(i + 1).y() + diffS->at(i).y())/2;
+                dl2 += (diffS->at(i + 1).x() - diffS->at(i).x())*(diffS->at(i + 1).y() + diffS->at(i).y())/2.0;
             }
             if(ui->file1Box->isChecked()){
-                msEff1 = -2*(ui->nSpinBox->value()*muB[ui->unitBox->currentIndex()]/ui->pSpinBox->value())*(dl3 - 2*dl2)/summ;
-                mOrb1 = -(4/3)*(ui->nSpinBox->value()*muB[ui->unitBox->currentIndex()]/ui->pSpinBox->value())*(dl3 + dl2)/summ;
+                msEff1 = -2.0*(ui->nSpinBox->value()*muB[ui->unitBox->currentIndex()]/ui->pSpinBox->value())*(dl3 - 2.0*dl2)/summ;
+                mOrb1 = -(4.0/3.0)*(ui->nSpinBox->value()*muB[ui->unitBox->currentIndex()]/ui->pSpinBox->value())*(dl3 + dl2)/summ;
                 ui->l31Label->setText(QString::number(dl3));
                 ui->sum1Label->setText(QString::number(summ));
                 ui->l21Label->setText(QString::number(dl2));
@@ -837,8 +938,8 @@ void MainWindow::reCalc(){
                 ui->mOrb1Label->setText(QString::number(mOrb1) + " " + units[ui->unitBox->currentIndex()]);
                 calc1 = true;
             }else{
-                msEff2 = -2*(ui->nSpinBox->value()*muB[ui->unitBox->currentIndex()]/ui->pSpinBox->value())*(dl3 - 2*dl2)/summ;
-                mOrb2 = -(4/3)*(ui->nSpinBox->value()*muB[ui->unitBox->currentIndex()]/ui->pSpinBox->value())*(dl3 + dl2)/summ;
+                msEff2 = -2.0*(ui->nSpinBox->value()*muB[ui->unitBox->currentIndex()]/ui->pSpinBox->value())*(dl3 - 2.0*dl2)/summ;
+                mOrb2 = -(4.0/3.0)*(ui->nSpinBox->value()*muB[ui->unitBox->currentIndex()]/ui->pSpinBox->value())*(dl3 + dl2)/summ;
                 ui->l32Label->setText(QString::number(dl3));
                 ui->sum2Label->setText(QString::number(summ));
                 ui->l22Label->setText(QString::number(dl2));
@@ -873,57 +974,74 @@ void MainWindow::reCalc(){
     if(chart->series().contains(level)){
         chart->removeSeries(level);
     }
+    if(diff->series().contains(dLevel)){
+        diff->removeSeries(dLevel);
+    }
     if(loaded1 && loaded2){
-        if(ui->levelSpinBox->value() < limits1.first - eps || ui->levelSpinBox->value() < limits2.first - eps || ui->levelSpinBox->value() > limits1.second || ui->levelSpinBox->value() > limits2.second){
-            ui->levelSpinBox->setValue(qMin(limits1.second, limits2.second));
-        }
-        ui->levelSpinBox->setMaximum(qMin(limits1.second, limits2.second));
-        ui->levelSpinBox->setMinimum(qMax(limits1.first, limits2.first));
-        int i1 = 0;
-        int i2 = 0;
-        while(tmp1Data.at(i1).first <= ui->levelSpinBox->value()- eps){
-            i1++;
-        }
-        while(tmp2Data.at(i2).first <= ui->levelSpinBox->value() - eps){
-            i2++;
-        }
-        if(i2 > tmp2Data.length()){
-            i2 = tmp2Data.length();
-        }
-        if(i1 > tmp1Data.length()){
-            i1 = tmp1Data.length();
-        }
-        QPair<qreal, qreal> intens = QPair<qreal, qreal>((data1Loader->getData().at(i1).second.first + data1Loader->getData().at(i1).second.second)/2, (data2Loader->getData().at(i2).second.first + data2Loader->getData().at(i2).second.second)/2);
-        ui->levelBox->setEnabled(true);
-        ui->levelSpinBox->setEnabled(true);
         ui->swapButton->setEnabled(true);
+        ui->levelBox->setEnabled(true);
         if(ui->levelBox->isChecked()){
-            level = new QtCharts::QLineSeries();
+            int minInd1 = 0;
+            qreal signalMin1 = 10000;
+            for(int i = 0; i < tmp1Data.length(); i++) {
+                QPair<qreal,QPair<qreal, qreal>> curr = tmp1Data.at(i);
+                if((curr.second.second - curr.second.first) < signalMin1){
+                    minInd1 = i;
+                    signalMin1 = curr.second.second - curr.second.first;
+                }
+            }
+            int minInd2 = 0;
+            qreal signalMin2 = 10000;
+            for(int i = 0; i < tmp2Data.length(); i++) {
+                QPair<qreal,QPair<qreal, qreal>> curr = tmp2Data.at(i);
+                if((curr.second.second - curr.second.first) < signalMin2){
+                    minInd2 = i;
+                    signalMin2 = curr.second.second - curr.second.first;
+                }
+            }
+            qreal signalMin = (tmp1Data.at(minInd1).first + tmp2Data.at(minInd2).first)/2;
+            minInd1 = 0;
+            for(int i = 0; i < tmp1Data.length(); i++){
+                if(qAbs(signalMin - tmp1Data.at(minInd1).first) > qAbs(signalMin - tmp1Data.at(i).first)){
+                    minInd1 = i;
+                }
+            }
+            signalMin1 = tmp1Data.at(minInd1).second.second - tmp1Data.at(minInd1).second.first;
+            minInd2 = 0;
+            for(int i = 0; i < tmp2Data.length(); i++){
+                if(qAbs(signalMin - tmp2Data.at(minInd2).first) > qAbs(signalMin - tmp2Data.at(i).first)){
+                    minInd2 = i;
+                }
+            }
+            signalMin2 = tmp2Data.at(minInd2).second.second - tmp2Data.at(minInd2).second.first;
+            intens = QPair<qreal, qreal>(signalMin1, signalMin2);
+            dLevel = new QtCharts::QLineSeries();
             if(ui->file1Box->isChecked()){
-                level->append(data.at(i1).first, axisY->min());
-                level->append(data.at(i1).first, axisY->max());
+                dLevel->append(data.at(minInd1).first, diffY->min());
+                dLevel->append(data.at(minInd1).first, diffY->max());
             }else{
-                level->append(data.at(i2).first, axisY->min());
-                level->append(data.at(i2).first, axisY->max());
+                dLevel->append(data.at(minInd2).first, diffY->min());
+                dLevel->append(data.at(minInd2).first, diffY->max());
+            }
+            dLevel->setName("min");
+            diff->addSeries(dLevel);
+            dLevel->attachAxis(diffY);
+            dLevel->attachAxis(diffX);
+            level = new QtCharts::QLineSeries();
+            level->setName("XMCD min");
+            if(ui->file1Box->isChecked()){
+                level->append(data.at(minInd1).first, axisY->min());
+                level->append(data.at(minInd1).first, axisY->max());
+            }else{
+                level->append(data.at(minInd2).first, axisY->min());
+                level->append(data.at(minInd2).first, axisY->max());
             }
             chart->addSeries(level);
             level->attachAxis(axisY);
             level->attachAxis(axisX);
         }
-        if(ui->angle1Box->isChecked()){
-            phi1 = M_PI/2;
-            phi2 = qAcos(intens.second/intens.first);
-            ui->angle2CalcLable->setText("Unknown");
-            ui->angle1CalcLable->setText(QString::number(phi2*180/M_PI));
-        }else{
-            phi1 = qAcos(intens.first/intens.second);
-            ui->angle1CalcLable->setText("Unknown");
-            ui->angle2CalcLable->setText(QString::number(phi1*180/M_PI));
-            phi2 = M_PI/2;
-        }
     }else{
         ui->levelBox->setEnabled(false);
-        ui->levelSpinBox->setEnabled(false);
         ui->swapButton->setEnabled(false);
     }
     if(ui->calculateBox->isChecked()){
@@ -939,6 +1057,15 @@ void MainWindow::reCalc(){
                     if(teta2 == -1){
                         ui->errorLable->setText("unknown angle 2");
                     }else{
+                        if(ui->angle1Box->isChecked()){
+                            phi1 = teta1;
+                            phi2 = abs(teta2 + qAcos(intens.second/intens.first));
+                        }else{
+                            phi2 = teta2;
+                            phi1 = abs(teta1 + qAcos(intens.first/intens.second));
+                        }
+                        ui->angle1CalcLable->setText(QString::number(phi2*180/M_PI) + "°");
+                        ui->angle2CalcLable->setText(QString::number(phi1*180/M_PI)  + "°");
                         moo = -(mOrb1*qSin(teta2)*qSin(phi2) - qSin(teta1)*qSin(phi1)*mOrb2)/(qSin(teta1)*qSin(phi1)*qCos(teta2)*qCos(phi2) - qSin(teta2)*qSin(phi2)*qCos(teta1)*qCos(phi1));//fixed
                         ui->mOrbOLabel->setText(QString::number(moo));
                         mop = (-mOrb2*qCos(teta1)*qCos(phi1) + mOrb1*qCos(teta2)*qCos(phi2))/(qSin(teta1)*qSin(phi1)*qCos(teta2)*qCos(phi2) - qSin(teta2)*qSin(phi2)*qCos(teta1)*qCos(phi1));//fixed
@@ -983,9 +1110,12 @@ void MainWindow::exportCharts(){
         if(!ui->file1Box->isChecked() && loaded1){
             swap();
         }
+        /*
         expSession = new QSettings(exPath + "/session.ini", QSettings::IniFormat);
         expSession->beginGroup("file1");
+        */
         if(loaded1){
+            /*
             expSession->setValue("path", file1Path + "/");
             expSession->setValue("name", ui->file1Label->text());
             expSession->beginGroup("buttons");
@@ -1009,6 +1139,7 @@ void MainWindow::exportCharts(){
                 expSession->setValue("XMCD", ui->diffBox->isChecked());
                 expSession->setValue("integr", ui->rawBox->isChecked());
             expSession->endGroup();
+            */
             *outStream << "file1 = " << file1Path << "/" << ui->file1Label->text() << "\n\n";
             *outStream << "theta = " << teta1*180/M_PI << "\n";
             *outStream << "lChopLength = " << ui->bSpinBox->value() << "\n";
@@ -1016,16 +1147,10 @@ void MainWindow::exportCharts(){
             *outStream << "normalisation type = ";
             if(ui->stepBox->isChecked()){
                 *outStream << "r + constant step";
+            }else if(ui->mulBox->isChecked()){
+                *outStream << "r * constant";
             }else{
-                if(ui->mulBox->isChecked()){
-                    *outStream << "r * constant";
-                }else{
-                    if(ui->oneBox->isChecked()){
-                        *outStream << "from zero to 100";
-                    }else{
-                        *outStream << "none";
-                    }
-                }
+                *outStream << "none";
             }
             *outStream << "\n";
             *outStream << "leftLinearisationInterval = " << ui->llSpinBox->value() << "\n";
@@ -1036,7 +1161,7 @@ void MainWindow::exportCharts(){
             if(ui->angle1Box->isChecked()){
                 *outStream << "in-plane magnetisation" << "\n";
             }else{
-                *outStream << "magnetisation angle = " << ui->angle1CalcLable->text() << " @" << ui->levelSpinBox->value() << "\n";
+                *outStream << "magnetisation angle = " << ui->angle1CalcLable->text() << "\n";
             }
             *outStream << "Al3+Al2 = " << ui->sum1Label->text() << "\n";
             *outStream << "dAl3 = " << ui->l31Label->text() << "\n";
@@ -1044,7 +1169,7 @@ void MainWindow::exportCharts(){
             *outStream << "msEff = " << ui->msEff1Label->text() << "\n";
             *outStream << "mOrb = " << ui->mOrb1Label->text() << "\n";
         }
-        expSession->endGroup();
+        //expSession->endGroup();
         exportState++;
         if(loaded2){
             swap();
@@ -1055,8 +1180,10 @@ void MainWindow::exportCharts(){
         exportCharts();
         break;
     case 2: //export 2 file
-        expSession->beginGroup("file2");
+
         if(loaded2){
+            /*
+            expSession->beginGroup("file2");
             expSession->setValue("path", file2Path + "/");
             expSession->setValue("name", ui->file2Label->text());
             expSession->beginGroup("buttons");
@@ -1083,6 +1210,7 @@ void MainWindow::exportCharts(){
                 expSession->setValue("calibrLevel", ui->levelSpinBox->value());
                 expSession->setValue("calc", ui->calculateBox->isChecked());
             expSession->endGroup();
+            */
             *outStream << "\nfile2 = " << file2Path << "/" << ui->file2Label->text() << "\n\n";
             *outStream << "theta = " << teta2*180/M_PI << "\n";
             *outStream << "lChopLength = " << ui->bSpinBox->value() << "\n";
@@ -1090,16 +1218,10 @@ void MainWindow::exportCharts(){
             *outStream << "normalisation type = ";
             if(ui->stepBox->isChecked()){
                 *outStream << "r + constant step";
+            }else if(ui->mulBox->isChecked()){
+                *outStream << "r * constant";
             }else{
-                if(ui->mulBox->isChecked()){
-                    *outStream << "r * constant";
-                }else{
-                    if(ui->oneBox->isChecked()){
-                        *outStream << "from zero to 100";
-                    }else{
-                        *outStream << "none";
-                    }
-                }
+                *outStream << "none";
             }
             *outStream << "\n";
             *outStream << "leftLinearisationInterval = " << ui->llSpinBox->value() << "\n";
@@ -1110,7 +1232,7 @@ void MainWindow::exportCharts(){
             if(ui->angle2Box->isChecked()){
                 *outStream << "in-plane magnetisation" << "\n";
             }else{
-                *outStream << "magnetisation angle = " << ui->angle2CalcLable->text() << " @" << ui->levelSpinBox->value() << "\n";
+                *outStream << "magnetisation angle = " << ui->angle2CalcLable->text() << "\n";
             }
             *outStream << "Al3+Al2 = " << ui->sum2Label->text() << "\n";
             *outStream << "dAl3 = " << ui->l32Label->text() << "\n";
@@ -1118,13 +1240,12 @@ void MainWindow::exportCharts(){
             *outStream << "msEff = " << ui->msEff2Label->text() << "\n";
             *outStream << "mOrb = " << ui->mOrb2Label->text() << "\n";
         }
-        expSession->endGroup();
+        //expSession->endGroup();
         exportState++;
         exportCharts();
         break;
     case 3: //export common data and charts
         *outStream << "\ncommon" << "\n";
-        *outStream << "calibrLevel" << ui->levelSpinBox->value() << "\n";
         *outStream << "units " << ui->unitBox->currentText() << "\n";
         *outStream << "Nh = " << ui->nSpinBox->value() << "\n";
         *outStream << "polarisation coeff = Pc = " << ui->pSpinBox->value() << "\n";
@@ -1179,7 +1300,7 @@ void MainWindow::exportCharts(){
             *outStream << "l";
             *outStream << "r";
         }
-        if(ui->normBox->isChecked() || ui->stepBox->isChecked() || ui->mulBox->isChecked() || ui->oneBox->isChecked()){
+        if(ui->normBox->isChecked() || ui->stepBox->isChecked() || ui->mulBox->isChecked()){
             *outStream << "lN";
             *outStream << "rN";
         }
@@ -1196,9 +1317,9 @@ void MainWindow::exportCharts(){
         *outStream << qSetFieldWidth(1) << "\n";
 
         if(i == 1){
-            data = data1Loader->getData();
+            data = tmp1Data;
         }else{
-            data = data2Loader->getData();
+            data = tmp2Data;
         }
         qreal m1 = ((data.last().second.first - data.first().second.first)*2/3)/(2*qAcos(0));
         qreal m2 = ((data.last().second.first - data.first().second.first)/3)/(2*qAcos(0));
@@ -1209,7 +1330,7 @@ void MainWindow::exportCharts(){
                 *outStream << bareData.at(j).second.first;
                 *outStream << bareData.at(j).second.second;
             }
-            if(ui->normBox->isChecked() || ui->stepBox->isChecked() || ui->mulBox->isChecked() || ui->oneBox->isChecked()){
+            if(ui->normBox->isChecked() || ui->stepBox->isChecked() || ui->mulBox->isChecked()){
                 *outStream << data.at(j).second.first;
                 *outStream << data.at(j).second.second;
             }
@@ -1310,7 +1431,7 @@ void MainWindow::lChanged(){
 
 void MainWindow::bg(){
     if((ui->linearBackgroundBox->isChecked() || ui->steppedBackgroundBox->isChecked()) &&!(ui->normBox->isChecked()
-    || ui->stepBox->isChecked() || ui->mulBox->isChecked() || ui->oneBox->isChecked())){
+    || ui->stepBox->isChecked() || ui->mulBox->isChecked())){
         ui->normBox->setChecked(true);
     }
     reCalc();
@@ -1358,7 +1479,11 @@ void MainWindow::fileSelect(){
         }else{
             state->insert("zero", 0);
         }
-        bool norm = state->value("norm", 1) == 1; //default
+        qreal zeroShadow = state->value("zeroShadow" , 0);
+        state->insert("zeroShadow", ui->zeroShadowSpinBox->value());
+        qreal shadow = state->value("shadow" , 0);
+        state->insert("shadow", ui->shadowSpinBox->value());
+        /*bool norm = state->value("norm", 1) == 1; //default
         if(ui->normBox->isChecked()){
             state->insert("norm", 1);
         }else{
@@ -1382,6 +1507,7 @@ void MainWindow::fileSelect(){
         }else{
             state->insert("one", 0);
         }
+        */
         tmp = state->value("max", 0);
         if(ui->maxBox->isChecked()){
             state->insert("max", 1);
@@ -1401,12 +1527,13 @@ void MainWindow::fileSelect(){
         }else{
             state->insert("st", 0);
         }
-        bool diff = state->value("diff", 0) == 1;
+        /*bool diff = state->value("diff", 0) == 1;
         if(ui->diffBox->isChecked()){
             state->insert("diff", 1);
         }else{
             state->insert("diff", 0);
         }
+        */
         bool integr = state->value("integr", 0) == 1;
         if(ui->integrateBox->isChecked()){
             state->insert("integr", 1);
@@ -1429,13 +1556,16 @@ void MainWindow::fileSelect(){
         ui->dividerBox->setChecked(1 == tmp);
         ui->rawBox->setChecked(raw);
         ui->zeroBox->setChecked(zero);
-        ui->normBox->setChecked(norm);
+        ui->zeroShadowSpinBox->setValue(zeroShadow);
+        ui->shadowSpinBox->setValue(shadow);
+        /*ui->normBox->setChecked(norm);
         ui->stepBox->setChecked(plus);
         ui->mulBox->setChecked(mul);
         ui->oneBox->setChecked(one);
+        */
         ui->linearBackgroundBox->setChecked(lin);
         ui->steppedBackgroundBox->setChecked(st);
-        ui->diffBox->setChecked(diff);
+        //ui->diffBox->setChecked(diff);
         ui->integrateBox->setChecked(integr);
         reCalc();
     }else{
@@ -1507,6 +1637,7 @@ void MainWindow::reCalcBoth(){
 }
 
 void MainWindow::loadSession(){
+    /*
     //fix
     qDebug() << "loading";
     bool firstFileSelected = false;
@@ -1580,9 +1711,11 @@ void MainWindow::loadSession(){
     session->endGroup();
     //firstFileSelected.
     data1Loader = new FileLoader(file1Path + "/" + file1Name);
+    */
 }
 
 void MainWindow::saveSession(){
+    /*
     session->beginGroup("firstTab");
         session->setValue("drive", ui->driveBox->currentText());
         session->setValue("firstSelected", ui->file1Box->isChecked());
@@ -1676,4 +1809,5 @@ void MainWindow::saveSession(){
             session->setValue("loaded", false);
         }
     session->endGroup();
+    */
 }

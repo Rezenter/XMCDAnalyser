@@ -57,6 +57,7 @@ private:
     QtCharts::QLineSeries *rMax;
     QtCharts::QValueAxis *axisX;
     QtCharts::QValueAxis *axisY;
+    QtCharts::QValueAxis *axisY2;
     QtCharts::QValueAxis *diffY;
     QtCharts::QValueAxis *diffX;
     QtCharts::QLineSeries *divider;
@@ -67,6 +68,11 @@ private:
     QtCharts::QLineSeries *ll;
     QtCharts::QLineSeries *rl;
     QtCharts::QLineSeries *level;
+    QtCharts::QLineSeries *dLevel;
+    QtCharts::QLineSeries *halfSum;
+    QtCharts::QLineSeries *diffS2;
+    QtCharts::QLineSeries *chartDiff;
+    QtCharts::QLineSeries *XMCDZero;
     QString path = QCoreApplication::applicationDirPath();
     QFile *save;
     QTextStream *stream;
@@ -97,7 +103,6 @@ private:
     QTextStream *outStream;
     qreal a;
     qreal b;
-    QtCharts::QLineSeries *stepsSeries;
     qreal mOrb1 = 0;
     qreal msEff1 = 0;
     qreal mOrb2 = 0;
@@ -127,6 +132,7 @@ private:
     QSettings *expSession;
     int exportState = 0;
     bool is1;
+    int count = 0;
 
 
 private slots:

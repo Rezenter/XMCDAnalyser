@@ -17,11 +17,12 @@ public:
     QPair<qreal, qreal> getRBackground();
     QPair<qreal, qreal> getLBackground();
     QVector<QPair<qreal, QPair<qreal, qreal>>> getBareData();
-    void setLimits(double, double);
+    void setLimits(double, double, double);
     QPair<int, int> getLimits();
     QVector<QPair<qreal, QPair<qreal, qreal>>> getZero();
 
 private:
+    double prevShift = 0;
     QFile *file;
     QTextStream *stream;
     double l = 0;
