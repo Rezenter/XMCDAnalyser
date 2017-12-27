@@ -100,6 +100,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->sumBox, &QCheckBox::clicked, this, &MainWindow::reCalc);
     QObject::connect(ui->shadowSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &MainWindow::reCalc);
     QObject::connect(ui->zeroShadowSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &MainWindow::reCalc);
+    QObject::connect(ui->treatAngleAsGroup, static_cast<void(QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked), this, &MainWindow::reopen);
     buildFileTree();
     loadSettings();
     refresh();
@@ -107,6 +108,12 @@ MainWindow::MainWindow(QWidget *parent) :
         loadSession();
     }
     session->setValue("normalExit", false);
+
+    ui->sumBox->setEnabled(false); //disabled in current version
+    ui->angle1Box->setEnabled(false); //disabled in current version
+    ui->angle2Box->setEnabled(false); //disabled in current version
+    ui->sessionButton->setEnabled(false); //disabled in current version
+
 }
 
 MainWindow::~MainWindow()// recheck the system
@@ -385,17 +392,19 @@ void MainWindow::load(QModelIndex index){
         data2Loader = new FileLoader(file2Path + "/" + file2Name);
         index = table->index(index.row(), 2);
         teta2 = table->data(index, Qt::DisplayRole).toDouble();
-        int t = teta2;
-        switch (t) {
-            case 0:
-                teta2 = angle0;
-                break;
-            case 1:
-                teta2 = angle1;
-                break;
-            case 2:
-                teta2 = angle2;
-                break;
+        if(ui->holderButton->isChecked()){
+            int t = teta2;
+            switch (t) {
+                case 0:
+                    teta2 = angle0;
+                    break;
+                case 1:
+                    teta2 = angle1;
+                    break;
+                case 2:
+                    teta2 = angle2;
+                    break;
+            }
         }
         teta2 = teta2*M_PI/180;
         ui->calculateBox->setChecked(false);
@@ -656,6 +665,7 @@ void MainWindow::reCalc(){
     if(chart->series().contains(halfSum)){
         chart->removeSeries(halfSum);
     }
+    /*
     if(ui->sumBox->isChecked()){
         halfSum = new QtCharts::QLineSeries();
         halfSum->setName("Half-Sum");
@@ -675,6 +685,7 @@ void MainWindow::reCalc(){
         halfSum->attachAxis(axisY);
         halfSum->attachAxis(axisX);
     }
+    */
     if(ui->file1Box->isChecked()){
         tmp1Data = data;
     }else{
@@ -1057,6 +1068,7 @@ void MainWindow::reCalc(){
                     if(teta2 == -1){
                         ui->errorLable->setText("unknown angle 2");
                     }else{
+                        /*
                         if(ui->angle1Box->isChecked()){
                             phi1 = teta1;
                             phi2 = abs(teta2 + qAcos(intens.second/intens.first));
@@ -1064,6 +1076,11 @@ void MainWindow::reCalc(){
                             phi2 = teta2;
                             phi1 = abs(teta1 + qAcos(intens.first/intens.second));
                         }
+                        */
+                        //assume saturation -> phi = theta
+                        phi1 = teta1;
+                        phi2 = teta2;
+
                         ui->angle1CalcLable->setText(QString::number(phi2*180/M_PI) + "°");
                         ui->angle2CalcLable->setText(QString::number(phi1*180/M_PI)  + "°");
                         moo = -(mOrb1*qSin(teta2)*qSin(phi2) - qSin(teta1)*qSin(phi1)*mOrb2)/(qSin(teta1)*qSin(phi1)*qCos(teta2)*qCos(phi2) - qSin(teta2)*qSin(phi2)*qCos(teta1)*qCos(phi1));//fixed
