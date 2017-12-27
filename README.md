@@ -1,5 +1,5 @@
 # XMCDAnalyser
-small programm aiming to analyse X-rayMagneticircularDichroism data
+small programm aiming to analyse X-ray Magnetic Circular Dichroism data
 
 !Unfinished!
 
