@@ -100,7 +100,9 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->sumBox, &QCheckBox::clicked, this, &MainWindow::reCalc);
     QObject::connect(ui->shadowSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &MainWindow::reCalc);
     QObject::connect(ui->zeroShadowSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &MainWindow::reCalc);
-    QObject::connect(ui->treatAngleAsGroup, static_cast<void(QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked), this, &MainWindow::reopen);
+    //QObject::connect(ui->treatAngleAsGroup, static_cast<void(QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked), this, &MainWindow::reopen);
+    QObject::connect(ui->phi1OffsetBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &MainWindow::reCalc);
+    QObject::connect(ui->phi2OffsetBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &MainWindow::reCalc);
     buildFileTree();
     loadSettings();
     refresh();
@@ -113,6 +115,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->angle1Box->setEnabled(false); //disabled in current version
     ui->angle2Box->setEnabled(false); //disabled in current version
     ui->sessionButton->setEnabled(false); //disabled in current version
+    ui->levelBox->setEnabled(false);
 
 }
 
@@ -445,6 +448,7 @@ void MainWindow::reCalc(){
     /*qDebug() << "reCalc" << count;
     count++;
     */
+    //qDebug() << teta1*180/M_PI << phi1*180/M_PI << teta2*180/M_PI << phi2*180/M_PI;
     if((ui->file1Box->isChecked() && loaded1) || (ui->file2Box->isChecked() && loaded2)){
         if(ui->rawBox->isChecked() || ui->zeroBox->isChecked()){
         ui->linearBox->setChecked(false);
@@ -600,10 +604,10 @@ void MainWindow::reCalc(){
                 xyrSum += pair.first*(pair.second.first + pair.second.second)/2.0;
             }
         }
-        qreal al;
-        qreal bl;
-        qreal ar;
-        qreal br;
+        qreal al = 1;
+        qreal bl = 0;
+        qreal ar = 1;
+        qreal br = 0;
         if(ln > 1){
             al = (ln*xylSum - xlSum*ylSum)/(ln*xxlSum - pow(xlSum, 2));
             bl = (ylSum - al*xlSum)/ln;
@@ -918,27 +922,42 @@ void MainWindow::reCalc(){
         if(!ui->steppedBackgroundBox->isChecked() || !ui->linearBackgroundBox->isChecked() || !ui->diffBox->isChecked()){
             ui->integrateBox->setChecked(false);
         }else{
-            qreal summ = 0;
+            qreal summ = 0.0;
             for(int i = 0; i < data.length() - 1; i++){
                 summ += (data.at(i + 1).first - data.at(i).first)*(data.at(i + 1).second.first + data.at(i).second.first)/2.0;
                 summ += (data.at(i + 1).first - data.at(i).first)*(data.at(i + 1).second.second + data.at(i).second.second)/2.0;
             }
+            int XMCDminInd = 0;
+            qreal XMCDmin = 1E12;
+            int XMCDmaxInd = 0;
+            qreal XMCDmax = -1E12;
+            for(int i = 0 ; i < diffS->points().length(); i++){
+                if(diffS->at(i).y() < XMCDmin){
+                    XMCDmin = diffS->at(i).y();
+                    XMCDminInd = i;
+                }else if(diffS->at(i).y() > XMCDmax){
+                    XMCDmax = diffS->at(i).y();
+                    XMCDmaxInd = i;
+                }
+            }
             qreal localMin = 1E12;
             int localMinInd = 0;
-            for(int i = lInd.first; i < lInd.second; i++){
-                if((data.at(i).second.first + data.at(i).second.second)/2.0 < localMin){
-                   localMin = (data.at(i).second.first + data.at(i).second.second)/2.0;
+            for(int i = XMCDminInd; i < XMCDmaxInd; i++){
+                if(qAbs(diffS->at(i).y()) < localMin){
+                   localMin = qAbs(diffS->at(i).y());
                    localMinInd = i;
                 }
             }
-            qreal dl3 = 0;
+            qreal dl3 = 0.0;
             for(int i = 0; i < localMinInd - 1; i++){
                 dl3 += (diffS->at(i + 1).x() - diffS->at(i).x())*(diffS->at(i + 1).y() + diffS->at(i).y())/2.0;
             }
-            qreal dl2 = 0;
-            for(int i = localMinInd; i < data.length() - 1; i++){
+            qreal dl2 = 0.0;
+            for(int i = localMinInd; i < diffS->points().length() - 1; i++){
                 dl2 += (diffS->at(i + 1).x() - diffS->at(i).x())*(diffS->at(i + 1).y() + diffS->at(i).y())/2.0;
+                //qDebug() << i << diffS->at(i).x() <<dl2 << diffS->at(i).y();
             }
+            qDebug() << summ << dl3 << dl2;
             if(ui->file1Box->isChecked()){
                 msEff1 = -2.0*(ui->nSpinBox->value()*muB[ui->unitBox->currentIndex()]/ui->pSpinBox->value())*(dl3 - 2.0*dl2)/summ;
                 mOrb1 = -(4.0/3.0)*(ui->nSpinBox->value()*muB[ui->unitBox->currentIndex()]/ui->pSpinBox->value())*(dl3 + dl2)/summ;
@@ -989,7 +1008,12 @@ void MainWindow::reCalc(){
         diff->removeSeries(dLevel);
     }
     if(loaded1 && loaded2){
+        phi1 = teta1 + ui->phi1OffsetBox->value()*M_PI/180;
+        phi2 = teta2 + ui->phi2OffsetBox->value()*M_PI/180;
+        ui->angle1CalcLable->setText(QString::number(phi2*180/M_PI) + "°");
+        ui->angle2CalcLable->setText(QString::number(phi1*180/M_PI)  + "°");
         ui->swapButton->setEnabled(true);
+        /*
         ui->levelBox->setEnabled(true);
         if(ui->levelBox->isChecked()){
             int minInd1 = 0;
@@ -1051,22 +1075,23 @@ void MainWindow::reCalc(){
             level->attachAxis(axisY);
             level->attachAxis(axisX);
         }
+        */
     }else{
-        ui->levelBox->setEnabled(false);
+        //ui->levelBox->setEnabled(false);
         ui->swapButton->setEnabled(false);
     }
     if(ui->calculateBox->isChecked()){
         if(!calc1){
-            ui->errorLable->setText("integrate 1 before");
+            //ui->errorLable->setText("integrate 1 before");
         }else{
             if(!calc2){
-                ui->errorLable->setText("integrate 2 before");
+                //ui->errorLable->setText("integrate 2 before");
             }else{
                 if(teta1 == -1){
-                    ui->errorLable->setText("unknown angle 1");
+                    //ui->errorLable->setText("unknown angle 1");
                 }else{
                     if(teta2 == -1){
-                        ui->errorLable->setText("unknown angle 2");
+                        //ui->errorLable->setText("unknown angle 2");
                     }else{
                         /*
                         if(ui->angle1Box->isChecked()){
@@ -1078,11 +1103,6 @@ void MainWindow::reCalc(){
                         }
                         */
                         //assume saturation -> phi = theta
-                        phi1 = teta1;
-                        phi2 = teta2;
-
-                        ui->angle1CalcLable->setText(QString::number(phi2*180/M_PI) + "°");
-                        ui->angle2CalcLable->setText(QString::number(phi1*180/M_PI)  + "°");
                         moo = -(mOrb1*qSin(teta2)*qSin(phi2) - qSin(teta1)*qSin(phi1)*mOrb2)/(qSin(teta1)*qSin(phi1)*qCos(teta2)*qCos(phi2) - qSin(teta2)*qSin(phi2)*qCos(teta1)*qCos(phi1));//fixed
                         ui->mOrbOLabel->setText(QString::number(moo));
                         mop = (-mOrb2*qCos(teta1)*qCos(phi1) + mOrb1*qCos(teta2)*qCos(phi2))/(qSin(teta1)*qSin(phi1)*qCos(teta2)*qCos(phi2) - qSin(teta2)*qSin(phi2)*qCos(teta1)*qCos(phi1));//fixed
@@ -1325,9 +1345,11 @@ void MainWindow::exportCharts(){
             *outStream << "l Max";
             *outStream << "r Max";
         }
+        /*
         if(ui->steppedBackgroundBox->isChecked()){
             *outStream << "st. back.";
         }
+        */
         if(ui->diffBox->isChecked()){
             *outStream << "diff";
         }
@@ -1338,8 +1360,10 @@ void MainWindow::exportCharts(){
         }else{
             data = tmp2Data;
         }
+        /*
         qreal m1 = ((data.last().second.first - data.first().second.first)*2/3)/(2*qAcos(0));
         qreal m2 = ((data.last().second.first - data.first().second.first)/3)/(2*qAcos(0));
+        */
         for(int j = 0; j < data.length(); j++){
             *outStream  << qSetFieldWidth(10) << left << data.at(j).first;
             *outStream << qSetFieldWidth(14) << left;
@@ -1347,9 +1371,9 @@ void MainWindow::exportCharts(){
                 *outStream << bareData.at(j).second.first;
                 *outStream << bareData.at(j).second.second;
             }
-            if(ui->normBox->isChecked() || ui->stepBox->isChecked() || ui->mulBox->isChecked()){
-                *outStream << data.at(j).second.first;
-                *outStream << data.at(j).second.second;
+            if(ui->normBox->isChecked() || ui->stepBox->isChecked() || ui->mulBox->isChecked()){   
+                *outStream << lNorm->at(j).y();
+                *outStream << rNorm->at(j).y();
             }
             if(ui->maxBox->isChecked()){
                 if(lInd.first == j || lInd.second == j){
@@ -1363,11 +1387,13 @@ void MainWindow::exportCharts(){
                     *outStream << 0;
                 }
             }
+            /*
             if(ui->steppedBackgroundBox->isChecked()){
                 *outStream << data.first().second.first + m1 * (qAcos(0) + qAtan(ui->filletSpinBox->value()*(data.at(j).first - data.at(lInd.first).first))) + m2 * (qAcos(0) + qAtan(ui->filletSpinBox->value()*(data.at(j).first - data.at(lInd.second).first)));
             }
+            */
             if(ui->diffBox->isChecked()){
-                *outStream << (data.at(j).second.first - data.at(j).second.second);
+                *outStream << diffS->at(j).y();
             }
             *outStream << qSetFieldWidth(1) << "\n";
         }

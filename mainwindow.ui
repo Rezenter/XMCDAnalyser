@@ -39,7 +39,7 @@
        <number>100000</number>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab">
        <property name="sizePolicy">
@@ -1131,7 +1131,497 @@
         <string>result</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_5">
-        <item row="2" column="0">
+        <item row="1" column="1">
+         <widget class="QDoubleSpinBox" name="energyShiftSpinBox">
+          <property name="suffix">
+           <string>[eV]</string>
+          </property>
+          <property name="decimals">
+           <number>4</number>
+          </property>
+          <property name="minimum">
+           <double>-2.000000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>2.000000000000000</double>
+          </property>
+          <property name="singleStep">
+           <double>0.010000000000000</double>
+          </property>
+          <property name="value">
+           <double>0.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_18">
+          <property name="text">
+           <string>energy shift</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QGroupBox" name="groupBox_6">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>100</height>
+           </size>
+          </property>
+          <property name="toolTip">
+           <string>Results, gained from the second file.</string>
+          </property>
+          <property name="title">
+           <string>integrals 2</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_8">
+           <item row="1" column="1">
+            <widget class="QLabel" name="l32Label">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="toolTip">
+              <string>Integral of (XMCD)*dx from left chopped edge to local minimum between maximums for the second file.</string>
+             </property>
+             <property name="text">
+              <string>Unknown</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_20">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="toolTip">
+              <string>Integral of (XMCD)*dx from left chopped edge to local minimum between maximums for the second file.</string>
+             </property>
+             <property name="text">
+              <string>ΔAl3 = </string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLabel" name="sum2Label">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="toolTip">
+              <string>Integral of (normalized r.p. signal + normalized l.p. signal)*dx from left chopped edge to right for the second file.</string>
+             </property>
+             <property name="text">
+              <string>Unknown</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0" rowspan="2">
+            <widget class="QLabel" name="label_21">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="toolTip">
+              <string>Integral of (XMCD)*dx from local minimum between maximums to the chopped right edge for the second file.</string>
+             </property>
+             <property name="text">
+              <string>ΔAl2 = </string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1" rowspan="2">
+            <widget class="QLabel" name="l22Label">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="toolTip">
+              <string>Integral of (XMCD)*dx from local minimum between maximums to the chopped right edge for the second file.</string>
+             </property>
+             <property name="text">
+              <string>Unknown</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_15">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="toolTip">
+              <string>Integral of (normalized r.p. signal + normalized l.p. signal)*dx from left chopped edge to right for the second file.</string>
+             </property>
+             <property name="text">
+              <string>Al3 + Al2 =</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="4" rowspan="2" colspan="2">
+            <widget class="QLabel" name="msEff2Label">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="toolTip">
+              <string>Effective spin moment value</string>
+             </property>
+             <property name="text">
+              <string>Unknown</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="5">
+            <widget class="QDoubleSpinBox" name="phi2OffsetBox">
+             <property name="maximum">
+              <double>90.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.100000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="4" colspan="2">
+            <widget class="QLabel" name="mOrb2Label">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="toolTip">
+              <string>Orbital moment value</string>
+             </property>
+             <property name="text">
+              <string>Unknown</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="3">
+            <widget class="QLabel" name="Label_10">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="toolTip">
+              <string>Effective spin moment value</string>
+             </property>
+             <property name="text">
+              <string>msEff =</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="3">
+            <widget class="QLabel" name="label_22">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="toolTip">
+              <string>Orbital moment value</string>
+             </property>
+             <property name="text">
+              <string>mOrb =</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QCheckBox" name="angle2Box">
+             <property name="toolTip">
+              <string>Use this file as start point to calculate second M. angle.</string>
+             </property>
+             <property name="text">
+              <string>assume M2||SR</string>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">angleGroup</string>
+             </attribute>
+            </widget>
+           </item>
+           <item row="0" column="3">
+            <widget class="QLabel" name="label_27">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="toolTip">
+              <string>Magnetisation angle relative to normal axis gained from calculations, assuming intensity is in proportion to cos(M. angle).</string>
+             </property>
+             <property name="text">
+              <string>φ2  =</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="4">
+            <widget class="QLabel" name="angle1CalcLable">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="toolTip">
+              <string>Magnetisation angle relative to normal axis gained from calculations, assuming intensity is in proportion to cos(M. angle).</string>
+             </property>
+             <property name="text">
+              <string>Unknown</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="3" column="1" rowspan="2">
+         <widget class="QGroupBox" name="groupBox">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>200</height>
+           </size>
+          </property>
+          <property name="toolTip">
+           <string>Final results, gained from both files.</string>
+          </property>
+          <property name="title">
+           <string>results</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_6">
+           <item row="4" column="4">
+            <widget class="QLabel" name="mOrbOLabel">
+             <property name="toolTip">
+              <string>Normal component of orbital moment</string>
+             </property>
+             <property name="text">
+              <string>Unknown</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="0">
+            <widget class="QLabel" name="label_11">
+             <property name="toolTip">
+              <string/>
+             </property>
+             <property name="text">
+              <string>mT⊥ =</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="1">
+            <widget class="QLabel" name="mTLabel">
+             <property name="toolTip">
+              <string/>
+             </property>
+             <property name="text">
+              <string>Unknown</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="2" colspan="2">
+            <widget class="QLabel" name="label_13">
+             <property name="toolTip">
+              <string>Paralel component of orbital moment</string>
+             </property>
+             <property name="text">
+              <string>mOrb|| =</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="4">
+            <widget class="QLabel" name="mOrbPLabel">
+             <property name="toolTip">
+              <string>Paralel component of orbital moment</string>
+             </property>
+             <property name="text">
+              <string>Unknown</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_26">
+             <property name="toolTip">
+              <string>Unit selection.</string>
+             </property>
+             <property name="text">
+              <string>Unit</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QComboBox" name="unitBox">
+             <property name="toolTip">
+              <string>Unit selection.</string>
+             </property>
+             <property name="currentText">
+              <string>µβ</string>
+             </property>
+             <property name="currentIndex">
+              <number>1</number>
+             </property>
+             <item>
+              <property name="text">
+               <string>J/T</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>µβ</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>eV/T</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>erg/G</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="6" column="2">
+            <widget class="QLabel" name="label_28">
+             <property name="toolTip">
+              <string>Orbital moment, calculatet from components.</string>
+             </property>
+             <property name="text">
+              <string>mOrb = </string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="4">
+            <widget class="QLabel" name="mOrbLabel">
+             <property name="toolTip">
+              <string>Orbital moment, calculatet from components.</string>
+             </property>
+             <property name="text">
+              <string>Unknown</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_23">
+             <property name="toolTip">
+              <string>Beamline polarization constant.</string>
+             </property>
+             <property name="text">
+              <string>Pc</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QDoubleSpinBox" name="pSpinBox">
+             <property name="toolTip">
+              <string>Beamline polarization constant.</string>
+             </property>
+             <property name="maximum">
+              <double>1.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.010000000000000</double>
+             </property>
+             <property name="value">
+              <double>0.700000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_19">
+             <property name="toolTip">
+              <string>Energy level population.</string>
+             </property>
+             <property name="text">
+              <string>Nh</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QDoubleSpinBox" name="nSpinBox">
+             <property name="toolTip">
+              <string>Energy level population.</string>
+             </property>
+             <property name="singleStep">
+              <double>0.010000000000000</double>
+             </property>
+             <property name="value">
+              <double>2.490000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <widget class="QLabel" name="label_10">
+             <property name="toolTip">
+              <string>Spin moment value</string>
+             </property>
+             <property name="text">
+              <string>ms =</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1">
+            <widget class="QLabel" name="msLabel">
+             <property name="toolTip">
+              <string>Spin moment value</string>
+             </property>
+             <property name="text">
+              <string>Unknown</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="2" colspan="2">
+            <widget class="QLabel" name="label_12">
+             <property name="toolTip">
+              <string>Normal component of orbital moment</string>
+             </property>
+             <property name="text">
+              <string>mOrb┴ =</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="3" column="0">
          <widget class="QGroupBox" name="groupBox_5">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
@@ -1269,22 +1759,6 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="5">
-            <widget class="QLabel" name="angle1CalcLable">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="toolTip">
-              <string>Magnetisation angle relative to normal axis gained from calculations, assuming intensity is in proportion to cos(M. angle).</string>
-             </property>
-             <property name="text">
-              <string>Unknown</string>
-             </property>
-            </widget>
-           </item>
            <item row="1" column="5" colspan="2">
             <widget class="QLabel" name="msEff1Label">
              <property name="sizePolicy">
@@ -1365,29 +1839,33 @@
              </attribute>
             </widget>
            </item>
-           <item row="2" column="2" colspan="2">
-            <widget class="QLabel" name="label_8">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
+           <item row="0" column="6">
+            <widget class="QDoubleSpinBox" name="phi1OffsetBox">
+             <property name="maximum">
+              <double>90.000000000000000</double>
              </property>
-             <property name="minimumSize">
-              <size>
-               <width>20</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>=&gt;</string>
+             <property name="singleStep">
+              <double>0.100000000000000</double>
              </property>
             </widget>
            </item>
-           <item row="0" column="2" colspan="3">
-            <widget class="QLabel" name="label_27">
+           <item row="0" column="4">
+            <widget class="QLabel" name="label_30">
+             <property name="toolTip">
+              <string>Magnetisation angle relative to normal axis gained from calculations, assuming intensity is in proportion to cos(M. angle).</string>
+             </property>
+             <property name="text">
+              <string>φ1 =</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="5">
+            <widget class="QLabel" name="angle2CalcLable">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
@@ -1396,7 +1874,7 @@
               <string>Magnetisation angle relative to normal axis gained from calculations, assuming intensity is in proportion to cos(M. angle).</string>
              </property>
              <property name="text">
-              <string>M2. angle =</string>
+              <string>Unknown</string>
              </property>
             </widget>
            </item>
@@ -1425,497 +1903,6 @@
           </property>
          </widget>
         </item>
-        <item row="3" column="0">
-         <widget class="QGroupBox" name="groupBox_6">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>100</height>
-           </size>
-          </property>
-          <property name="toolTip">
-           <string>Results, gained from the second file.</string>
-          </property>
-          <property name="title">
-           <string>integrals 2</string>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_8">
-           <item row="1" column="1">
-            <widget class="QLabel" name="l32Label">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="toolTip">
-              <string>Integral of (XMCD)*dx from left chopped edge to local minimum between maximums for the second file.</string>
-             </property>
-             <property name="text">
-              <string>Unknown</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="label_20">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="toolTip">
-              <string>Integral of (XMCD)*dx from left chopped edge to local minimum between maximums for the second file.</string>
-             </property>
-             <property name="text">
-              <string>ΔAl3 = </string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QLabel" name="sum2Label">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="toolTip">
-              <string>Integral of (normalized r.p. signal + normalized l.p. signal)*dx from left chopped edge to right for the second file.</string>
-             </property>
-             <property name="text">
-              <string>Unknown</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0" rowspan="2">
-            <widget class="QLabel" name="label_21">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="toolTip">
-              <string>Integral of (XMCD)*dx from local minimum between maximums to the chopped right edge for the second file.</string>
-             </property>
-             <property name="text">
-              <string>ΔAl2 = </string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1" rowspan="2">
-            <widget class="QLabel" name="l22Label">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="toolTip">
-              <string>Integral of (XMCD)*dx from local minimum between maximums to the chopped right edge for the second file.</string>
-             </property>
-             <property name="text">
-              <string>Unknown</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="4">
-            <widget class="QLabel" name="angle2CalcLable">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="toolTip">
-              <string>Magnetisation angle relative to normal axis gained from calculations, assuming intensity is in proportion to cos(M. angle).</string>
-             </property>
-             <property name="text">
-              <string>Unknown</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_15">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="toolTip">
-              <string>Integral of (normalized r.p. signal + normalized l.p. signal)*dx from left chopped edge to right for the second file.</string>
-             </property>
-             <property name="text">
-              <string>Al3 + Al2 =</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="4" rowspan="2" colspan="2">
-            <widget class="QLabel" name="msEff2Label">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="toolTip">
-              <string>Effective spin moment value</string>
-             </property>
-             <property name="text">
-              <string>Unknown</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="4" colspan="2">
-            <widget class="QLabel" name="mOrb2Label">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="toolTip">
-              <string>Orbital moment value</string>
-             </property>
-             <property name="text">
-              <string>Unknown</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="3">
-            <widget class="QLabel" name="Label_10">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="toolTip">
-              <string>Effective spin moment value</string>
-             </property>
-             <property name="text">
-              <string>msEff =</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="3">
-            <widget class="QLabel" name="label_22">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="toolTip">
-              <string>Orbital moment value</string>
-             </property>
-             <property name="text">
-              <string>mOrb =</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="2">
-            <widget class="QLabel" name="label_14">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>=&gt;</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="2">
-            <widget class="QCheckBox" name="angle2Box">
-             <property name="toolTip">
-              <string>Use this file as start point to calculate second M. angle.</string>
-             </property>
-             <property name="text">
-              <string>assume M2||SR</string>
-             </property>
-             <attribute name="buttonGroup">
-              <string notr="true">angleGroup</string>
-             </attribute>
-            </widget>
-           </item>
-           <item row="0" column="2" colspan="2">
-            <widget class="QLabel" name="label_30">
-             <property name="toolTip">
-              <string>Magnetisation angle relative to normal axis gained from calculations, assuming intensity is in proportion to cos(M. angle).</string>
-             </property>
-             <property name="text">
-              <string>M1. angle =</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item row="2" column="1" rowspan="2">
-         <widget class="QGroupBox" name="groupBox">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>200</height>
-           </size>
-          </property>
-          <property name="toolTip">
-           <string>Final results, gained from both files.</string>
-          </property>
-          <property name="title">
-           <string>results</string>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_6">
-           <item row="0" column="0">
-            <widget class="QLabel" name="errorLable">
-             <property name="text">
-              <string>no errors</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="label_23">
-             <property name="toolTip">
-              <string>Beamline polarization constant.</string>
-             </property>
-             <property name="text">
-              <string>Pc</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QDoubleSpinBox" name="pSpinBox">
-             <property name="toolTip">
-              <string>Beamline polarization constant.</string>
-             </property>
-             <property name="maximum">
-              <double>1.000000000000000</double>
-             </property>
-             <property name="singleStep">
-              <double>0.010000000000000</double>
-             </property>
-             <property name="value">
-              <double>0.700000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="label_19">
-             <property name="toolTip">
-              <string>Energy level population.</string>
-             </property>
-             <property name="text">
-              <string>Nh</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
-            <widget class="QDoubleSpinBox" name="nSpinBox">
-             <property name="toolTip">
-              <string>Energy level population.</string>
-             </property>
-             <property name="singleStep">
-              <double>0.010000000000000</double>
-             </property>
-             <property name="value">
-              <double>2.490000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="0">
-            <widget class="QLabel" name="label_10">
-             <property name="toolTip">
-              <string>Spin moment value</string>
-             </property>
-             <property name="text">
-              <string>ms =</string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="1">
-            <widget class="QLabel" name="msLabel">
-             <property name="toolTip">
-              <string>Spin moment value</string>
-             </property>
-             <property name="text">
-              <string>Unknown</string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="2" colspan="2">
-            <widget class="QLabel" name="label_12">
-             <property name="toolTip">
-              <string>Normal component of orbital moment</string>
-             </property>
-             <property name="text">
-              <string>mOrb┴ =</string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="4">
-            <widget class="QLabel" name="mOrbOLabel">
-             <property name="toolTip">
-              <string>Normal component of orbital moment</string>
-             </property>
-             <property name="text">
-              <string>Unknown</string>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="0">
-            <widget class="QLabel" name="label_11">
-             <property name="toolTip">
-              <string/>
-             </property>
-             <property name="text">
-              <string>mT⊥ =</string>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="1">
-            <widget class="QLabel" name="mTLabel">
-             <property name="toolTip">
-              <string/>
-             </property>
-             <property name="text">
-              <string>Unknown</string>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="2" colspan="2">
-            <widget class="QLabel" name="label_13">
-             <property name="toolTip">
-              <string>Paralel component of orbital moment</string>
-             </property>
-             <property name="text">
-              <string>mOrb|| =</string>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="4">
-            <widget class="QLabel" name="mOrbPLabel">
-             <property name="toolTip">
-              <string>Paralel component of orbital moment</string>
-             </property>
-             <property name="text">
-              <string>Unknown</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="0">
-            <widget class="QLabel" name="label_26">
-             <property name="toolTip">
-              <string>Unit selection.</string>
-             </property>
-             <property name="text">
-              <string>Unit</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="1">
-            <widget class="QComboBox" name="unitBox">
-             <property name="toolTip">
-              <string>Unit selection.</string>
-             </property>
-             <property name="currentText">
-              <string>µβ</string>
-             </property>
-             <property name="currentIndex">
-              <number>1</number>
-             </property>
-             <item>
-              <property name="text">
-               <string>J/T</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>µβ</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>eV/T</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>erg/G</string>
-              </property>
-             </item>
-            </widget>
-           </item>
-           <item row="7" column="2">
-            <widget class="QLabel" name="label_28">
-             <property name="toolTip">
-              <string>Orbital moment, calculatet from components.</string>
-             </property>
-             <property name="text">
-              <string>mOrb = </string>
-             </property>
-            </widget>
-           </item>
-           <item row="7" column="4">
-            <widget class="QLabel" name="mOrbLabel">
-             <property name="toolTip">
-              <string>Orbital moment, calculatet from components.</string>
-             </property>
-             <property name="text">
-              <string>Unknown</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QDoubleSpinBox" name="energyShiftSpinBox">
-          <property name="suffix">
-           <string>[eV]</string>
-          </property>
-          <property name="decimals">
-           <number>4</number>
-          </property>
-          <property name="minimum">
-           <double>-2.000000000000000</double>
-          </property>
-          <property name="maximum">
-           <double>2.000000000000000</double>
-          </property>
-          <property name="singleStep">
-           <double>0.010000000000000</double>
-          </property>
-          <property name="value">
-           <double>0.000000000000000</double>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_18">
-          <property name="text">
-           <string>energy shift</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
        </layout>
       </widget>
      </widget>
@@ -1929,19 +1916,9 @@
  <buttongroups>
   <buttongroup name="angleGroup"/>
   <buttongroup name="treatAngleAsGroup"/>
-  <buttongroup name="normGroup">
-   <property name="exclusive">
-    <bool>true</bool>
-   </property>
-  </buttongroup>
-  <buttongroup name="elseGroup">
+  <buttongroup name="filterGroup">
    <property name="exclusive">
     <bool>false</bool>
-   </property>
-  </buttongroup>
-  <buttongroup name="fileGroup">
-   <property name="exclusive">
-    <bool>true</bool>
    </property>
   </buttongroup>
   <buttongroup name="backgroundGroup">
@@ -1949,9 +1926,19 @@
     <bool>false</bool>
    </property>
   </buttongroup>
-  <buttongroup name="filterGroup">
+  <buttongroup name="elseGroup">
    <property name="exclusive">
     <bool>false</bool>
+   </property>
+  </buttongroup>
+  <buttongroup name="normGroup">
+   <property name="exclusive">
+    <bool>true</bool>
+   </property>
+  </buttongroup>
+  <buttongroup name="fileGroup">
+   <property name="exclusive">
+    <bool>true</bool>
    </property>
   </buttongroup>
  </buttongroups>

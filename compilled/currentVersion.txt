@@ -1,4 +1,10 @@
-disabled:
-	half-sum normalisation
-	load session button
-	angle calculations
+v3
+	disabled:
+		half-sum normalisation
+		load session button
+		angle calculations
+v4
+	fixed integration limits
+	disabled calibration level
+	added phi offset spin boxes
+	fixed export

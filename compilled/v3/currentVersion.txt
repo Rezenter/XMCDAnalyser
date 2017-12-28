@@ -1,0 +1,4 @@
+disabled:
+	half-sum normalisation
+	load session button
+	angle calculations
