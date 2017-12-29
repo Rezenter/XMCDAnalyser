@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     /*To-do list:
+        * clear linear coeff. lables
         * carefully delete everything in destructor
         * prevent crash
     */
@@ -915,7 +916,7 @@ void MainWindow::reCalc(){
                 qreal XMCDmin = 1E12;
                 int XMCDmaxInd = 0;
                 qreal XMCDmax = -1E12;
-                for(int i = 0 ; i < data.length(); i++){
+                for(int i = 0 ; i < XMCD->points().length(); i++){
                     if(XMCD->at(i).y() < XMCDmin){
                         XMCDmin = XMCD->at(i).y();
                         XMCDminInd = i;
@@ -1392,6 +1393,7 @@ void MainWindow::exportCharts(){
         exportState = 0; //exit
         break;
     }
+    reCalcBoth();
 }
 
 void MainWindow::findMax(){
