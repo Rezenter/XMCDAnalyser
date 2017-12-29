@@ -39,7 +39,7 @@
        <number>100000</number>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
        <property name="sizePolicy">
@@ -462,44 +462,6 @@
         </item>
         <item>
          <layout class="QGridLayout" name="gridLayout">
-          <item row="2" column="1">
-           <widget class="QCheckBox" name="stepBox">
-            <property name="toolTip">
-             <string>Add constant background to the right polarization signal in order to equalize left edge.</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="text">
-             <string>+</string>
-            </property>
-            <property name="checked">
-             <bool>false</bool>
-            </property>
-            <attribute name="buttonGroup">
-             <string notr="true">normGroup</string>
-            </attribute>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QCheckBox" name="mulBox">
-            <property name="toolTip">
-             <string>Multiply right polarization signal by constant in orger to equalize left edge.</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="text">
-             <string>*</string>
-            </property>
-            <property name="checked">
-             <bool>false</bool>
-            </property>
-            <attribute name="buttonGroup">
-             <string notr="true">normGroup</string>
-            </attribute>
-           </widget>
-          </item>
           <item row="5" column="0">
            <widget class="QCheckBox" name="dividerBox">
             <property name="sizePolicy">
@@ -1062,28 +1024,6 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="0" rowspan="2">
-           <widget class="QCheckBox" name="normBox">
-            <property name="toolTip">
-             <string>(raw data)/(i.zero)</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="text">
-             <string>normalization</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-            <property name="autoExclusive">
-             <bool>true</bool>
-            </property>
-            <attribute name="buttonGroup">
-             <string notr="true">normGroup</string>
-            </attribute>
-           </widget>
-          </item>
           <item row="0" column="1">
            <widget class="QDoubleSpinBox" name="shadowSpinBox">
             <property name="toolTip">
@@ -1120,6 +1060,47 @@
             <property name="singleStep">
              <double>0.100000000000000</double>
             </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QCheckBox" name="mulBox">
+            <property name="toolTip">
+             <string>Multiply right polarization signal by constant in orger to equalize left edge.</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="text">
+             <string>*</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+            <attribute name="buttonGroup">
+             <string notr="true">normGroup</string>
+            </attribute>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QCheckBox" name="normBox">
+            <property name="toolTip">
+             <string>(raw data)/(i.zero)</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="text">
+             <string>normalization</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
+            </property>
+            <attribute name="buttonGroup">
+             <string notr="true">normGroup</string>
+            </attribute>
            </widget>
           </item>
          </layout>
@@ -1914,14 +1895,13 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="angleGroup"/>
-  <buttongroup name="treatAngleAsGroup"/>
-  <buttongroup name="filterGroup">
+  <buttongroup name="backgroundGroup">
    <property name="exclusive">
     <bool>false</bool>
    </property>
   </buttongroup>
-  <buttongroup name="backgroundGroup">
+  <buttongroup name="treatAngleAsGroup"/>
+  <buttongroup name="filterGroup">
    <property name="exclusive">
     <bool>false</bool>
    </property>
@@ -1931,6 +1911,7 @@
     <bool>false</bool>
    </property>
   </buttongroup>
+  <buttongroup name="angleGroup"/>
   <buttongroup name="normGroup">
    <property name="exclusive">
     <bool>true</bool>

@@ -87,13 +87,13 @@ private:
     QString file1Name;
     FileLoader *data1Loader;
     qreal teta1;
-    QPair<qreal, qreal> limits1;
+    //QPair<qreal, qreal> limits1;
     QVector<QPair<qreal, QPair<qreal, qreal>>> tmp1Data;
     QString file2Path;
     QString file2Name;
     FileLoader *data2Loader;
     qreal teta2;
-    QPair<qreal, qreal> limits2;
+    //QPair<qreal, qreal> limits2;
     QVector<QPair<qreal, QPair<qreal, qreal>>> tmp2Data;
     QVector<QPair<qreal, QPair<qreal, qreal>>> data;
     QVector<QPair<qreal, QPair<qreal, qreal>>> bareData;

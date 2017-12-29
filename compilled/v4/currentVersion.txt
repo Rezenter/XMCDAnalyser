@@ -8,7 +8,3 @@ v4
 	disabled calibration level
 	added phi offset spin boxes
 	fixed export
-v5
-	fixed XMCD integration
-	a bit reworked MainWindow::reCalc()
-	removed stepped normalisation
