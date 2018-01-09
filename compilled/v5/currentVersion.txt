@@ -12,6 +12,3 @@ v5
 	fixed XMCD integration
 	a bit reworked MainWindow::reCalc()
 	removed stepped normalisation
-v6
-	cosmetic fixes
-	added "to-do" section

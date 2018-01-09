@@ -10,9 +10,18 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     /*To-do list:
+        * add smoothing!!!
+        * separate reCalc() to stages
+        * move calculations to separate thread
         * clear linear coeff. lables
         * carefully delete everything in destructor
         * prevent crash
+        * save/load session
+        * refresh should also refresh right table
+        * add sample filter
+        * replace file tree with dialog
+        * check "forget" buttons: not all checkboxes returned to their default state
+        * fix "calculate" button: availiable before integration of both files
     */
 
     ui->setupUi(this);
