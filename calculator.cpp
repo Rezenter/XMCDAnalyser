@@ -1,7 +1,9 @@
 #include "calculator.h"
 
 Calculator::Calculator(QObject *parent) : QObject(parent){
-
+    for(int file = 0; file < 2; file++){
+        loader[file] = new FileLoader(path[file]);
+    }
 }
 
 /*to-do:
@@ -12,16 +14,15 @@ Calculator::Calculator(QObject *parent) : QObject(parent){
 Calculator::~Calculator(){
 
     for(int i = 0; i < 2; i++){
-        delete tmpLoader[i];
         delete loader[i];
     }
     emit dead();
 }
 
-void Calculator::setLoader(FileLoader *newLoader, const int file){
+void Calculator::setLoader(const QString loaderPath, const int file){
     if(file == 0 || file == 1){
-        if(tmpLoader[file] != newLoader){
-            tmpLoader[file] = newLoader;
+        if(path[file] != loaderPath){
+            path[file] = loaderPath;
             loaderChanged[file] = true;
             reset();
         }
@@ -65,8 +66,7 @@ void Calculator::setShadowCurrent(const qreal signal, const qreal iZero, const i
 
 void Calculator::load(const int file){
     if(file == 0 || file == 1){
-        loader[file]->setLimits(limits[file].x(), limits[file].y(), energyShift*(file - 0.5));
-        //mb i should clear all arrays
+        loader[file]->setLimits(floor(limits[file].x()), floor(limits[file].y()), energyShift*(file - 0.5));
         bare[file].resize(loader[file]->getBareData().size());
         zero[file].resize(bare[file].size());
         for(int i = 0; i <  bare[file].size(); i++){
@@ -75,6 +75,8 @@ void Calculator::load(const int file){
             tmp = loader[file]->getZero().at(i);
             zero[file][i] = QPair< qreal, QPointF>(tmp.first, QPointF(tmp.second.first, tmp.second.second));
         }
+        emit rawData(bare[file], file);
+        emit iZero(zero[file], file);
         loaded[file] = true;
         calcData(file);
     }else{
@@ -127,7 +129,7 @@ void Calculator::smooth(const int file){
                 y[0] += data[file][i].second.x();
                 y[1] += data[file][i].second.y();
             }
-            smoothedData[file][0] = QPair<qreal, QPointF>(x, QPointF(y[0]/smoothPoints[file], y[1]/smoothPoints[file]));
+            smoothedData[file][0] = QPair<qreal, QPointF>(x/smoothPoints[file], QPointF(y[0]/smoothPoints[file], y[1]/smoothPoints[file]));
             for(int i = smoothPoints[file]; i < data[file].size(); i++){
                 x += data[file][i].first;
                 x -= data[file][i - smoothPoints[file]].first;
@@ -135,7 +137,7 @@ void Calculator::smooth(const int file){
                 y[1] += data[file][i].second.y();
                 y[0] -= data[file][i - smoothPoints[file]].second.x();
                 y[1] -= data[file][i - smoothPoints[file]].second.y();
-                smoothedData[file][i - smoothPoints[file] + 1] = QPair<qreal, QPointF>(x, QPointF(y[0]/smoothPoints[file], y[1]/smoothPoints[file]));
+                smoothedData[file][i - smoothPoints[file] + 1] = QPair<qreal, QPointF>(x/smoothPoints[file], QPointF(y[0]/smoothPoints[file], y[1]/smoothPoints[file]));
             }
         }else if(smoothPoints[file] == 1){
             smoothedData[file].resize(data[file].size());
@@ -303,6 +305,7 @@ void Calculator::linear(const int file){
                 linearCoeff[file][i].rx() = (integer[i]*xySum[i] - xSum[i]*ySum[i])/(integer[i]*x2Sum[i] - pow(xSum[i], 2));
                 linearCoeff[file][i].ry() = (ySum[i] - linearCoeff[file][i].rx()*xSum[i])/integer[i];
             }
+            emit linCoeffs(linearCoeff[file][0], linearCoeff[file][1], file);
             if(stepFitNeeded[file]){
                 //box1
             }else if(steppedNeeded[file]){
@@ -477,7 +480,7 @@ int Calculator::reset(){
         for(int file = 0; file < 2; file++){
             if(loaderChanged[file]){
                 loaderChanged[file] = false;
-                loader[file] = tmpLoader[file];
+                loader[file] = new FileLoader(path[file]);
                 limits[file] = tmpLimits[file];
                 energyShift = tmpEnergyShift;
                 loaded[file] = false;
@@ -597,15 +600,21 @@ int Calculator::reset(){
                 }
             }
             switch (stage) {
-                case 1:
-                    load(file);
-                    break;
-                case 2:
+                case 1:{
+                qint64 begin = QDateTime().currentMSecsSinceEpoch();
+                load(file);
+                qDebug() << QDateTime().currentMSecsSinceEpoch() - begin << "load";
+                    break;}
+            case 2:{
+                qint64 begin = QDateTime().currentMSecsSinceEpoch();
                     calcData(file);
-                    break;
-                case 3:
+                    qDebug() << QDateTime().currentMSecsSinceEpoch() - begin << "calc";
+                    break;}
+            case 3:{
+                qint64 begin = QDateTime().currentMSecsSinceEpoch();
                     smooth(file);
-                    break;
+                    qDebug() << QDateTime().currentMSecsSinceEpoch() - begin << "smooth";
+                    break;}
                 case 4:
                     normalize(file);
                     break;

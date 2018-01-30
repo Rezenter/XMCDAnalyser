@@ -7,6 +7,7 @@
 #include "fileloader.h"
 #include <QPointF>
 #include <QtMath>
+#include <QDateTime>
 
 class Calculator : public QObject{
 
@@ -24,9 +25,10 @@ signals:
     void XMCD(const QVector<QPointF> points, const int file);
     void integrals(const qreal summ, const qreal dl2, const qreal dl3, const qreal mSE, const qreal mO, const int file);
     void moments(const qreal mOP, const qreal mOO, const qreal ms, const qreal mt);
+    void linCoeffs(const QPointF left, const QPointF right, const int file);
 
 public slots:
-    void setLoader(FileLoader *loader, const int file);
+    void setLoader(const QString loaderPath, const int file);
     void setLimits(const qreal left, const qreal right, const int file);
     void setEnergyShift(const qreal shift);
     void setShadowCurrent(const qreal signal, const qreal iZero, const int file);
@@ -50,7 +52,7 @@ private:
     QVector<QPointF> diff[2];
     QVector<QPointF> finalDiff[2];
     FileLoader *loader[2];
-    FileLoader *tmpLoader[2];
+    QString path[2] = {};
     bool loaderChanged[2] = {false};
     bool loaded[2] = {false};
     bool shadowChanged[2] = {false};
@@ -77,8 +79,8 @@ private:
     bool calculateChanged = false;
     bool tmpCalculateNeeded = false;
     QPointF linearCoeff[2][2]; //[file][left, right](a, b)
-    QPointF limits[2] = {QPointF(std::numeric_limits<qreal>::min(), std::numeric_limits<qreal>::max())};
-    QPointF tmpLimits[2] = {QPointF(std::numeric_limits<qreal>::min(), std::numeric_limits<qreal>::max())};
+    QPointF limits[2] = {QPointF(0, 0)};
+    QPointF tmpLimits[2] = {QPointF(0, 0)};
     QPointF shadow[2] = {QPointF(0.0, 0.0)};
     QPointF tmpShadow[2] = {QPointF(0.0, 0.0)};
     QPointF max[2] = {QPointF(0.0, 0.0)};
