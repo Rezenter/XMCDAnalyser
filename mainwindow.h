@@ -1,24 +1,21 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "ui_mainwindow.h"
-#include <QGenericMatrix>
 #include <QMainWindow>
-#include <QRegExpValidator>
-#include <QtMath>
 #include <QLineSeries>
 #include <QChartView>
 #include <QValueAxis>
-#include <QThread>
 #include <QCoreApplication>
 #include <QSettings>
-#include <QStorageInfo>
 #include <QFileSystemModel>
-#include "extfsm.h"
 #include <QItemSelection>
-#include "fileloader.h"
-#include <QtMath>
-#include <QHash>
+#include <QThread>
+#include <QFileSystemWatcher>
+
+#include "ui_mainwindow.h"
+#include "extfsm.h"
+#include "calculator.h"
+#include "pairwidget.h"
 
 namespace Ui {
 class MainWindow;
@@ -34,127 +31,81 @@ public:
 
 public slots:
 
+signals:
+    void setLoader(const QString loaderPath, const int file);
+    void setLimits(const qreal left, const qreal right, const int file);
+    void setEnergyShift(const qreal shift, const int file);
+    void setShadowCurrent(const qreal signal, const qreal iZero, const int file);
+    void setSmooth(const int count, const int file);
+    void setDiff(const bool needed, const int file);
+    void setLinearIntervals(const QPointF interval, bool needed, const int file);
+    void setNormalizationCoeff(const qreal coeff, bool needed, const int file);
+    void setStepped(const qreal coeff, bool needed, const int file);
+    void setIntegrate(const bool needed, const int index, const int file);
+    void setIntegrationConstants(const qreal newPc, const qreal newNh);
+    void setCalculate(const bool needed, const QPointF newPhi, const QPointF newTheta);
+
 private:
+    QThread *calcThread;
+    Calculator *calculator;
     Ui::MainWindow *ui;
     void loadSettings();
     void saveSettings();
-    void refresh();
-    void buildFileTree();
     void resizeEvent(QResizeEvent*);
-    void saveSession();
-    QtCharts::QChartView *chartView;
-    QtCharts::QChartView *diffView;
-    QtCharts::QChart *chart;
-    QtCharts::QChart *diff;
-    QtCharts::QLineSeries *l;
-    QtCharts::QLineSeries *r;
-    QtCharts::QLineSeries *lNorm;
-    QtCharts::QLineSeries *rNorm;
-    QtCharts::QLineSeries *lSteps;
-    QtCharts::QLineSeries *rSteps;
-    QtCharts::QLineSeries *diffS;
-    QtCharts::QLineSeries *lMax;
-    QtCharts::QLineSeries *rMax;
-    QtCharts::QValueAxis *axisX;
-    QtCharts::QValueAxis *axisY;
-    QtCharts::QValueAxis *axisY2;
-    QtCharts::QValueAxis *diffY;
-    QtCharts::QValueAxis *diffX;
-    QtCharts::QLineSeries *divider;
-    QtCharts::QLineSeries *lz;
-    QtCharts::QLineSeries *rz;
-    QtCharts::QLineSeries *l0;
-    QtCharts::QLineSeries *lIntervals;
-    QtCharts::QLineSeries *ll;
-    QtCharts::QLineSeries *rl;
-    QtCharts::QLineSeries *level;
-    QtCharts::QLineSeries *dLevel;
-    QtCharts::QLineSeries *halfSum;
-    QtCharts::QLineSeries *diffS2;
-    QtCharts::QLineSeries *chartDiff;
-    QtCharts::QLineSeries *XMCDZero;
-    QString path = QCoreApplication::applicationDirPath();
-    QFile *save;
-    QTextStream *stream;
-    QSettings *settings;
-    QSettings *par;
-    QStorageInfo storage = QStorageInfo::root();
-    QFileSystemModel *model = new QFileSystemModel();
+    QtCharts::QChartView chartView;
+    QtCharts::QChart chart;
+    QtCharts::QLineSeries raw[2];
+    QtCharts::QLineSeries norm[2];
+    QtCharts::QLineSeries zero[2];
+    QtCharts::QValueAxis axisX;
+    QtCharts::QValueAxis axisY;
+    QtCharts::QValueAxis axisY2;
+    QFileSystemModel model;
     ExtFSM *table = new ExtFSM(this);
-    QString drive;
-    QModelIndex currentSelection;
-    QString file1Path;
-    QString file1Name;
-    FileLoader *data1Loader;
-    qreal teta1;
-    //QPair<qreal, qreal> limits1;
-    QVector<QPair<qreal, QPair<qreal, qreal>>> tmp1Data;
-    QString file2Path;
-    QString file2Name;
-    FileLoader *data2Loader;
-    qreal teta2;
-    //QPair<qreal, qreal> limits2;
-    QVector<QPair<qreal, QPair<qreal, qreal>>> tmp2Data;
-    QVector<QPair<qreal, QPair<qreal, qreal>>> data;
-    QVector<QPair<qreal, QPair<qreal, qreal>>> bareData;
-    QPair<int, int> lInd;
-    QPair<int, int> rInd;
-    QFile *outFile;
-    QTextStream *outStream;
-    qreal a;
-    qreal b;
-    qreal mOrb1 = 0;
-    qreal msEff1 = 0;
-    qreal mOrb2 = 0;
-    qreal msEff2 = 0;
+    QString dataDir;
+    QString filePath;
+    QString fileName[2];
+    qreal theta[2];
+    qreal phi[2];
     qreal muB[4] = {9.274009994*pow(10,-24), 1, 5.7883818012*pow(10, -5), 9.274009994*pow(10, -21)};
     QString units[4] = {"J/T", "µβ", "eV/T", "erg/G"};
     QString sample = "not found";
     QString geom = "not found";
     QString energy = "not found";
-    bool loaded1 = false;
-    bool loaded2 = false;
-    bool calc1 = false;
-    bool calc2 = false;
-    qreal angle0 = 0;
-    qreal angle1 = 55;
-    qreal angle2 = 65;
-    qreal ms;
-    qreal mt;
-    qreal mop;
-    qreal moo;
-    QHash<QString,qreal> *state;
-    qreal phi1;
-    qreal phi2;
-    qreal eps = 0.01;
-    QPair<qreal, qreal> intens;
-    QSettings *session;
-    QSettings *expSession;
-    int exportState = 0;
-    bool is1;
-    int count = 0;
-
+    qreal angle[3] = {0, 55, 65};
+    QSettings session;
+    bool loaded[2];
+    QLabel *fileNameLabel[2];
+    QCheckBox *fileCheckBox[2];
+    void rescale();
+    QFileSystemWatcher *refresh;
+    int file = 0;
+    int id;
+    QList<PairWidget *> pairs;
+    QString defaults();
+    void loadState(QString state);
 
 private slots:
-    void refreshButton();
-    void driveChanged(int);
-    void open(QModelIndex);
+    void open(QString);
     void load(QModelIndex);
-    void reopen();
-    void load();
     QModelIndex selected(QModelIndex);
-    void reCalc();
-    void findMax();
     void exportCharts();
-    void lChanged();
-    void bg();
-    void fileSelect();
-    void forget1();
-    void forget2();
-    void reCalcBoth();
+    void forget(int buttonID);
     void myResize();//?
     void swap();
-    void loadSession();
+    void setPath();
+    void newPair();
+    void getData(const QVector<QPair<qreal, QPointF>> points, const int file);
+    void rawData(const QVector<QPair<qreal, QPointF>> points, const int file);
+    void iZero(const QVector<QPair<qreal, QPointF>> points, const int file);
+    void XMCD(const QVector<QPointF> points, const int file);
+    void linCoeffs(const QPointF left, const QPointF right, const int file);
+    void integrals(const qreal summ, const qreal dl2, const qreal dl3, const qreal mSE, const qreal mO, const int file);
+    void moments(const qreal mOP, const qreal mOO, const qreal ms, const qreal mt);
+    void paintItBlack(const int id);
+    void deletePair(const int id);
+    void fileSelected(const int file);
+    void saveSession();
 };
 
 #endif // MAINWINDOW_H

@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>857</width>
-    <height>738</height>
+    <width>1200</width>
+    <height>650</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1200</width>
+    <height>650</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
@@ -27,13 +33,19 @@
     </size>
    </property>
    <layout class="QGridLayout" name="gridLayout_2">
-    <item row="0" column="1">
+    <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>500</width>
+        <height>500</height>
+       </size>
       </property>
       <property name="toolTipDuration">
        <number>100000</number>
@@ -49,30 +61,50 @@
         </sizepolicy>
        </property>
        <attribute name="title">
-        <string>file Select</string>
+        <string>File Management</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_3">
-        <item row="4" column="0">
-         <widget class="QLabel" name="label_16">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>30</width>
-            <height>0</height>
-           </size>
+        <item row="1" column="3">
+         <widget class="QCheckBox" name="geomBox">
+          <property name="toolTip">
+           <string>show data with different geometry regarding to the first file only</string>
           </property>
           <property name="text">
-           <string>file 1</string>
+           <string>diff geom</string>
           </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">filterGroup</string>
+          </attribute>
          </widget>
         </item>
-        <item row="4" column="3">
-         <widget class="QPushButton" name="forget1Button">
+        <item row="0" column="2">
+         <widget class="QRadioButton" name="angleButton">
+          <property name="text">
+           <string>angle = deg</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">treatAngleAsGroup</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="0" column="0" colspan="2">
+         <widget class="QRadioButton" name="holderButton">
+          <property name="text">
+           <string>angle = holder</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">treatAngleAsGroup</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QCheckBox" name="file2Box">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -80,30 +112,39 @@
            </sizepolicy>
           </property>
           <property name="toolTip">
-           <string>Replace the first file with &quot;none&quot;.</string>
+           <string>Processing second file.</string>
           </property>
           <property name="toolTipDuration">
            <number>100000</number>
           </property>
           <property name="text">
-           <string>forget 1</string>
+           <string>file 2</string>
           </property>
+          <property name="autoExclusive">
+           <bool>false</bool>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">fileGroup</string>
+          </attribute>
          </widget>
         </item>
-        <item row="4" column="2">
-         <widget class="QLabel" name="file1Label">
+        <item row="1" column="0" colspan="2">
+         <widget class="QCheckBox" name="sampleBox">
           <property name="toolTip">
-           <string>First file name.</string>
-          </property>
-          <property name="toolTipDuration">
-           <number>100000</number>
+           <string>show data for the same sample as in the first file only</string>
           </property>
           <property name="text">
-           <string>none</string>
+           <string>same sample</string>
           </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">filterGroup</string>
+          </attribute>
          </widget>
         </item>
-        <item row="0" column="4" rowspan="9">
+        <item row="0" column="4" rowspan="7">
          <widget class="QTableView" name="fileTable">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -122,10 +163,10 @@
           </attribute>
          </widget>
         </item>
-        <item row="6" column="2">
-         <widget class="QLabel" name="file2Label">
+        <item row="3" column="1" colspan="2">
+         <widget class="QLabel" name="file1Label">
           <property name="toolTip">
-           <string>Second file name.</string>
+           <string>First file name.</string>
           </property>
           <property name="toolTipDuration">
            <number>100000</number>
@@ -135,153 +176,7 @@
           </property>
          </widget>
         </item>
-        <item row="6" column="0">
-         <widget class="QLabel" name="label_17">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>30</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>file 2</string>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="1">
-         <widget class="QCheckBox" name="file2Box">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="toolTip">
-           <string>Processing second file.</string>
-          </property>
-          <property name="toolTipDuration">
-           <number>100000</number>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="autoExclusive">
-           <bool>false</bool>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">fileGroup</string>
-          </attribute>
-         </widget>
-        </item>
-        <item row="7" column="0" colspan="4">
-         <layout class="QHBoxLayout" name="horizontalLayout">
-          <item>
-           <widget class="QLineEdit" name="fileMask">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>81</width>
-              <height>21</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>File extension.</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="text">
-             <string>txt</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="refreshButton">
-            <property name="minimumSize">
-             <size>
-              <width>80</width>
-              <height>21</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>Refresh the file system tree.</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="text">
-             <string>refresh</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="sessionButton">
-            <property name="text">
-             <string>load last session</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item row="2" column="0" colspan="4">
-         <widget class="QTreeView" name="fileTree">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>400</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="toolTip">
-           <string>File system tree.</string>
-          </property>
-          <property name="toolTipDuration">
-           <number>100000</number>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0" colspan="4">
-         <widget class="QComboBox" name="driveBox">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>300</width>
-            <height>22</height>
-           </size>
-          </property>
-          <property name="toolTip">
-           <string>Drive selection.</string>
-          </property>
-          <property name="toolTipDuration">
-           <number>100000</number>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="3">
+        <item row="4" column="3" rowspan="2">
          <widget class="QPushButton" name="forget2Button">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
@@ -298,9 +193,75 @@
           <property name="text">
            <string>forget2</string>
           </property>
+          <attribute name="buttonGroup">
+           <string notr="true">forgetGroup</string>
+          </attribute>
          </widget>
         </item>
-        <item row="4" column="1">
+        <item row="4" column="1" rowspan="2" colspan="2">
+         <widget class="QLabel" name="file2Label">
+          <property name="toolTip">
+           <string>Second file name.</string>
+          </property>
+          <property name="toolTipDuration">
+           <number>100000</number>
+          </property>
+          <property name="text">
+           <string>none</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="3">
+         <widget class="QPushButton" name="selectPathButton">
+          <property name="text">
+           <string>select Path</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="3">
+         <widget class="QPushButton" name="forget1Button">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="toolTip">
+           <string>Replace the first file with &quot;none&quot;.</string>
+          </property>
+          <property name="toolTipDuration">
+           <number>100000</number>
+          </property>
+          <property name="text">
+           <string>forget 1</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">forgetGroup</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="2" column="0" colspan="4">
+         <widget class="QScrollArea" name="scrollArea">
+          <property name="horizontalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOff</enum>
+          </property>
+          <property name="widgetResizable">
+           <bool>false</bool>
+          </property>
+          <widget class="QWidget" name="scrollAreaInternals">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>272</width>
+             <height>536</height>
+            </rect>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout"/>
+          </widget>
+         </widget>
+        </item>
+        <item row="3" column="0" rowspan="2">
          <widget class="QCheckBox" name="file1Box">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
@@ -315,7 +276,7 @@
            <number>100000</number>
           </property>
           <property name="text">
-           <string/>
+           <string>file 1</string>
           </property>
           <property name="checked">
            <bool>true</bool>
@@ -328,99 +289,35 @@
           </attribute>
          </widget>
         </item>
-        <item row="5" column="0" colspan="4">
-         <widget class="QGroupBox" name="groupBox_2">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>40</height>
-           </size>
+        <item row="1" column="2">
+         <widget class="QCheckBox" name="energyBox">
+          <property name="toolTip">
+           <string>show data for the same energy interval as in the first file only</string>
           </property>
-          <property name="title">
-           <string>filters</string>
+          <property name="text">
+           <string>same energy</string>
           </property>
-          <layout class="QGridLayout" name="gridLayout_11">
-           <item row="0" column="0">
-            <layout class="QHBoxLayout" name="horizontalLayout_2">
-             <item>
-              <widget class="QCheckBox" name="sampleBox">
-               <property name="toolTip">
-                <string>show data for the same sample as in the first file only</string>
-               </property>
-               <property name="text">
-                <string>same sample</string>
-               </property>
-               <property name="checked">
-                <bool>true</bool>
-               </property>
-               <attribute name="buttonGroup">
-                <string notr="true">filterGroup</string>
-               </attribute>
-              </widget>
-             </item>
-             <item>
-              <widget class="QCheckBox" name="energyBox">
-               <property name="toolTip">
-                <string>show data for the same energy interval as in the first file only</string>
-               </property>
-               <property name="text">
-                <string>same energy interval</string>
-               </property>
-               <property name="checked">
-                <bool>true</bool>
-               </property>
-               <attribute name="buttonGroup">
-                <string notr="true">filterGroup</string>
-               </attribute>
-              </widget>
-             </item>
-             <item>
-              <widget class="QCheckBox" name="geomBox">
-               <property name="toolTip">
-                <string>show data with different geometry regarding to the first file only</string>
-               </property>
-               <property name="text">
-                <string>different geometry</string>
-               </property>
-               <property name="checked">
-                <bool>true</bool>
-               </property>
-               <attribute name="buttonGroup">
-                <string notr="true">filterGroup</string>
-               </attribute>
-              </widget>
-             </item>
-            </layout>
-           </item>
-          </layout>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">filterGroup</string>
+          </attribute>
          </widget>
         </item>
-        <item row="1" column="0" colspan="4">
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
-          <item>
-           <widget class="QRadioButton" name="holderButton">
-            <property name="text">
-             <string>angle = holder</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-            <attribute name="buttonGroup">
-             <string notr="true">treatAngleAsGroup</string>
-            </attribute>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="angleButton">
-            <property name="text">
-             <string>angle = electromagnet angle</string>
-            </property>
-            <attribute name="buttonGroup">
-             <string notr="true">treatAngleAsGroup</string>
-            </attribute>
-           </widget>
-          </item>
-         </layout>
+        <item row="6" column="2" colspan="2">
+         <widget class="QPushButton" name="sessionButton">
+          <property name="text">
+           <string>load last session</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0" colspan="2">
+         <widget class="QPushButton" name="pairButton">
+          <property name="text">
+           <string>new pair</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -432,10 +329,10 @@
         </sizepolicy>
        </property>
        <attribute name="title">
-        <string>data</string>
+        <string>Raw Data Processing</string>
        </attribute>
-       <layout class="QHBoxLayout" name="horizontalLayout_4">
-        <item>
+       <layout class="QGridLayout" name="gridLayout_4">
+        <item row="0" column="0">
          <widget class="QWidget" name="chartWidget" native="true">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -446,7 +343,7 @@
           <property name="minimumSize">
            <size>
             <width>400</width>
-            <height>0</height>
+            <height>300</height>
            </size>
           </property>
           <property name="maximumSize">
@@ -460,122 +357,144 @@
           </property>
          </widget>
         </item>
-        <item>
+        <item row="0" column="1">
          <layout class="QGridLayout" name="gridLayout">
-          <item row="6" column="0">
-           <widget class="QCheckBox" name="maxBox">
+          <item row="0" column="1">
+           <widget class="QDoubleSpinBox" name="shadowSpinBox">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Shadow current through i-zero sensor.</string>
+            </property>
+            <property name="prefix">
+             <string>Shadow current = </string>
+            </property>
+            <property name="decimals">
+             <number>1</number>
+            </property>
+            <property name="minimum">
+             <double>-100.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>100.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.100000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="13" column="1">
+           <widget class="QPushButton" name="exportButton">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
             <property name="toolTip">
-             <string>Show current maximums in order to set separator.</string>
+             <string>save chart data</string>
             </property>
             <property name="toolTipDuration">
              <number>100000</number>
             </property>
             <property name="text">
-             <string>show maximums</string>
+             <string>export all visible data</string>
             </property>
-            <property name="autoExclusive">
-             <bool>false</bool>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QSpinBox" name="bSpinBox">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="suffix">
+             <string> points</string>
+            </property>
+            <property name="prefix">
+             <string>Left </string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="0">
+           <widget class="QCheckBox" name="linearBox">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="text">
+             <string>show linearization</string>
             </property>
             <attribute name="buttonGroup">
              <string notr="true">elseGroup</string>
             </attribute>
            </widget>
           </item>
-          <item row="5" column="1">
-           <widget class="QDoubleSpinBox" name="dividerSpinBox">
+          <item row="12" column="0">
+           <widget class="QCheckBox" name="calculateBox">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>If both files have calculated integrals, calculate resulting moments.</string>
+            </property>
             <property name="toolTipDuration">
              <number>100000</number>
             </property>
-            <property name="decimals">
-             <number>1</number>
+            <property name="text">
+             <string>calculate result</string>
             </property>
-            <property name="maximum">
-             <double>1000.000000000000000</double>
-            </property>
+            <attribute name="buttonGroup">
+             <string notr="true">elseGroup</string>
+            </attribute>
            </widget>
           </item>
-          <item row="5" column="0">
-           <widget class="QCheckBox" name="dividerBox">
+          <item row="9" column="1">
+           <widget class="QLabel" name="label_24">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
             </property>
             <property name="text">
-             <string>maximum separator</string>
+             <string>stepped background</string>
             </property>
-            <attribute name="buttonGroup">
-             <string notr="true">elseGroup</string>
-            </attribute>
-           </widget>
-          </item>
-          <item row="11" column="0">
-           <widget class="QCheckBox" name="steppedBackgroundBox">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="toolTip">
-             <string>Substract stepped background.</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="text">
-             <string>stepped substraction</string>
-            </property>
-            <property name="checked">
-             <bool>false</bool>
-            </property>
-            <attribute name="buttonGroup">
-             <string notr="true">backgroundGroup</string>
-            </attribute>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QCheckBox" name="zeroBox">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="toolTip">
-             <string>beam intensity</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="statusTip">
-             <string>Normalisation signal from beamline.</string>
-            </property>
-            <property name="text">
-             <string>i. zero</string>
-            </property>
-            <property name="autoExclusive">
-             <bool>true</bool>
-            </property>
-            <attribute name="buttonGroup">
-             <string notr="true">normGroup</string>
-            </attribute>
            </widget>
           </item>
           <item row="0" column="0">
@@ -585,6 +504,12 @@
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
             </property>
             <property name="toolTip">
              <string>Bare data strait from beamline.</string>
@@ -606,8 +531,189 @@
             </attribute>
            </widget>
           </item>
+          <item row="13" column="0">
+           <widget class="QPushButton" name="swapButton">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Change current selected file.</string>
+            </property>
+            <property name="text">
+             <string>swap file</string>
+            </property>
+           </widget>
+          </item>
+          <item row="14" column="0" colspan="2">
+           <widget class="QLineEdit" name="exportLine">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Export path</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QCheckBox" name="zeroBox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>beam intensity</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="statusTip">
+             <string>Normalisation signal from beamline.</string>
+            </property>
+            <property name="text">
+             <string>i. zero</string>
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
+            </property>
+            <attribute name="buttonGroup">
+             <string notr="true">normGroup</string>
+            </attribute>
+           </widget>
+          </item>
+          <item row="8" column="1">
+           <widget class="QLabel" name="rkLabel">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Slope of the right-edge linearisation line.</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="text">
+             <string>Unknown</string>
+            </property>
+           </widget>
+          </item>
+          <item row="11" column="1">
+           <widget class="QCheckBox" name="integrateBox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Calculate integrals based on the XMSD signal. Show them in the next tab.</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="text">
+             <string>integrate this XMCD signal</string>
+            </property>
+            <attribute name="buttonGroup">
+             <string notr="true">elseGroup</string>
+            </attribute>
+           </widget>
+          </item>
+          <item row="7" column="0">
+           <widget class="QDoubleSpinBox" name="rlSpinBox">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="prefix">
+             <string>Right </string>
+            </property>
+            <property name="suffix">
+             <string> points</string>
+            </property>
+            <property name="decimals">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <double>20.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.100000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QDoubleSpinBox" name="zeroShadowSpinBox">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Shadow current through XAS sensor.</string>
+            </property>
+            <property name="prefix">
+             <string>Shadow i-zero  = </string>
+            </property>
+            <property name="decimals">
+             <number>1</number>
+            </property>
+            <property name="minimum">
+             <double>-100.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>100.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.100000000000000</double>
+            </property>
+           </widget>
+          </item>
           <item row="9" column="0">
            <widget class="QDoubleSpinBox" name="filletSpinBox">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
             <property name="toolTipDuration">
              <number>100000</number>
             </property>
@@ -628,16 +734,50 @@
             </property>
            </widget>
           </item>
-          <item row="9" column="1">
-           <widget class="QLabel" name="label_24">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
+          <item row="2" column="0">
+           <widget class="QCheckBox" name="normBox">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>(raw data)/(i.zero)</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
             </property>
             <property name="text">
-             <string>steps smoothing</string>
+             <string>normalization</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
+            </property>
+            <attribute name="buttonGroup">
+             <string notr="true">normGroup</string>
+            </attribute>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QSpinBox" name="tSpinBox">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="suffix">
+             <string> points</string>
+            </property>
+            <property name="prefix">
+             <string>Right </string>
             </property>
            </widget>
           </item>
@@ -648,6 +788,12 @@
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
             </property>
             <property name="toolTip">
              <string>Substract linear background.</string>
@@ -663,48 +809,97 @@
             </attribute>
            </widget>
           </item>
-          <item row="15" column="0">
-           <widget class="QCheckBox" name="levelBox">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
+          <item row="8" column="0">
+           <widget class="QDoubleSpinBox" name="llSpinBox">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
             </property>
-            <property name="text">
-             <string>show calibration level</string>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="prefix">
+             <string>Left </string>
+            </property>
+            <property name="suffix">
+             <string> points</string>
+            </property>
+            <property name="decimals">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <double>20.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.100000000000000</double>
             </property>
            </widget>
           </item>
-          <item row="14" column="0">
-           <widget class="QCheckBox" name="integrateBox">
+          <item row="10" column="1">
+           <widget class="QCheckBox" name="steppedBackgroundBox">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
             <property name="toolTip">
-             <string>Calculate integrals based on the XMSD signal. Show them in the next tab.</string>
+             <string>Substract stepped background.</string>
             </property>
             <property name="toolTipDuration">
              <number>100000</number>
             </property>
             <property name="text">
-             <string>integrate this XMCD signal</string>
+             <string>stepped substraction</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
             </property>
             <attribute name="buttonGroup">
-             <string notr="true">elseGroup</string>
+             <string notr="true">backgroundGroup</string>
             </attribute>
            </widget>
           </item>
-          <item row="13" column="0">
+          <item row="7" column="1">
+           <widget class="QLabel" name="lkLabel">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Slope of the left-edge linearisation line.</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="text">
+             <string>Unknown</string>
+            </property>
+           </widget>
+          </item>
+          <item row="11" column="0">
            <widget class="QCheckBox" name="diffBox">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
             </property>
             <property name="toolTip">
              <string>Show XMSD signal in the next tab.</string>
@@ -729,88 +924,14 @@
             </attribute>
            </widget>
           </item>
-          <item row="16" column="0">
-           <widget class="QCheckBox" name="calculateBox">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="toolTip">
-             <string>If both files have calculated integrals, calculate resulting moments.</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="text">
-             <string>calculate result</string>
-            </property>
-            <attribute name="buttonGroup">
-             <string notr="true">elseGroup</string>
-            </attribute>
-           </widget>
-          </item>
-          <item row="12" column="0">
-           <widget class="QCheckBox" name="sumBox">
-            <property name="text">
-             <string>Half-sum normalization</string>
-            </property>
-           </widget>
-          </item>
-          <item row="17" column="1">
-           <widget class="QPushButton" name="exportButton">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="toolTip">
-             <string>save chart data</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="text">
-             <string>export all visible data</string>
-            </property>
-           </widget>
-          </item>
-          <item row="17" column="0">
-           <widget class="QPushButton" name="swapButton">
-            <property name="toolTip">
-             <string>Change current selected file.</string>
-            </property>
-            <property name="text">
-             <string>swap file</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QCheckBox" name="normBox">
-            <property name="toolTip">
-             <string>(raw data)/(i.zero)</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="text">
-             <string>normalization</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-            <property name="autoExclusive">
-             <bool>true</bool>
-            </property>
-            <attribute name="buttonGroup">
-             <string notr="true">normGroup</string>
-            </attribute>
-           </widget>
-          </item>
-          <item row="3" column="1">
+          <item row="2" column="1">
            <widget class="QCheckBox" name="mulBox">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
             <property name="toolTip">
              <string>Multiply right polarization signal by constant in orger to equalize left edge.</string>
             </property>
@@ -828,324 +949,45 @@
             </attribute>
            </widget>
           </item>
-          <item row="1" column="1">
-           <widget class="QDoubleSpinBox" name="zeroShadowSpinBox">
-            <property name="toolTip">
-             <string>Shadow current through XAS sensor.</string>
-            </property>
-            <property name="decimals">
-             <number>1</number>
-            </property>
-            <property name="minimum">
-             <double>-100.000000000000000</double>
-            </property>
-            <property name="maximum">
-             <double>100.000000000000000</double>
-            </property>
-            <property name="singleStep">
-             <double>0.100000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QDoubleSpinBox" name="shadowSpinBox">
-            <property name="toolTip">
-             <string>Shadow current through i-zero sensor.</string>
-            </property>
-            <property name="decimals">
-             <number>1</number>
-            </property>
-            <property name="minimum">
-             <double>-100.000000000000000</double>
-            </property>
-            <property name="maximum">
-             <double>100.000000000000000</double>
-            </property>
-            <property name="singleStep">
-             <double>0.100000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="7" column="0" colspan="2">
-           <widget class="QGroupBox" name="groupBox_3">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
+          <item row="3" column="0" colspan="2">
+           <widget class="QSpinBox" name="smoothSpinBox">
             <property name="minimumSize">
              <size>
               <width>0</width>
-              <height>0</height>
+              <height>15</height>
              </size>
             </property>
-            <property name="toolTip">
-             <string>Define left/right side cropping intervals [eV].</string>
+            <property name="prefix">
+             <string>Smooth points count = </string>
             </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
+            <property name="minimum">
+             <number>1</number>
             </property>
-            <property name="title">
-             <string>crop</string>
+            <property name="maximum">
+             <number>10</number>
             </property>
-            <layout class="QGridLayout" name="gridLayout_9">
-             <item row="0" column="0">
-              <widget class="QDoubleSpinBox" name="bSpinBox">
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>15</height>
-                </size>
-               </property>
-               <property name="toolTipDuration">
-                <number>100000</number>
-               </property>
-               <property name="maximum">
-                <double>20.000000000000000</double>
-               </property>
-               <property name="singleStep">
-                <double>0.100000000000000</double>
-               </property>
-               <property name="value">
-                <double>0.000000000000000</double>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QLabel" name="label">
-               <property name="toolTipDuration">
-                <number>100000</number>
-               </property>
-               <property name="text">
-                <string>l</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QDoubleSpinBox" name="tSpinBox">
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>15</height>
-                </size>
-               </property>
-               <property name="toolTipDuration">
-                <number>100000</number>
-               </property>
-               <property name="maximum">
-                <double>20.000000000000000</double>
-               </property>
-               <property name="singleStep">
-                <double>0.100000000000000</double>
-               </property>
-               <property name="value">
-                <double>0.000000000000000</double>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QLabel" name="label_2">
-               <property name="toolTipDuration">
-                <number>100000</number>
-               </property>
-               <property name="text">
-                <string>r</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
            </widget>
           </item>
-          <item row="8" column="0" colspan="2">
-           <widget class="QGroupBox" name="linGroupBox">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
+          <item row="5" column="0" colspan="2">
+           <widget class="QLabel" name="label">
             <property name="minimumSize">
              <size>
               <width>0</width>
-              <height>0</height>
+              <height>15</height>
              </size>
             </property>
-            <property name="toolTip">
-             <string>Define linearization intervals[eV].</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="title">
+            <property name="text">
              <string>linearization intervals</string>
             </property>
-            <layout class="QGridLayout" name="gridLayout_4">
-             <item row="0" column="0">
-              <widget class="QDoubleSpinBox" name="llSpinBox">
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>15</height>
-                </size>
-               </property>
-               <property name="toolTipDuration">
-                <number>100000</number>
-               </property>
-               <property name="decimals">
-                <number>1</number>
-               </property>
-               <property name="maximum">
-                <double>20.000000000000000</double>
-               </property>
-               <property name="singleStep">
-                <double>0.100000000000000</double>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="2">
-              <widget class="QLabel" name="lkLabel">
-               <property name="toolTip">
-                <string>Slope of the left-edge linearisation line.</string>
-               </property>
-               <property name="toolTipDuration">
-                <number>100000</number>
-               </property>
-               <property name="text">
-                <string>Unknown</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="3" rowspan="2">
-              <widget class="QCheckBox" name="linearBox">
-               <property name="toolTipDuration">
-                <number>100000</number>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-               <attribute name="buttonGroup">
-                <string notr="true">elseGroup</string>
-               </attribute>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QDoubleSpinBox" name="rlSpinBox">
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>15</height>
-                </size>
-               </property>
-               <property name="toolTipDuration">
-                <number>100000</number>
-               </property>
-               <property name="decimals">
-                <number>1</number>
-               </property>
-               <property name="maximum">
-                <double>20.000000000000000</double>
-               </property>
-               <property name="singleStep">
-                <double>0.100000000000000</double>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QLabel" name="label_5">
-               <property name="toolTipDuration">
-                <number>100000</number>
-               </property>
-               <property name="text">
-                <string>r</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="2">
-              <widget class="QLabel" name="rkLabel">
-               <property name="toolTip">
-                <string>Slope of the right-edge linearisation line.</string>
-               </property>
-               <property name="toolTipDuration">
-                <number>100000</number>
-               </property>
-               <property name="text">
-                <string>Unknown</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QLabel" name="label_4">
-               <property name="toolTipDuration">
-                <number>100000</number>
-               </property>
-               <property name="text">
-                <string>l</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item row="18" column="0" colspan="2">
-           <widget class="QLineEdit" name="exportLine">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="toolTip">
-             <string>Export path</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
             </property>
            </widget>
           </item>
          </layout>
         </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tab_3">
-       <attribute name="title">
-        <string>result</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_5">
-        <item row="1" column="1">
-         <widget class="QDoubleSpinBox" name="energyShiftSpinBox">
-          <property name="suffix">
-           <string>[eV]</string>
-          </property>
-          <property name="decimals">
-           <number>4</number>
-          </property>
-          <property name="minimum">
-           <double>-2.000000000000000</double>
-          </property>
-          <property name="maximum">
-           <double>2.000000000000000</double>
-          </property>
-          <property name="singleStep">
-           <double>0.010000000000000</double>
-          </property>
-          <property name="value">
-           <double>0.000000000000000</double>
-          </property>
-         </widget>
-        </item>
         <item row="1" column="0">
-         <widget class="QLabel" name="label_18">
-          <property name="text">
-           <string>energy shift</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0">
-         <widget class="QGroupBox" name="groupBox_6">
+         <widget class="QGroupBox" name="groupBox_5">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
             <horstretch>0</horstretch>
@@ -1159,22 +1001,44 @@
            </size>
           </property>
           <property name="toolTip">
-           <string>Results, gained from the second file.</string>
+           <string>Results, gained from the first file.</string>
           </property>
           <property name="title">
-           <string>integrals 2</string>
+           <string>file 1</string>
           </property>
-          <layout class="QGridLayout" name="gridLayout_8">
-           <item row="1" column="1">
-            <widget class="QLabel" name="l32Label">
+          <layout class="QGridLayout" name="gridLayout_12">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_8">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>40</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>Integral of (normalized r.p. signal + normalized l.p. signal)*dx from left chopped edge to right for the first file.</string>
+             </property>
+             <property name="text">
+              <string>Al3 + Al2 =</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLabel" name="sum1Label_2">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
              <property name="toolTip">
-              <string>Integral of (XMCD)*dx from left chopped edge to local minimum between maximums for the second file.</string>
+              <string>Integral of (normalized r.p. signal + normalized l.p. signal)*dx from left chopped edge to right for the first file.</string>
              </property>
              <property name="text">
               <string>Unknown</string>
@@ -1182,89 +1046,88 @@
             </widget>
            </item>
            <item row="1" column="0">
-            <widget class="QLabel" name="label_20">
+            <widget class="QLabel" name="label_14">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
+             <property name="minimumSize">
+              <size>
+               <width>40</width>
+               <height>0</height>
+              </size>
+             </property>
              <property name="toolTip">
-              <string>Integral of (XMCD)*dx from left chopped edge to local minimum between maximums for the second file.</string>
+              <string>Integral of (XMCD)*dx from left chopped edge to local minimum between maximums for the first file.</string>
              </property>
              <property name="text">
               <string>ΔAl3 = </string>
              </property>
             </widget>
            </item>
-           <item row="0" column="1">
-            <widget class="QLabel" name="sum2Label">
+           <item row="1" column="1">
+            <widget class="QLabel" name="l31Label_2">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
              <property name="toolTip">
-              <string>Integral of (normalized r.p. signal + normalized l.p. signal)*dx from left chopped edge to right for the second file.</string>
+              <string>Integral of (XMCD)*dx from left chopped edge to local minimum between maximums for the first file.</string>
+             </property>
+             <property name="toolTipDuration">
+              <number>100000</number>
              </property>
              <property name="text">
               <string>Unknown</string>
              </property>
             </widget>
            </item>
-           <item row="2" column="0" rowspan="2">
-            <widget class="QLabel" name="label_21">
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_34">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
+             <property name="minimumSize">
+              <size>
+               <width>40</width>
+               <height>0</height>
+              </size>
+             </property>
              <property name="toolTip">
-              <string>Integral of (XMCD)*dx from local minimum between maximums to the chopped right edge for the second file.</string>
+              <string>Integral of (XMCD)*dx from local minimum between maximums to the chopped right edge for the first file.</string>
              </property>
              <property name="text">
               <string>ΔAl2 = </string>
              </property>
             </widget>
            </item>
-           <item row="2" column="1" rowspan="2">
-            <widget class="QLabel" name="l22Label">
+           <item row="2" column="1">
+            <widget class="QLabel" name="l21Label_2">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
              <property name="toolTip">
-              <string>Integral of (XMCD)*dx from local minimum between maximums to the chopped right edge for the second file.</string>
+              <string>Integral of (XMCD)*dx from local minimum between maximums to the chopped right edge for the first file.</string>
              </property>
              <property name="text">
               <string>Unknown</string>
              </property>
             </widget>
            </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_15">
+           <item row="1" column="5" colspan="2">
+            <widget class="QLabel" name="msEff1Label_2">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="toolTip">
-              <string>Integral of (normalized r.p. signal + normalized l.p. signal)*dx from left chopped edge to right for the second file.</string>
-             </property>
-             <property name="text">
-              <string>Al3 + Al2 =</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="4" rowspan="2" colspan="2">
-            <widget class="QLabel" name="msEff2Label">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
@@ -1277,20 +1140,10 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="5">
-            <widget class="QDoubleSpinBox" name="phi2OffsetBox">
-             <property name="maximum">
-              <double>90.000000000000000</double>
-             </property>
-             <property name="singleStep">
-              <double>0.100000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="4" colspan="2">
-            <widget class="QLabel" name="mOrb2Label">
+           <item row="2" column="5" colspan="2">
+            <widget class="QLabel" name="mOrb1Label_2">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
@@ -1303,10 +1156,10 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="3">
-            <widget class="QLabel" name="Label_10">
+           <item row="1" column="4">
+            <widget class="QLabel" name="Label_12">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
@@ -1319,10 +1172,10 @@
              </property>
             </widget>
            </item>
-           <item row="3" column="3">
-            <widget class="QLabel" name="label_22">
+           <item row="2" column="4">
+            <widget class="QLabel" name="label_35">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
@@ -1335,42 +1188,36 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="2">
-            <widget class="QCheckBox" name="angle2Box">
+           <item row="1" column="2" colspan="2">
+            <widget class="QCheckBox" name="angle1Box_2">
              <property name="toolTip">
               <string>Use this file as start point to calculate second M. angle.</string>
              </property>
              <property name="text">
-              <string>assume M2||SR</string>
+              <string>assume M1||SR</string>
              </property>
-             <attribute name="buttonGroup">
-              <string notr="true">angleGroup</string>
-             </attribute>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
             </widget>
            </item>
-           <item row="0" column="3">
-            <widget class="QLabel" name="label_27">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
+           <item row="0" column="4">
+            <widget class="QLabel" name="label_36">
              <property name="toolTip">
               <string>Magnetisation angle relative to normal axis gained from calculations, assuming intensity is in proportion to cos(M. angle).</string>
              </property>
              <property name="text">
-              <string>φ2  =</string>
+              <string>φ1 =</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
              </property>
             </widget>
            </item>
-           <item row="0" column="4">
-            <widget class="QLabel" name="angle1CalcLable">
+           <item row="0" column="5">
+            <widget class="QLabel" name="angle2CalcLable_2">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
@@ -1383,10 +1230,20 @@
              </property>
             </widget>
            </item>
+           <item row="0" column="2" colspan="2">
+            <widget class="QDoubleSpinBox" name="phi1OffsetBox_2">
+             <property name="maximum">
+              <double>90.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.100000000000000</double>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
         </item>
-        <item row="3" column="1" rowspan="2">
+        <item row="1" column="1" rowspan="2">
          <widget class="QGroupBox" name="groupBox">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
@@ -1406,9 +1263,9 @@
           <property name="title">
            <string>results</string>
           </property>
-          <layout class="QGridLayout" name="gridLayout_6">
+          <layout class="QGridLayout" name="gridLayout_13">
            <item row="4" column="4">
-            <widget class="QLabel" name="mOrbOLabel">
+            <widget class="QLabel" name="mOrbOLabel_2">
              <property name="toolTip">
               <string>Normal component of orbital moment</string>
              </property>
@@ -1418,7 +1275,7 @@
             </widget>
            </item>
            <item row="5" column="0">
-            <widget class="QLabel" name="label_11">
+            <widget class="QLabel" name="label_37">
              <property name="toolTip">
               <string/>
              </property>
@@ -1428,7 +1285,7 @@
             </widget>
            </item>
            <item row="5" column="1">
-            <widget class="QLabel" name="mTLabel">
+            <widget class="QLabel" name="mTLabel_2">
              <property name="toolTip">
               <string/>
              </property>
@@ -1438,7 +1295,7 @@
             </widget>
            </item>
            <item row="5" column="2" colspan="2">
-            <widget class="QLabel" name="label_13">
+            <widget class="QLabel" name="label_38">
              <property name="toolTip">
               <string>Paralel component of orbital moment</string>
              </property>
@@ -1448,7 +1305,7 @@
             </widget>
            </item>
            <item row="5" column="4">
-            <widget class="QLabel" name="mOrbPLabel">
+            <widget class="QLabel" name="mOrbPLabel_2">
              <property name="toolTip">
               <string>Paralel component of orbital moment</string>
              </property>
@@ -1458,7 +1315,7 @@
             </widget>
            </item>
            <item row="2" column="0">
-            <widget class="QLabel" name="label_26">
+            <widget class="QLabel" name="label_39">
              <property name="toolTip">
               <string>Unit selection.</string>
              </property>
@@ -1468,7 +1325,7 @@
             </widget>
            </item>
            <item row="2" column="1">
-            <widget class="QComboBox" name="unitBox">
+            <widget class="QComboBox" name="unitBox_2">
              <property name="toolTip">
               <string>Unit selection.</string>
              </property>
@@ -1500,28 +1357,8 @@
              </item>
             </widget>
            </item>
-           <item row="6" column="2">
-            <widget class="QLabel" name="label_28">
-             <property name="toolTip">
-              <string>Orbital moment, calculatet from components.</string>
-             </property>
-             <property name="text">
-              <string>mOrb = </string>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="4">
-            <widget class="QLabel" name="mOrbLabel">
-             <property name="toolTip">
-              <string>Orbital moment, calculatet from components.</string>
-             </property>
-             <property name="text">
-              <string>Unknown</string>
-             </property>
-            </widget>
-           </item>
            <item row="0" column="0">
-            <widget class="QLabel" name="label_23">
+            <widget class="QLabel" name="label_41">
              <property name="toolTip">
               <string>Beamline polarization constant.</string>
              </property>
@@ -1531,7 +1368,7 @@
             </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QDoubleSpinBox" name="pSpinBox">
+            <widget class="QDoubleSpinBox" name="pSpinBox_2">
              <property name="toolTip">
               <string>Beamline polarization constant.</string>
              </property>
@@ -1547,7 +1384,7 @@
             </widget>
            </item>
            <item row="1" column="0">
-            <widget class="QLabel" name="label_19">
+            <widget class="QLabel" name="label_42">
              <property name="toolTip">
               <string>Energy level population.</string>
              </property>
@@ -1557,7 +1394,7 @@
             </widget>
            </item>
            <item row="1" column="1">
-            <widget class="QDoubleSpinBox" name="nSpinBox">
+            <widget class="QDoubleSpinBox" name="nSpinBox_2">
              <property name="toolTip">
               <string>Energy level population.</string>
              </property>
@@ -1570,7 +1407,7 @@
             </widget>
            </item>
            <item row="4" column="0">
-            <widget class="QLabel" name="label_10">
+            <widget class="QLabel" name="label_43">
              <property name="toolTip">
               <string>Spin moment value</string>
              </property>
@@ -1580,7 +1417,7 @@
             </widget>
            </item>
            <item row="4" column="1">
-            <widget class="QLabel" name="msLabel">
+            <widget class="QLabel" name="msLabel_2">
              <property name="toolTip">
               <string>Spin moment value</string>
              </property>
@@ -1590,7 +1427,7 @@
             </widget>
            </item>
            <item row="4" column="2" colspan="2">
-            <widget class="QLabel" name="label_12">
+            <widget class="QLabel" name="label_44">
              <property name="toolTip">
               <string>Normal component of orbital moment</string>
              </property>
@@ -1599,11 +1436,31 @@
              </property>
             </widget>
            </item>
+           <item row="2" column="3">
+            <widget class="QLabel" name="label_40">
+             <property name="toolTip">
+              <string>Orbital moment, calculatet from components.</string>
+             </property>
+             <property name="text">
+              <string>mOrb = </string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="4">
+            <widget class="QLabel" name="mOrbLabel_2">
+             <property name="toolTip">
+              <string>Orbital moment, calculatet from components.</string>
+             </property>
+             <property name="text">
+              <string>Unknown</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
         </item>
-        <item row="3" column="0">
-         <widget class="QGroupBox" name="groupBox_5">
+        <item row="2" column="0">
+         <widget class="QGroupBox" name="groupBox_6">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
             <horstretch>0</horstretch>
@@ -1617,44 +1474,22 @@
            </size>
           </property>
           <property name="toolTip">
-           <string>Results, gained from the first file.</string>
+           <string>Results, gained from the second file.</string>
           </property>
           <property name="title">
-           <string>integrals 1</string>
+           <string>file 2</string>
           </property>
-          <layout class="QGridLayout" name="gridLayout_7">
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_3">
+          <layout class="QGridLayout" name="gridLayout_10">
+           <item row="1" column="1">
+            <widget class="QLabel" name="l32Label_2">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>40</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="toolTip">
-              <string>Integral of (normalized r.p. signal + normalized l.p. signal)*dx from left chopped edge to right for the first file.</string>
-             </property>
-             <property name="text">
-              <string>Al3 + Al2 =</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QLabel" name="sum1Label">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
              <property name="toolTip">
-              <string>Integral of (normalized r.p. signal + normalized l.p. signal)*dx from left chopped edge to right for the first file.</string>
+              <string>Integral of (XMCD)*dx from left chopped edge to local minimum between maximums for the second file.</string>
              </property>
              <property name="text">
               <string>Unknown</string>
@@ -1662,88 +1497,89 @@
             </widget>
            </item>
            <item row="1" column="0">
-            <widget class="QLabel" name="label_6">
+            <widget class="QLabel" name="label_25">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
-             <property name="minimumSize">
-              <size>
-               <width>40</width>
-               <height>0</height>
-              </size>
-             </property>
              <property name="toolTip">
-              <string>Integral of (XMCD)*dx from left chopped edge to local minimum between maximums for the first file.</string>
+              <string>Integral of (XMCD)*dx from left chopped edge to local minimum between maximums for the second file.</string>
              </property>
              <property name="text">
               <string>ΔAl3 = </string>
              </property>
             </widget>
            </item>
-           <item row="1" column="1">
-            <widget class="QLabel" name="l31Label">
+           <item row="0" column="1">
+            <widget class="QLabel" name="sum2Label_2">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
              <property name="toolTip">
-              <string>Integral of (XMCD)*dx from left chopped edge to local minimum between maximums for the first file.</string>
-             </property>
-             <property name="toolTipDuration">
-              <number>100000</number>
+              <string>Integral of (normalized r.p. signal + normalized l.p. signal)*dx from left chopped edge to right for the second file.</string>
              </property>
              <property name="text">
               <string>Unknown</string>
              </property>
             </widget>
            </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="label_7">
+           <item row="2" column="0" rowspan="2">
+            <widget class="QLabel" name="label_29">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
-             <property name="minimumSize">
-              <size>
-               <width>40</width>
-               <height>0</height>
-              </size>
-             </property>
              <property name="toolTip">
-              <string>Integral of (XMCD)*dx from local minimum between maximums to the chopped right edge for the first file.</string>
+              <string>Integral of (XMCD)*dx from local minimum between maximums to the chopped right edge for the second file.</string>
              </property>
              <property name="text">
               <string>ΔAl2 = </string>
              </property>
             </widget>
            </item>
-           <item row="2" column="1">
-            <widget class="QLabel" name="l21Label">
+           <item row="2" column="1" rowspan="2">
+            <widget class="QLabel" name="l22Label_2">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
              <property name="toolTip">
-              <string>Integral of (XMCD)*dx from local minimum between maximums to the chopped right edge for the first file.</string>
+              <string>Integral of (XMCD)*dx from local minimum between maximums to the chopped right edge for the second file.</string>
              </property>
              <property name="text">
               <string>Unknown</string>
              </property>
             </widget>
            </item>
-           <item row="1" column="5" colspan="2">
-            <widget class="QLabel" name="msEff1Label">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_31">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="toolTip">
+              <string>Integral of (normalized r.p. signal + normalized l.p. signal)*dx from left chopped edge to right for the second file.</string>
+             </property>
+             <property name="text">
+              <string>Al3 + Al2 =</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="4" rowspan="2" colspan="2">
+            <widget class="QLabel" name="msEff2Label_2">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
@@ -1756,10 +1592,10 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="5" colspan="2">
-            <widget class="QLabel" name="mOrb1Label">
+           <item row="3" column="4" colspan="2">
+            <widget class="QLabel" name="mOrb2Label_2">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
@@ -1772,10 +1608,10 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="4">
-            <widget class="QLabel" name="Label_9">
+           <item row="1" column="3">
+            <widget class="QLabel" name="Label_11">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
@@ -1788,10 +1624,10 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="4">
-            <widget class="QLabel" name="label_9">
+           <item row="3" column="3">
+            <widget class="QLabel" name="label_32">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
@@ -1804,49 +1640,39 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="2" colspan="2">
-            <widget class="QCheckBox" name="angle1Box">
+           <item row="1" column="2">
+            <widget class="QCheckBox" name="angle2Box_2">
              <property name="toolTip">
               <string>Use this file as start point to calculate second M. angle.</string>
              </property>
              <property name="text">
-              <string>assume M1||SR</string>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
-             </property>
-             <attribute name="buttonGroup">
-              <string notr="true">angleGroup</string>
-             </attribute>
-            </widget>
-           </item>
-           <item row="0" column="6">
-            <widget class="QDoubleSpinBox" name="phi1OffsetBox">
-             <property name="maximum">
-              <double>90.000000000000000</double>
-             </property>
-             <property name="singleStep">
-              <double>0.100000000000000</double>
+              <string>assume M2||SR</string>
              </property>
             </widget>
            </item>
-           <item row="0" column="4">
-            <widget class="QLabel" name="label_30">
+           <item row="0" column="3">
+            <widget class="QLabel" name="label_33">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="toolTip">
               <string>Magnetisation angle relative to normal axis gained from calculations, assuming intensity is in proportion to cos(M. angle).</string>
              </property>
              <property name="text">
-              <string>φ1 =</string>
+              <string>φ2  =</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
              </property>
             </widget>
            </item>
-           <item row="0" column="5">
-            <widget class="QLabel" name="angle2CalcLable">
+           <item row="0" column="4">
+            <widget class="QLabel" name="angle1CalcLable_2">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
@@ -1859,11 +1685,60 @@
              </property>
             </widget>
            </item>
+           <item row="0" column="2">
+            <widget class="QDoubleSpinBox" name="phi2OffsetBox_2">
+             <property name="maximum">
+              <double>90.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.100000000000000</double>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
         </item>
-        <item row="0" column="0" colspan="2">
-         <widget class="QWidget" name="diffWidget" native="true">
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_3">
+       <attribute name="title">
+        <string>Summary</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_5">
+        <item row="1" column="2">
+         <widget class="QDoubleSpinBox" name="energyShiftSpinBox">
+          <property name="suffix">
+           <string>[eV]</string>
+          </property>
+          <property name="decimals">
+           <number>4</number>
+          </property>
+          <property name="minimum">
+           <double>-2.000000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>2.000000000000000</double>
+          </property>
+          <property name="singleStep">
+           <double>0.010000000000000</double>
+          </property>
+          <property name="value">
+           <double>0.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLabel" name="label_18">
+          <property name="text">
+           <string>energy shift</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1" colspan="2">
+         <widget class="QWidget" name="summaryChartWidget" native="true">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
             <horstretch>0</horstretch>
@@ -1884,6 +1759,19 @@
           </property>
          </widget>
         </item>
+        <item row="1" column="3">
+         <widget class="QPushButton" name="exportSummaryButton">
+          <property name="text">
+           <string>export</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QComboBox" name="fileComboBox"/>
+        </item>
+        <item row="1" column="4">
+         <widget class="QLineEdit" name="summaryPathLineEdit"/>
+        </item>
        </layout>
       </widget>
      </widget>
@@ -1895,13 +1783,13 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="angleGroup"/>
-  <buttongroup name="backgroundGroup">
+  <buttongroup name="treatAngleAsGroup"/>
+  <buttongroup name="filterGroup">
    <property name="exclusive">
     <bool>false</bool>
    </property>
   </buttongroup>
-  <buttongroup name="filterGroup">
+  <buttongroup name="backgroundGroup">
    <property name="exclusive">
     <bool>false</bool>
    </property>
@@ -1916,10 +1804,15 @@
     <bool>true</bool>
    </property>
   </buttongroup>
-  <buttongroup name="treatAngleAsGroup"/>
+  <buttongroup name="angleGroup"/>
   <buttongroup name="fileGroup">
    <property name="exclusive">
     <bool>true</bool>
+   </property>
+  </buttongroup>
+  <buttongroup name="forgetGroup">
+   <property name="exclusive">
+    <bool>false</bool>
    </property>
   </buttongroup>
  </buttongroups>

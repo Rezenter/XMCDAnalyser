@@ -15,12 +15,17 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
         extfsm.cpp \
-    fileloader.cpp
+    fileloader.cpp \
+    calculator.cpp \
+    pairwidget.cpp
 
 HEADERS  += mainwindow.h \
         extfsm.h \
-    fileloader.h
+    fileloader.h \
+    calculator.h \
+    pairwidget.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    pairwidget.ui
 
 RC_FILE = XMCDAnalyser.rc

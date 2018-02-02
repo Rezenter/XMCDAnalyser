@@ -12,19 +12,18 @@ class FileLoader
 {
 public:
     FileLoader(QString);
+    FileLoader();
     ~FileLoader();
     QVector<QPair<qreal, QPair<qreal, qreal>>> getData();
     QPair<qreal, qreal> getRBackground();
     QPair<qreal, qreal> getLBackground();
     QVector<QPair<qreal, QPair<qreal, qreal>>> getBareData();
-    void setLimits(double, double, double);
+    void setLimits(int, int, double);
     QPair<int, int> getLimits();
     QVector<QPair<qreal, QPair<qreal, qreal>>> getZero();
 
 private:
     double prevShift = 0;
-    QFile *file;
-    QTextStream *stream;
     double l = 0;
     double r = 0;
     int li = 0;

@@ -2,13 +2,13 @@
 #include <QDebug>
 
 FileLoader::FileLoader(QString path){
-    file = new QFile(path);
-    file->open(QIODevice::ReadOnly);
-    stream = new QTextStream(file);
+    QFile file(path);
+    file.open(QIODevice::ReadOnly);
+    QTextStream stream(&file);
     bool flag = false;
     if(path.endsWith("txt", Qt::CaseInsensitive)){
-        while(!stream->atEnd()) {
-            QString line = stream->readLine();
+        while(!stream.atEnd()) {
+            QString line = stream.readLine();
             if(line.length() > 0 && flag){
                 QStringList args = line.split("\t");
                 if(args.length() < 10){
@@ -29,13 +29,15 @@ FileLoader::FileLoader(QString path){
         }
         ri = data.length()-1;
     }
-    file->close();
+    file.close();
+}
+
+FileLoader::FileLoader(){
+
 }
 
 FileLoader::~FileLoader(){
-    delete stream;
-    file->close();
-    delete file;
+
 }
 
 QVector<QPair<qreal, QPair<qreal, qreal>>> FileLoader::getData(){
@@ -58,27 +60,10 @@ QPair<int, int> FileLoader::getLimits(){
     return QPair<int, int>(li, ri);
 }
 
-void FileLoader::setLimits(double l, double r, double shift){
+void FileLoader::setLimits(int nl, int nr, double shift){
     prevShift = shift;
-    this->r = r;
-    this->l = l;
-    QPair<qreal, QPair<qreal, qreal>> pair;
-    bool flagl = true;
-    bool flagr = true;
-    int i = 0;
-    foreach(pair, data){
-        if(flagl && pair.first - data.at(0).first >= l){
-            flagl = false;
-            li = i;
-        }else{
-            if(flagr && data.at(data.length() - 1).first - pair.first <= r){
-                flagr = false;
-                ri = i;
-                break;
-            }
-        }
-        i++;
-    }
+    li = nl;
+    ri = data.size() - nr - 1;
 }
 
 QVector<QPair<qreal, QPair<qreal, qreal>>> FileLoader::getZero(){

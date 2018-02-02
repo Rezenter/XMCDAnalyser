@@ -26,11 +26,12 @@ signals:
     void integrals(const qreal summ, const qreal dl2, const qreal dl3, const qreal mSE, const qreal mO, const int file);
     void moments(const qreal mOP, const qreal mOO, const qreal ms, const qreal mt);
     void linCoeffs(const QPointF left, const QPointF right, const int file);
+    void compleated();
 
 public slots:
     void setLoader(const QString loaderPath, const int file);
     void setLimits(const qreal left, const qreal right, const int file);
-    void setEnergyShift(const qreal shift);
+    void setEnergyShift(const qreal shift, const int file);
     void setShadowCurrent(const qreal signal, const qreal iZero, const int file);
     void setSmooth(const int count, const int file);
     void setDiff(const bool needed, const int file);
@@ -51,7 +52,7 @@ private:
     QVector<QPair<qreal, QPointF>> finalData[2];
     QVector<QPointF> diff[2];
     QVector<QPointF> finalDiff[2];
-    FileLoader *loader[2];
+    FileLoader loader[2];
     QString path[2] = {};
     bool loaderChanged[2] = {false};
     bool loaded[2] = {false};
@@ -90,8 +91,8 @@ private:
     QPointF tmpPhi = {QPointF(0.0 , 0.0)};
     QPointF theta = {QPointF(0.0 , 0.0)};
     QPointF tmpTheta = {QPointF(0.0 , 0.0)};
-    qreal energyShift = 0.0;
-    qreal tmpEnergyShift = 0.0;
+    qreal energyShift[2] = {0.0};
+    qreal tmpEnergyShift[2] = {0.0};
     qreal normalizationCoeff[2][3] = {}; //[file][a, b, c]
     qreal tmpNormalizationCoeff[2][3] = {};
     qreal steppedCoeff[2] = {10.0};
