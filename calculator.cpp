@@ -1,9 +1,7 @@
 #include "calculator.h"
 
 Calculator::Calculator(QObject *parent) : QObject(parent){
-    for(int file = 0; file < 2; file++){
-        loader[file] = new FileLoader(path[file]);
-    }
+
 }
 
 /*to-do:
@@ -12,10 +10,6 @@ Calculator::Calculator(QObject *parent) : QObject(parent){
 */
 
 Calculator::~Calculator(){
-
-    for(int i = 0; i < 2; i++){
-        delete loader[i];
-    }
     emit dead();
 }
 
@@ -43,11 +37,10 @@ void Calculator::setLimits(const qreal left, const qreal right, const int file){
     }
 }
 
-void Calculator::setEnergyShift(const qreal shift){
-    if(shift != tmpEnergyShift){
-        tmpEnergyShift = shift;
-        loaderChanged[0] = true;
-        loaderChanged[1] = true;
+void Calculator::setEnergyShift(const qreal shift, const int file){
+    if(shift != tmpEnergyShift[file]){
+        tmpEnergyShift[file] = shift;
+        loaderChanged[file] = true;
         reset();
     }
 }
@@ -66,13 +59,13 @@ void Calculator::setShadowCurrent(const qreal signal, const qreal iZero, const i
 
 void Calculator::load(const int file){
     if(file == 0 || file == 1){
-        loader[file]->setLimits(floor(limits[file].x()), floor(limits[file].y()), energyShift*(file - 0.5));
-        bare[file].resize(loader[file]->getBareData().size());
+        loader[file].setLimits(floor(limits[file].x()), floor(limits[file].y()), energyShift[file]);
+        bare[file].resize(loader[file].getBareData().size());
         zero[file].resize(bare[file].size());
         for(int i = 0; i <  bare[file].size(); i++){
-            QPair<qreal, QPair<qreal, qreal>> tmp = loader[file]->getBareData().at(i);
+            QPair<qreal, QPair<qreal, qreal>> tmp = loader[file].getBareData().at(i);
             bare[file][i] = QPair< qreal, QPointF>(tmp.first, QPointF(tmp.second.first, tmp.second.second));
-            tmp = loader[file]->getZero().at(i);
+            tmp = loader[file].getZero().at(i);
             zero[file][i] = QPair< qreal, QPointF>(tmp.first, QPointF(tmp.second.first, tmp.second.second));
         }
         emit rawData(bare[file], file);
@@ -91,7 +84,7 @@ void Calculator::calcData(const int file){
             for(int i = 0; i <  bare[file].size(); i++){
                 data[file][i] = QPair<qreal, QPointF>(bare[file][i].first,
                                                       QPointF((bare[file][i].second.x() - shadow[file].x()*1E-12)/(zero[file][i].second.x() - shadow[file].y()*1E-6),
-                                                              (bare[file][i].second.y() - shadow[file].x()*1E-12)/(zero[file][i].second.y() - shadow[file].y()*1E-12)));
+                                                              (bare[file][i].second.y() - shadow[file].x()*1E-12)/(zero[file][i].second.y() - shadow[file].y()*1E-6)));
             }
             smooth(file);
         }else{
@@ -480,9 +473,9 @@ int Calculator::reset(){
         for(int file = 0; file < 2; file++){
             if(loaderChanged[file]){
                 loaderChanged[file] = false;
-                loader[file] = new FileLoader(path[file]);
+                loader[file] = FileLoader(path[file]);
                 limits[file] = tmpLimits[file];
-                energyShift = tmpEnergyShift;
+                energyShift[file] = tmpEnergyShift[file];
                 loaded[file] = false;
                 stage = 1;
             }
@@ -637,6 +630,7 @@ int Calculator::reset(){
                     calculate();
                     break;
                 default:
+                    emit compleated();
                     return -1;
             }
 

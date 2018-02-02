@@ -9,7 +9,6 @@ class ExtFSM : public QAbstractTableModel
  public:
      ExtFSM(QObject *parent=0);
      ExtFSM(QList<QList<QString>> list, QObject *parent=0);
-
      int rowCount(const QModelIndex &parent) const;
      int columnCount(const QModelIndex &parent) const;
      QVariant data(const QModelIndex &index, int role) const;
