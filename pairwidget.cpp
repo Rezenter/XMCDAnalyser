@@ -6,6 +6,10 @@ PairWidget::PairWidget(QWidget *parent)
     : QWidget(parent)
 {
     ui.setupUi(this);
+    fileLabels[0] = ui.file1Label;
+    fileLabels[1] = ui.file2Label;
+    fileButtons[0] = ui.file1Button;
+    fileButtons[1] = ui.file2Button;
     QString  style = "QGroupBox {"
                      "border:1px solid #3A3939;"
                      "border-radius: 7px;"

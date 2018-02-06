@@ -57,13 +57,15 @@ private:
     QtCharts::QLineSeries raw[2];
     QtCharts::QLineSeries norm[2];
     QtCharts::QLineSeries zero[2];
+    QtCharts::QLineSeries xmcd;
+    QtCharts::QLineSeries line[2];
     QtCharts::QValueAxis axisX;
     QtCharts::QValueAxis axisY;
     QtCharts::QValueAxis axisY2;
     QFileSystemModel model;
     ExtFSM *table = new ExtFSM(this);
     QString dataDir;
-    QString filePath;
+    QString filePath[2];
     QString fileName[2];
     qreal theta[2];
     qreal phi[2];
@@ -76,31 +78,33 @@ private:
     QSettings session;
     bool loaded[2];
     QLabel *fileNameLabel[2];
-    QCheckBox *fileCheckBox[2];
+    QRadioButton *fileCheckBox[2];
+    QCheckBox *holderBox[2];
+    QDoubleSpinBox *offsets[2];
+    QRadioButton *parallel[2];
     void rescale();
     QFileSystemWatcher *refresh;
+    int id = 0;
     int file = 0;
-    int id;
     QList<PairWidget *> pairs;
     QString defaults();
-    void loadState(QString state);
+    void loadState(QString state, const int file);//file = -1, 0 , 1// -1 -> ui changes only
 
 private slots:
     void open(QString);
     void load(QModelIndex);
-    QModelIndex selected(QModelIndex);
     void exportCharts();
     void forget(int buttonID);
     void myResize();//?
     void swap();
     void setPath();
     void newPair();
-    void getData(const QVector<QPair<qreal, QPointF>> points, const int file);
-    void rawData(const QVector<QPair<qreal, QPointF>> points, const int file);
-    void iZero(const QVector<QPair<qreal, QPointF>> points, const int file);
-    void XMCD(const QVector<QPointF> points, const int file);
-    void linCoeffs(const QPointF left, const QPointF right, const int file);
-    void integrals(const qreal summ, const qreal dl2, const qreal dl3, const qreal mSE, const qreal mO, const int file);
+    void getData(const QVector<QPair<qreal, QPointF>> points);
+    void rawData(const QVector<QPair<qreal, QPointF>> points);
+    void iZero(const QVector<QPair<qreal, QPointF>> points);
+    void XMCD(const QVector<QPointF> points);
+    void linCoeffs(const QPointF left, const QPointF right);
+    void integrals(const qreal summ, const qreal dl2, const qreal dl3, const qreal mSE, const qreal mO);
     void moments(const qreal mOP, const qreal mOO, const qreal ms, const qreal mt);
     void paintItBlack(const int id);
     void deletePair(const int id);
