@@ -64,183 +64,14 @@
         <string>File Management</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_3">
-        <item row="1" column="3">
-         <widget class="QCheckBox" name="geomBox">
-          <property name="toolTip">
-           <string>show data with different geometry regarding to the first file only</string>
-          </property>
+        <item row="6" column="0" colspan="3">
+         <widget class="QPushButton" name="pairButton">
           <property name="text">
-           <string>diff geom</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">filterGroup</string>
-          </attribute>
-         </widget>
-        </item>
-        <item row="0" column="2">
-         <widget class="QRadioButton" name="angleButton">
-          <property name="text">
-           <string>angle = deg</string>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">treatAngleAsGroup</string>
-          </attribute>
-         </widget>
-        </item>
-        <item row="0" column="0" colspan="2">
-         <widget class="QRadioButton" name="holderButton">
-          <property name="text">
-           <string>angle = holder</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">treatAngleAsGroup</string>
-          </attribute>
-         </widget>
-        </item>
-        <item row="5" column="0">
-         <widget class="QCheckBox" name="file2Box">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="toolTip">
-           <string>Processing second file.</string>
-          </property>
-          <property name="toolTipDuration">
-           <number>100000</number>
-          </property>
-          <property name="text">
-           <string>file 2</string>
-          </property>
-          <property name="autoExclusive">
-           <bool>false</bool>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">fileGroup</string>
-          </attribute>
-         </widget>
-        </item>
-        <item row="1" column="0" colspan="2">
-         <widget class="QCheckBox" name="sampleBox">
-          <property name="toolTip">
-           <string>show data for the same sample as in the first file only</string>
-          </property>
-          <property name="text">
-           <string>same sample</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">filterGroup</string>
-          </attribute>
-         </widget>
-        </item>
-        <item row="0" column="4" rowspan="7">
-         <widget class="QTableView" name="fileTable">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="toolTipDuration">
-           <number>100000</number>
-          </property>
-          <property name="sortingEnabled">
-           <bool>true</bool>
-          </property>
-          <attribute name="verticalHeaderVisible">
-           <bool>false</bool>
-          </attribute>
-         </widget>
-        </item>
-        <item row="3" column="1" colspan="2">
-         <widget class="QLabel" name="file1Label">
-          <property name="toolTip">
-           <string>First file name.</string>
-          </property>
-          <property name="toolTipDuration">
-           <number>100000</number>
-          </property>
-          <property name="text">
-           <string>none</string>
+           <string>new pair</string>
           </property>
          </widget>
         </item>
-        <item row="4" column="3" rowspan="2">
-         <widget class="QPushButton" name="forget2Button">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="toolTip">
-           <string>Replace the second file with &quot;none&quot;.</string>
-          </property>
-          <property name="toolTipDuration">
-           <number>100000</number>
-          </property>
-          <property name="text">
-           <string>forget2</string>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">forgetGroup</string>
-          </attribute>
-         </widget>
-        </item>
-        <item row="4" column="1" rowspan="2" colspan="2">
-         <widget class="QLabel" name="file2Label">
-          <property name="toolTip">
-           <string>Second file name.</string>
-          </property>
-          <property name="toolTipDuration">
-           <number>100000</number>
-          </property>
-          <property name="text">
-           <string>none</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="3">
-         <widget class="QPushButton" name="selectPathButton">
-          <property name="text">
-           <string>select Path</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="3">
-         <widget class="QPushButton" name="forget1Button">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="toolTip">
-           <string>Replace the first file with &quot;none&quot;.</string>
-          </property>
-          <property name="toolTipDuration">
-           <number>100000</number>
-          </property>
-          <property name="text">
-           <string>forget 1</string>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">forgetGroup</string>
-          </attribute>
-         </widget>
-        </item>
-        <item row="2" column="0" colspan="4">
+        <item row="2" column="0" colspan="5">
          <widget class="QScrollArea" name="scrollArea">
           <property name="horizontalScrollBarPolicy">
            <enum>Qt::ScrollBarAlwaysOff</enum>
@@ -261,35 +92,7 @@
           </widget>
          </widget>
         </item>
-        <item row="3" column="0" rowspan="2">
-         <widget class="QCheckBox" name="file1Box">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="toolTip">
-           <string>Processing first file.</string>
-          </property>
-          <property name="toolTipDuration">
-           <number>100000</number>
-          </property>
-          <property name="text">
-           <string>file 1</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-          <property name="autoExclusive">
-           <bool>false</bool>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">fileGroup</string>
-          </attribute>
-         </widget>
-        </item>
-        <item row="1" column="2">
+        <item row="1" column="3">
          <widget class="QCheckBox" name="energyBox">
           <property name="toolTip">
            <string>show data for the same energy interval as in the first file only</string>
@@ -305,18 +108,132 @@
           </attribute>
          </widget>
         </item>
-        <item row="6" column="2" colspan="2">
+        <item row="6" column="3" colspan="2">
          <widget class="QPushButton" name="sessionButton">
           <property name="text">
            <string>load last session</string>
           </property>
          </widget>
         </item>
-        <item row="6" column="0" colspan="2">
-         <widget class="QPushButton" name="pairButton">
-          <property name="text">
-           <string>new pair</string>
+        <item row="1" column="4">
+         <widget class="QCheckBox" name="geomBox">
+          <property name="toolTip">
+           <string>show data with different geometry regarding to the first file only</string>
           </property>
+          <property name="text">
+           <string>diff geom</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">filterGroup</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="1" column="0" colspan="3">
+         <widget class="QCheckBox" name="sampleBox">
+          <property name="toolTip">
+           <string>show data for the same sample as in the first file only</string>
+          </property>
+          <property name="text">
+           <string>same sample</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">filterGroup</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="0" column="5" rowspan="7">
+         <widget class="QTableView" name="fileTable">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="toolTipDuration">
+           <number>100000</number>
+          </property>
+          <property name="sortingEnabled">
+           <bool>true</bool>
+          </property>
+          <attribute name="verticalHeaderVisible">
+           <bool>false</bool>
+          </attribute>
+         </widget>
+        </item>
+        <item row="0" column="4">
+         <widget class="QPushButton" name="selectPathButton">
+          <property name="text">
+           <string>select Path</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QCheckBox" name="holder1Box">
+          <property name="text">
+           <string>holder</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1">
+         <widget class="QCheckBox" name="holder2Box">
+          <property name="text">
+           <string>holder</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="2" colspan="3">
+         <widget class="QLabel" name="file1Label">
+          <property name="toolTip">
+           <string>First file name.</string>
+          </property>
+          <property name="toolTipDuration">
+           <number>100000</number>
+          </property>
+          <property name="text">
+           <string>none</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="2" rowspan="2" colspan="3">
+         <widget class="QLabel" name="file2Label">
+          <property name="toolTip">
+           <string>Second file name.</string>
+          </property>
+          <property name="toolTipDuration">
+           <number>100000</number>
+          </property>
+          <property name="text">
+           <string>none</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QRadioButton" name="file1Button">
+          <property name="text">
+           <string>file 1</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">fileGroup</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QRadioButton" name="file2Button">
+          <property name="text">
+           <string>file 2</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">fileGroup</string>
+          </attribute>
          </widget>
         </item>
        </layout>
@@ -359,8 +276,82 @@
         </item>
         <item row="0" column="1">
          <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="0">
+           <widget class="QRadioButton" name="rawBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Bare data strait from beamline.</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="statusTip">
+             <string/>
+            </property>
+            <property name="text">
+             <string>raw data</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
+            </property>
+            <attribute name="buttonGroup">
+             <string notr="true">dataTypeGroup</string>
+            </attribute>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QRadioButton" name="normBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>(raw data)/(i.zero)</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="text">
+             <string>normalization</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
+            </property>
+            <attribute name="buttonGroup">
+             <string notr="true">dataTypeGroup</string>
+            </attribute>
+           </widget>
+          </item>
           <item row="0" column="1">
            <widget class="QDoubleSpinBox" name="shadowSpinBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -387,7 +378,7 @@
             </property>
            </widget>
           </item>
-          <item row="13" column="1">
+          <item row="15" column="1">
            <widget class="QPushButton" name="exportButton">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -412,27 +403,11 @@
             </property>
            </widget>
           </item>
-          <item row="4" column="1">
-           <widget class="QSpinBox" name="bSpinBox">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>15</height>
-             </size>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="suffix">
-             <string> points</string>
-            </property>
-            <property name="prefix">
-             <string>Left </string>
-            </property>
-           </widget>
-          </item>
           <item row="6" column="0">
            <widget class="QCheckBox" name="linearBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -445,41 +420,13 @@
             <property name="text">
              <string>show linearization</string>
             </property>
-            <attribute name="buttonGroup">
-             <string notr="true">elseGroup</string>
-            </attribute>
-           </widget>
-          </item>
-          <item row="12" column="0">
-           <widget class="QCheckBox" name="calculateBox">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>15</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>If both files have calculated integrals, calculate resulting moments.</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="text">
-             <string>calculate result</string>
-            </property>
-            <attribute name="buttonGroup">
-             <string notr="true">elseGroup</string>
-            </attribute>
            </widget>
           </item>
           <item row="9" column="1">
            <widget class="QLabel" name="label_24">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
               <horstretch>0</horstretch>
@@ -497,42 +444,11 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="0">
-           <widget class="QCheckBox" name="rawBox">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>15</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>Bare data strait from beamline.</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="statusTip">
-             <string/>
-            </property>
-            <property name="text">
-             <string>raw data</string>
-            </property>
-            <property name="autoExclusive">
-             <bool>true</bool>
-            </property>
-            <attribute name="buttonGroup">
-             <string notr="true">normGroup</string>
-            </attribute>
-           </widget>
-          </item>
-          <item row="13" column="0">
+          <item row="15" column="0">
            <widget class="QPushButton" name="swapButton">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -547,7 +463,7 @@
             </property>
            </widget>
           </item>
-          <item row="14" column="0" colspan="2">
+          <item row="16" column="1">
            <widget class="QLineEdit" name="exportLine">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -569,8 +485,55 @@
             </property>
            </widget>
           </item>
+          <item row="3" column="0">
+           <widget class="QSpinBox" name="tSpinBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="suffix">
+             <string> points</string>
+            </property>
+            <property name="prefix">
+             <string>Right </string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QSpinBox" name="bSpinBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="suffix">
+             <string> points</string>
+            </property>
+            <property name="prefix">
+             <string>Left </string>
+            </property>
+           </widget>
+          </item>
           <item row="1" column="0">
-           <widget class="QCheckBox" name="zeroBox">
+           <widget class="QRadioButton" name="zeroBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -599,12 +562,62 @@
              <bool>true</bool>
             </property>
             <attribute name="buttonGroup">
-             <string notr="true">normGroup</string>
+             <string notr="true">dataTypeGroup</string>
             </attribute>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QSpinBox" name="smoothSpinBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="prefix">
+             <string>Smooth points count = </string>
+            </property>
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>10</number>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QCheckBox" name="mulBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Multiply right polarization signal by constant in orger to equalize left edge.</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="text">
+             <string>*</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
            </widget>
           </item>
           <item row="8" column="1">
            <widget class="QLabel" name="rkLabel">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -622,36 +635,11 @@
             </property>
            </widget>
           </item>
-          <item row="11" column="1">
-           <widget class="QCheckBox" name="integrateBox">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>15</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>Calculate integrals based on the XMSD signal. Show them in the next tab.</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="text">
-             <string>integrate this XMCD signal</string>
-            </property>
-            <attribute name="buttonGroup">
-             <string notr="true">elseGroup</string>
-            </attribute>
-           </widget>
-          </item>
           <item row="7" column="0">
            <widget class="QDoubleSpinBox" name="rlSpinBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -680,6 +668,9 @@
           </item>
           <item row="1" column="1">
            <widget class="QDoubleSpinBox" name="zeroShadowSpinBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -708,6 +699,9 @@
           </item>
           <item row="9" column="0">
            <widget class="QDoubleSpinBox" name="filletSpinBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -734,55 +728,11 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="0">
-           <widget class="QCheckBox" name="normBox">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>15</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>(raw data)/(i.zero)</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="text">
-             <string>normalization</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-            <property name="autoExclusive">
-             <bool>true</bool>
-            </property>
-            <attribute name="buttonGroup">
-             <string notr="true">normGroup</string>
-            </attribute>
-           </widget>
-          </item>
-          <item row="4" column="0">
-           <widget class="QSpinBox" name="tSpinBox">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>15</height>
-             </size>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="suffix">
-             <string> points</string>
-            </property>
-            <property name="prefix">
-             <string>Right </string>
-            </property>
-           </widget>
-          </item>
           <item row="10" column="0">
            <widget class="QCheckBox" name="linearBackgroundBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -804,13 +754,13 @@
             <property name="text">
              <string>linear substraction</string>
             </property>
-            <attribute name="buttonGroup">
-             <string notr="true">backgroundGroup</string>
-            </attribute>
            </widget>
           </item>
           <item row="8" column="0">
            <widget class="QDoubleSpinBox" name="llSpinBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -839,6 +789,9 @@
           </item>
           <item row="10" column="1">
            <widget class="QCheckBox" name="steppedBackgroundBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -863,13 +816,13 @@
             <property name="checked">
              <bool>false</bool>
             </property>
-            <attribute name="buttonGroup">
-             <string notr="true">backgroundGroup</string>
-            </attribute>
            </widget>
           </item>
           <item row="7" column="1">
            <widget class="QLabel" name="lkLabel">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -889,6 +842,9 @@
           </item>
           <item row="11" column="0">
            <widget class="QCheckBox" name="diffBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -919,13 +875,26 @@
             <property name="tristate">
              <bool>false</bool>
             </property>
-            <attribute name="buttonGroup">
-             <string notr="true">elseGroup</string>
-            </attribute>
            </widget>
           </item>
-          <item row="2" column="1">
-           <widget class="QCheckBox" name="mulBox">
+          <item row="16" column="0">
+           <widget class="QPushButton" name="setExportPath1Button">
+            <property name="text">
+             <string>set Export Path</string>
+            </property>
+           </widget>
+          </item>
+          <item row="12" column="1">
+           <widget class="QCheckBox" name="integrateBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -933,54 +902,73 @@
              </size>
             </property>
             <property name="toolTip">
-             <string>Multiply right polarization signal by constant in orger to equalize left edge.</string>
+             <string>Calculate integrals based on the XMSD signal. Show them in the next tab.</string>
             </property>
             <property name="toolTipDuration">
              <number>100000</number>
             </property>
             <property name="text">
-             <string>*</string>
+             <string>integrate this XMCD signal</string>
             </property>
-            <property name="checked">
+           </widget>
+          </item>
+          <item row="13" column="0">
+           <widget class="QCheckBox" name="calculateBox">
+            <property name="enabled">
              <bool>false</bool>
             </property>
-            <attribute name="buttonGroup">
-             <string notr="true">normGroup</string>
-            </attribute>
-           </widget>
-          </item>
-          <item row="3" column="0" colspan="2">
-           <widget class="QSpinBox" name="smoothSpinBox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="minimumSize">
              <size>
               <width>0</width>
               <height>15</height>
              </size>
             </property>
-            <property name="prefix">
-             <string>Smooth points count = </string>
+            <property name="toolTip">
+             <string>If both files have calculated integrals, calculate resulting moments.</string>
             </property>
-            <property name="minimum">
-             <number>1</number>
-            </property>
-            <property name="maximum">
-             <number>10</number>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="0" colspan="2">
-           <widget class="QLabel" name="label">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>15</height>
-             </size>
+            <property name="toolTipDuration">
+             <number>100000</number>
             </property>
             <property name="text">
-             <string>linearization intervals</string>
+             <string>calculate result</string>
             </property>
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
+           </widget>
+          </item>
+          <item row="12" column="0">
+           <widget class="QSpinBox" name="integrationLimitSpinBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="suffix">
+             <string> points</string>
+            </property>
+            <property name="prefix">
+             <string>separate </string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QDoubleSpinBox" name="mulCoeffSpinBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="prefix">
+             <string>curvature </string>
+            </property>
+            <property name="suffix">
+             <string> 1E-2</string>
+            </property>
+            <property name="minimum">
+             <double>-100.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.010000000000000</double>
             </property>
            </widget>
           </item>
@@ -1188,19 +1176,6 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="2" colspan="2">
-            <widget class="QCheckBox" name="angle1Box_2">
-             <property name="toolTip">
-              <string>Use this file as start point to calculate second M. angle.</string>
-             </property>
-             <property name="text">
-              <string>assume M1||SR</string>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
            <item row="0" column="4">
             <widget class="QLabel" name="label_36">
              <property name="toolTip">
@@ -1231,13 +1206,35 @@
             </widget>
            </item>
            <item row="0" column="2" colspan="2">
-            <widget class="QDoubleSpinBox" name="phi1OffsetBox_2">
+            <widget class="QDoubleSpinBox" name="phi1OffsetSpinBox">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="maximum">
               <double>90.000000000000000</double>
              </property>
              <property name="singleStep">
               <double>0.100000000000000</double>
              </property>
+            </widget>
+           </item>
+           <item row="1" column="2" colspan="2">
+            <widget class="QRadioButton" name="angle1Box">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="toolTip">
+              <string>Use this file as start point to calculate second M. angle.</string>
+             </property>
+             <property name="text">
+              <string>assume M1||SR</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">angleGroup</string>
+             </attribute>
             </widget>
            </item>
           </layout>
@@ -1326,6 +1323,9 @@
            </item>
            <item row="2" column="1">
             <widget class="QComboBox" name="unitBox_2">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="toolTip">
               <string>Unit selection.</string>
              </property>
@@ -1640,16 +1640,6 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="2">
-            <widget class="QCheckBox" name="angle2Box_2">
-             <property name="toolTip">
-              <string>Use this file as start point to calculate second M. angle.</string>
-             </property>
-             <property name="text">
-              <string>assume M2||SR</string>
-             </property>
-            </widget>
-           </item>
            <item row="0" column="3">
             <widget class="QLabel" name="label_33">
              <property name="sizePolicy">
@@ -1686,13 +1676,32 @@
             </widget>
            </item>
            <item row="0" column="2">
-            <widget class="QDoubleSpinBox" name="phi2OffsetBox_2">
+            <widget class="QDoubleSpinBox" name="phi2OffsetSpinBox">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="maximum">
               <double>90.000000000000000</double>
              </property>
              <property name="singleStep">
               <double>0.100000000000000</double>
              </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QRadioButton" name="angle2Box">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="toolTip">
+              <string>Use this file as start point to calculate second M. angle.</string>
+             </property>
+             <property name="text">
+              <string>assume M2||SR</string>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">angleGroup</string>
+             </attribute>
             </widget>
            </item>
           </layout>
@@ -1707,6 +1716,9 @@
        <layout class="QGridLayout" name="gridLayout_5">
         <item row="1" column="2">
          <widget class="QDoubleSpinBox" name="energyShiftSpinBox">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="suffix">
            <string>[eV]</string>
           </property>
@@ -1737,6 +1749,23 @@
           </property>
          </widget>
         </item>
+        <item row="1" column="3">
+         <widget class="QPushButton" name="exportSummaryButton">
+          <property name="text">
+           <string>export</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QComboBox" name="fileComboBox">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="5">
+         <widget class="QLineEdit" name="summaryPathLineEdit"/>
+        </item>
         <item row="0" column="1" colspan="2">
          <widget class="QWidget" name="summaryChartWidget" native="true">
           <property name="sizePolicy">
@@ -1759,18 +1788,12 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="3">
-         <widget class="QPushButton" name="exportSummaryButton">
+        <item row="1" column="4">
+         <widget class="QPushButton" name="setExportPath2Button">
           <property name="text">
-           <string>export</string>
+           <string>set Export Path</string>
           </property>
          </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QComboBox" name="fileComboBox"/>
-        </item>
-        <item row="1" column="4">
-         <widget class="QLineEdit" name="summaryPathLineEdit"/>
         </item>
        </layout>
       </widget>
@@ -1783,37 +1806,17 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="treatAngleAsGroup"/>
   <buttongroup name="filterGroup">
    <property name="exclusive">
     <bool>false</bool>
    </property>
   </buttongroup>
-  <buttongroup name="backgroundGroup">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
-  <buttongroup name="elseGroup">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
-  <buttongroup name="normGroup">
-   <property name="exclusive">
-    <bool>true</bool>
-   </property>
-  </buttongroup>
-  <buttongroup name="angleGroup"/>
   <buttongroup name="fileGroup">
    <property name="exclusive">
     <bool>true</bool>
    </property>
   </buttongroup>
-  <buttongroup name="forgetGroup">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
+  <buttongroup name="angleGroup"/>
+  <buttongroup name="dataTypeGroup"/>
  </buttongroups>
 </ui>

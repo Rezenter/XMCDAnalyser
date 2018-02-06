@@ -29,8 +29,14 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     fileNameLabel[0] = ui->file1Label;
     fileNameLabel[1] = ui->file2Label;
-    fileCheckBox[0] = ui->file1Box;
-    fileCheckBox[1] = ui->file2Box;
+    fileCheckBox[0] = ui->file1Button;
+    fileCheckBox[1] = ui->file2Button;
+    holderBox[0] = ui->holder1Box;
+    holderBox[1] = ui->holder2Box;
+    offsets[0] = ui->phi1OffsetSpinBox;
+    offsets[1] = ui->phi2OffsetSpinBox;
+    parallel[0] = ui->angle1Box;
+    parallel[1] = ui->angle2Box;
     refresh = new QFileSystemWatcher(this);
     QSettings session(QApplication::applicationDirPath() + "/session.ini", QSettings::IniFormat);
     session.setValue("exePath", QCoreApplication::applicationDirPath());
@@ -57,11 +63,31 @@ MainWindow::MainWindow(QWidget *parent) :
     chartView.setChart(&chart);
     chartView.show();
     for(int file = 0; file < 2; file++){
-        chart.addSeries(&norm[file]); //order is important!
+        norm[file].setName("Norm " + QString::number(file));
+        raw[file].setName("Raw " + QString::number(file));
+        zero[file].setName("Zero " + QString::number(file));
+        line[file].setName("linear " + QString::number(file));
+        chart.addSeries(&norm[file]);
         norm[file].attachAxis(&axisX);
         norm[file].attachAxis(&axisY);
+        chart.addSeries(&raw[file]);
+        raw[file].attachAxis(&axisX);
+        raw[file].attachAxis(&axisY);
+        raw[file].setVisible(false);
+        chart.addSeries(&zero[file]);
+        zero[file].attachAxis(&axisX);
+        zero[file].attachAxis(&axisY);
+        zero[file].setVisible(false);
+        chart.addSeries(&line[file]);
+        line[file].attachAxis(&axisX);
+        line[file].attachAxis(&axisY);
+        line[file].setVisible(false);
     }
-
+    xmcd.setName("XMCD");
+    chart.addSeries(&xmcd);
+    xmcd.attachAxis(&axisX);
+    xmcd.attachAxis(&axisY);
+    xmcd.setVisible(false);
     ui->fileTable->setModel(table);
     ui->fileTable->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->fileTable->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -94,7 +120,66 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //ui to this
     QObject::connect(ui->fileTable, &QTableView::doubleClicked, this, static_cast<void(MainWindow::*)(QModelIndex)>(&MainWindow::load));
-    QObject::connect(ui->fileTable, &QTableView::clicked, this, &MainWindow::selected);
+    QObject::connect(ui->file1Button, &QRadioButton::toggled, this, [=]{
+        open(dataDir);
+    });
+    QObject::connect(ui->rawBox, &QRadioButton::toggled, this, [=](bool state){
+        raw[0].setVisible(state);
+        raw[1].setVisible(state);
+        if(state){
+            rescale();
+        }
+    });
+    QObject::connect(ui->zeroBox, &QRadioButton::toggled, this, [=](bool state){
+        zero[0].setVisible(state);
+        zero[1].setVisible(state);
+        if(state){
+            rescale();
+        }
+    });
+    QObject::connect(ui->normBox, &QRadioButton::toggled, this, [=](bool state){
+        norm[0].setVisible(state);
+        norm[1].setVisible(state);
+        if(state){
+            rescale();
+            ui->smoothSpinBox->setMaximum(norm[0].pointsVector().size());
+        }else{
+            ui->mulBox->setChecked(false);
+        }
+        ui->shadowSpinBox->setEnabled(state);
+        ui->zeroShadowSpinBox->setEnabled(state);
+        ui->smoothSpinBox->setEnabled(state);
+        ui->mulBox->setEnabled(state);
+    });
+    QObject::connect(ui->shadowSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, [=](double val){
+        setShadowCurrent(val, ui->zeroShadowSpinBox->value(), file);
+    });
+    QObject::connect(ui->zeroShadowSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, [=](double val){
+        setShadowCurrent(ui->shadowSpinBox->value(), val, file);
+    });
+    QObject::connect(ui->smoothSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, [=](int val){
+        setSmooth(val, file);
+    });
+    QObject::connect(ui->mulBox, &QRadioButton::toggled, this, [=](bool state){
+        ui->mulCoeffSpinBox->setEnabled(state);
+        ui->linearBox->setEnabled(state);
+        setNormalizationCoeff(ui->mulCoeffSpinBox->value(), state, file);
+        if(!state){
+            ui->linearBox->setEnabled(false);
+        }
+    });
+    QObject::connect(ui->mulCoeffSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, [=](double val){
+        setNormalizationCoeff(val, ui->mulBox->isChecked(), file);
+    });
+    QObject::connect(ui->linearBox, &QRadioButton::toggled, this, [=](bool state){
+        ui->llSpinBox->setEnabled(state);
+        ui->rlSpinBox->setEnabled(state);
+        ui->linearBackgroundBox->setEnabled(state);
+        line[0].setVisible(state);
+        line[1].setVisible(state);
+        rescale();
+    });
+
     QObject::connect(ui->exportButton, &QPushButton::pressed, this, &MainWindow::exportCharts);
     QObject::connect(ui->bSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, [=]{
         setLimits(ui->bSpinBox->value(), ui->tSpinBox->value(), file);
@@ -112,7 +197,6 @@ MainWindow::MainWindow(QWidget *parent) :
         setShadowCurrent(ui->shadowSpinBox->value(), ui->zeroShadowSpinBox->value(), file);
     });
     QObject::connect(ui->energyShiftSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, [=](double d){setEnergyShift(d, file);});
-    QObject::connect(ui->forgetGroup, static_cast<void(QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked), this, forget);
     QObject::connect(ui->tabWidget, static_cast<void(QTabWidget::*)(int)>(&QTabWidget::currentChanged), this, &MainWindow::myResize);
     QObject::connect(ui->swapButton, &QPushButton::pressed, this, &MainWindow::swap);
     //QObject::connect(ui->sessionButton, &QPushButton::pressed, this, &MainWindow::loadState);
@@ -120,12 +204,16 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(refresh, &QFileSystemWatcher::directoryChanged, this, &MainWindow::open);
     QObject::connect(ui->pairButton, &QPushButton::pressed, this, &MainWindow::newPair);
 
+    //holder buttons!!!
+
+
     //this to calc
     QObject::connect(this, &MainWindow::setEnergyShift, calculator, &Calculator::setEnergyShift);
     QObject::connect(this, &MainWindow::setLimits, calculator, &Calculator::setLimits);
     QObject::connect(this, &MainWindow::setLoader, calculator, &Calculator::setLoader);
     QObject::connect(this, &MainWindow::setSmooth, calculator, &Calculator::setSmooth);
     QObject::connect(this, &MainWindow::setShadowCurrent, calculator, &Calculator::setShadowCurrent);
+    QObject::connect(this, &MainWindow::setNormalizationCoeff, calculator, &Calculator::setNormalizationCoeff);
 
     //calc to this
     qRegisterMetaType<QVector<QPair<qreal,QPointF>>>("QVector<QPair<qreal,QPointF>>");
@@ -140,13 +228,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
     loadSettings();
     ui->scrollAreaInternals->resize(ui->scrollArea->width() - 5, ui->scrollArea->height());
-    if(!session.value("normalExit", false).toBool()){
+    if(session.value("normalExit", false).toBool()){
         //load all nods
         //loadState();//1
         //2
     }else{
         QString tmp = defaults();
-        loadState(tmp);
+        loadState(tmp, -1);
         QFile::remove(tmp);
     }
     session.setValue("normalExit", false);
@@ -172,29 +260,39 @@ MainWindow::~MainWindow()// recheck the system
 }
 
 void MainWindow::newPair(){
-    pairs.append(new PairWidget());
-    id = pairs.count() - 1;
-    if(ui->scrollArea->height() > ui->scrollAreaInternals->height()){
-        ui->scrollAreaInternals->resize(ui->scrollArea->width() - 5, ui->scrollArea->height());
+    if(fileName[0].size() != 0 && fileName[1].size() != 0){
+        pairs.append(new PairWidget());
+        id = pairs.count() - 1;
+        if(ui->scrollArea->height() > ui->scrollAreaInternals->height()){
+            ui->scrollAreaInternals->resize(ui->scrollArea->width() - 5, ui->scrollArea->height());
+        }
+        if(100 * id >= ui->scrollArea->height()){
+            ui->scrollAreaInternals->resize(230, ui->scrollAreaInternals->height() + 100);
+        }
+        ui->scrollAreaInternals->layout()->addWidget(pairs.last());
+        pairs.last()->id = id;
+        for(int file = 0; file < 2 ; ++file){
+            fileNameLabel[file]->setText("");
+            pairs.last()->state[file] = defaults();
+            pairs.last()->fileLabels[file]->setText(fileName[file]);
+            QSettings tmp(pairs.last()->state[file], QSettings::IniFormat);
+            tmp.setValue("filename", filePath[file] + "/" + fileName[file]);
+            tmp.setValue("isChecked", file == 0);
+            fileName[file] = "";
+            filePath[file] = "";
+        }
+        pairs.last()->ui.groupBox->setTitle(QString::number(id));//fix
+        pairs.at(id)->fileButtons[0]->setChecked(true);
+        ui->file1Button->setChecked(true);
+        paintItBlack(id);
+        QObject::connect(pairs.last(), &PairWidget::selected, this, &MainWindow::paintItBlack);
+        QObject::connect(pairs.last(), &PairWidget::deletePressed, this, &MainWindow::deletePair);
+        QObject::connect(pairs.last(), &PairWidget::fileSelected, this, &MainWindow::fileSelected);
     }
-    if(100 * id >= ui->scrollArea->height()){
-        ui->scrollAreaInternals->resize(230, ui->scrollAreaInternals->height() + 100);
-    }
-    ui->scrollAreaInternals->layout()->addWidget(pairs.last());
-    pairs.last()->id = id;
-    pairs.last()->ui.groupBox->setTitle(QString::number(id));
-    for(int file = 0; file < 2 ; ++file){
-        pairs.last()->state[file] = defaults();
-    }
-    paintItBlack(id);
-    QObject::connect(pairs.last(), &PairWidget::selected, this, &MainWindow::paintItBlack);
-    QObject::connect(pairs.last(), &PairWidget::deletePressed, this, &MainWindow::deletePair);
-    QObject::connect(pairs.last(), &PairWidget::fileSelected, this, &MainWindow::fileSelected);
 }
 
 void MainWindow::fileSelected(const int file){
-    this->file = file;
-    loadState(pairs.at(id)->state[file]);
+    loadState(pairs.at(id)->state[file], file);
 }
 
 void MainWindow::paintItBlack(const int id){
@@ -211,7 +309,7 @@ void MainWindow::paintItBlack(const int id){
     }else{
         file = 1;
     }
-    loadState(pairs.at(id)->state[file]);
+    loadState(pairs.at(id)->state[file], file);
 }
 
 void MainWindow::deletePair(const int id){
@@ -235,29 +333,68 @@ void MainWindow::deletePair(const int id){
         }
     }else{
         //fix
+        file = 0;
         QString tmp = defaults();
-        loadState(tmp);
+        loadState(tmp, -1);
         QFile::remove(tmp);
     }
 }
 
-void MainWindow::rawData(const QVector<QPair<qreal, QPointF>> points, const int file){
-
+void MainWindow::rawData(const QVector<QPair<qreal, QPointF>> points){
+    raw[0].blockSignals(true);
+    raw[0].clear();
+    raw[1].blockSignals(true);
+    raw[1].clear();
+    for(int i = 0; i < points.size(); ++i){
+        raw[0].append(points[i].first, points[i].second.x());
+        raw[1].append(points[i].first, points[i].second.y());
+    }
+    raw[0].blockSignals(false);
+    raw[1].blockSignals(false);
+    raw[0].pointsReplaced();
+    raw[1].pointsReplaced();
 }
 
-void MainWindow::iZero(const QVector<QPair<qreal, QPointF>> points, const int file){
-
+void MainWindow::iZero(const QVector<QPair<qreal, QPointF>> points){
+    zero[0].blockSignals(true);
+    zero[0].clear();
+    zero[1].blockSignals(true);
+    zero[1].clear();
+    for(int i = 0; i < points.size(); ++i){
+        zero[0].append(points[i].first, points[i].second.x());
+        zero[1].append(points[i].first, points[i].second.y());
+    }
+    zero[0].blockSignals(false);
+    zero[1].blockSignals(false);
+    zero[0].pointsReplaced();
+    zero[1].pointsReplaced();
 }
 
-void MainWindow::XMCD(const QVector<QPointF> points, const int file){
-
+void MainWindow::XMCD(const QVector<QPointF> points){
+    xmcd.blockSignals(true);
+    xmcd.clear();
+    for(int i = 0; i < points.size(); ++i){
+        xmcd.append(points[i].x(), points[i].y());
+    }
+    xmcd.blockSignals(false);
 }
 
-void MainWindow::linCoeffs(const QPointF left, const QPointF right, const int file){
-
+void MainWindow::linCoeffs(const QPointF left, const QPointF right){
+    line[0].blockSignals(true);
+    line[0].clear();
+    line[1].blockSignals(true);
+    line[1].clear();
+    line[0].append(norm[0].at(0).x(), norm[0].at(0).x() * left.x() + left.y());
+    line[0].append(norm[0].at(norm[0].points().size()).x(), norm[0].at(norm[0].points().size()).x() * left.x() + left.y());
+    line[1].append(norm[1].at(0).x(), norm[1].at(0).x() * right.x() + right.y());
+    line[1].append(norm[1].at(norm[1].points().size()).x(), norm[1].at(norm[1].points().size()).x() * right.x() + right.y());
+    line[0].blockSignals(false);
+    line[1].blockSignals(false);
+    line[0].pointsReplaced();
+    line[1].pointsReplaced();
 }
 
-void MainWindow::integrals(const qreal summ, const qreal dl2, const qreal dl3, const qreal mSE, const qreal mO, const int file){
+void MainWindow::integrals(const qreal summ, const qreal dl2, const qreal dl3, const qreal mSE, const qreal mO){
 
 }
 
@@ -265,11 +402,10 @@ void MainWindow::moments(const qreal mOP, const qreal mOO, const qreal ms, const
 
 }
 
-void MainWindow::getData(const QVector<QPair<qreal, QPointF> > points, const int file){
-    //qint64 begin = QDateTime().currentMSecsSinceEpoch();
+void MainWindow::getData(const QVector<QPair<qreal, QPointF> > points){
     norm[0].blockSignals(true);
-    norm[1].blockSignals(true);
     norm[0].clear();
+    norm[1].blockSignals(true);
     norm[1].clear();
     for(int i = 0; i < points.size(); ++i){
         norm[0].append(points[i].first, points[i].second.x());
@@ -277,8 +413,8 @@ void MainWindow::getData(const QVector<QPair<qreal, QPointF> > points, const int
     }
     norm[0].blockSignals(false);
     norm[1].blockSignals(false);
-    rescale();//remove later
-    //qDebug() << QDateTime().currentMSecsSinceEpoch() - begin << "rescale";
+    norm[0].pointsReplaced();
+    norm[1].pointsReplaced();
 }
 
 void MainWindow::rescale(){
@@ -287,27 +423,29 @@ void MainWindow::rescale(){
     QtCharts::QLineSeries *lineSer;
     QList<QtCharts::QAbstractSeries*>::iterator end = chart.series().end()--;
     std::for_each(chart.series().begin(), end, [&x, &y, &lineSer, this](QtCharts::QAbstractSeries* const ser){//"this" for debug
-        if(ser){
-            lineSer = dynamic_cast<QtCharts::QLineSeries *>(ser);
-        }
-        if(lineSer){
-            QVector<QPointF> tmp = lineSer->pointsVector();
-            for(int i = 0; i < tmp.size(); i++){
-                if(tmp[i].y() > y.y()){
-                    y.ry() = tmp[i].y();
-                }
-                if(tmp[i].y() < y.x()){
-                    y.rx() = tmp[i].y();
-                }
-                if(tmp[i].x() > x.y()){
-                    x.ry() = tmp[i].x();
-                }
-                if(tmp[i].x() < x.x()){
-                    x.rx() = tmp[i].x();
-                }
+        if(ser->isVisible()){
+            if(ser){
+                lineSer = dynamic_cast<QtCharts::QLineSeries *>(ser);
             }
-        }else{
-            qDebug() << "error in " << objectName() << "::" << __FUNCTION__  << "unable to cast to QLineSeries";
+            if(lineSer){
+                QVector<QPointF> tmp = lineSer->pointsVector();
+                for(int i = 0; i < tmp.size(); i++){
+                    if(tmp[i].y() > y.y()){
+                        y.ry() = tmp[i].y();
+                    }
+                    if(tmp[i].y() < y.x()){
+                        y.rx() = tmp[i].y();
+                    }
+                    if(tmp[i].x() > x.y()){
+                        x.ry() = tmp[i].x();
+                    }
+                    if(tmp[i].x() < x.x()){
+                        x.rx() = tmp[i].x();
+                    }
+                }
+            }else{
+                qDebug() << "error in " << objectName() << "::" << __FUNCTION__  << "unable to cast to QLineSeries";
+            }
         }
     });
     if(axisX.min() != x.x() && axisX.max() != x.y()){
@@ -340,12 +478,7 @@ void MainWindow::loadSettings(){
         resize(settings.value("windowSize", QSize(800, 600)).toSize());
         move(settings.value("windowPosition", QPoint(0, 0)).toPoint());
         setWindowTitle(settings.value("windowTitle", "XMCDAnalyzer(corrupted .ini)").toString());
-        if(settings.value("useHolders", false).toBool()){
-            ui->holderButton->setChecked(true);
-        }else{
-            ui->angleButton->setChecked(true);
-        }
-        //path
+        dataDir = settings.value("lastDir", "").toString();
         settings.beginGroup("fileTable");
             ui->fileTable->setColumnWidth(0, settings.value("nameWidth", 200).toInt());
             ui->fileTable->setColumnWidth(1, settings.value("sampleWidth", 200).toInt());
@@ -367,8 +500,7 @@ void MainWindow::saveSettings(){
         settings.setValue("windowSize", this->size());
         settings.setValue("windowPosition", this->pos());
         settings.setValue("windowTitle", this->windowTitle());
-        settings.setValue("useHolders", ui->holderButton->isChecked());
-        //
+        settings.setValue("lastDir", dataDir);
         settings.beginGroup("fileTable");
             settings.setValue("nameWidth", ui->fileTable->columnWidth(0));
             settings.setValue("sampleWidth", ui->fileTable->columnWidth(1));
@@ -385,8 +517,10 @@ void MainWindow::saveSettings(){
 
 void MainWindow::open(QString selectedPath){
     if(selectedPath.length() != 0){
-        if(ui->file1Box->isChecked()){
-            filePath = selectedPath;
+        if(ui->file1Button->isChecked()){
+            filePath[0] = selectedPath;
+        }else{
+            filePath[1] = selectedPath;
         }
         table->removeAll();
         QDir currentDir(selectedPath);
@@ -418,7 +552,7 @@ void MainWindow::open(QString selectedPath){
             if(ui->geomBox->isChecked() && ((par.value("angle", "-1").toString() == "-1") || (par.value("angle", "-1").toString() == "") || (par.value("angle", "noInfo").toString() == geom))){
                 sameGeom = false;
             }
-            if(((loaded[0]) && sameSample && sameGeom && sameEnergy) || ui->file1Box->isChecked()){
+            if(((fileName[0].size() != 0) && sameSample && sameGeom && sameEnergy) || ui->file1Button->isChecked()){
                 table->insertRow(row, QModelIndex());
                 QModelIndex index = table->index(row, 0, QModelIndex());
                 table->setData(index, files.at(i).fileName(), Qt::EditRole);
@@ -448,9 +582,9 @@ void MainWindow::load(QModelIndex index){
     if(fileCheckBox[0]->isChecked()){
         file = 0;
         sample = table->data(table->index(index.row(), 1), Qt::DisplayRole).toString();
-        ui->exportLine->setText(filePath + "/" + sample + "_output");
+        ui->exportLine->setText(filePath[file] + "/" + sample + "_output");
         geom = table->data(table->index(index.row(), 2), Qt::DisplayRole).toString();
-        QFile currentFile(filePath + "/" + fileName[0]);
+        QFile currentFile(filePath[file] + "/" + table->data(table->index(index.row(), 0), Qt::DisplayRole).toString());
         currentFile.open(QIODevice::ReadOnly);
         QTextStream stream(&currentFile);
         QString line = stream.readLine();
@@ -459,17 +593,15 @@ void MainWindow::load(QModelIndex index){
     }
     fileName[file] = table->data(table->index(index.row(), 0), Qt::DisplayRole).toString();
     fileNameLabel[file]->setText(fileName[file]);
-    emit setLoader(filePath + "/" + fileName[file], file);
+    /*
+    emit setLoader(filePath[file] + "/" + fileName[file], file);
     theta[file] = table->data(index = table->index(index.row(), 2), Qt::DisplayRole).toDouble();
-    if(ui->holderButton->isChecked()){
-        theta[file] = angle[(int)theta[file]]; //mb not here
+    if(holderBox[file]->isChecked()){
+        theta[file] = angle[(int)theta[file]];//create reverse transaction
     }
-    theta[file] = qDegreesToRadians(theta[file]); //mb not here
+    theta[file] = qDegreesToRadians(theta[file]);
     loaded[file] = true;
-}
-
-QModelIndex MainWindow::selected(QModelIndex index){
-    return index;
+    */
 }
 
 void MainWindow::resizeEvent(QResizeEvent* event){
@@ -493,54 +625,72 @@ void MainWindow::exportCharts(){
 }
 
 void MainWindow::forget(int file){
-    fileNameLabel[file]->setText("none");
     loaded[file] = false;
-    fileName[file] = "";
     QString tmp = defaults();
-    loadState(tmp);
+    loadState(tmp, file);
     if(pairs.size() != 0){
         QFile::remove(pairs.at(id)->state[file]);
         pairs.at(id)->state[file] = tmp;
     }
 }
 
-void MainWindow::loadState(QString session){
+void MainWindow::loadState(QString session, const int file){
     QSettings *set = new QSettings(session, QSettings::IniFormat);
-    //value
-
-    if(pairs.size() != 0){
-        if(pairs.at(id)->ui.file1Button->isChecked()){
-            pairs.at(id)->ui.file1Label->setText(set->value("filename", "unknown").toString());
-        }else{
-            pairs.at(id)->ui.file2Label->setText(set->value("filename", "unknown").toString());
+    if(file == 0 || file == 1){
+        fileName[file] = set->value("filename", "").toString();
+        QString tmp = fileName[file].split("/").last();
+        pairs.at(id)->fileLabels[file]->setText(tmp);
+        filePath[file] = fileName[file].chopped(tmp.size() + 1);
+        if(set->value("isChecked", false).toBool()){
+            pairs.at(id)->fileButtons[file]->setChecked(true);
+            setLoader(fileName[file], file);
         }
     }
-
-    set->setValue("path", "");
-    set->setValue("isChecked", false);
-    set->setValue("isRaw", false);
-    set->setValue("isZero", false);
-    set->setValue("isNorm", true);
-    set->setValue("shadow", 0.0);
-    set->setValue("zeroShadow", 0.0);
-    set->setValue("isMult", false);
-    set->setValue("smooth", 1);
-    set->setValue("cropL", 0);
-    set->setValue("cropR", 0);
-    set->setValue("linearShow", false);
-    set->setValue("linearL", 0.0);
-    set->setValue("linearR", 0.0);
-    set->setValue("steppedMul", 10.0);
-    set->setValue("linear", false);
-    set->setValue("stepped", false);
-    set->setValue("xmcd", false);
-    set->setValue("integrate", false);
-    set->setValue("calc", false);
-    set->setValue("phi1", 0.0);
-    set->setValue("phi2", 0.0);
-    set->setValue("shift", 0.0);
-    set->setValue("angle=holder", false);
-    delete test;
+    ui->rawBox->setChecked(set->value("isRaw", false).toBool());
+    ui->zeroBox->setChecked(set->value("isZero", false).toBool());
+    ui->normBox->setChecked(set->value("isNorm", true).toBool()); //default
+    ui->shadowSpinBox->setValue(set->value("shadow", 0.0).toDouble());
+    ui->zeroShadowSpinBox->setValue(set->value("zeroShadow", 0.0).toDouble());
+    ui->mulBox->setChecked(set->value("isMult", false).toBool());
+    ui->mulCoeffSpinBox->setValue(set->value("mulCoeff", 0.0).toDouble());
+    ui->smoothSpinBox->setValue(set->value("smooth", 0).toInt());
+    ui->bSpinBox->setValue(set->value("cropL", 0).toInt());
+    ui->tSpinBox->setValue(set->value("cropR", 0).toInt());
+    ui->linearBox->setChecked(set->value("linearShow", false).toBool());
+    ui->llSpinBox->setValue(set->value("linearL", 0.0).toDouble());
+    ui->rlSpinBox->setValue(set->value("linearR", 0.0).toDouble());
+    ui->filletSpinBox->setValue(set->value("steppedMul", 10.0).toDouble());
+    ui->linearBackgroundBox->setChecked(set->value("linear", false).toBool());
+    ui->steppedBackgroundBox->setChecked(set->value("stepped", false).toBool());
+    ui->diffBox->setChecked(set->value("xmcd", false).toBool());
+    ui->integrationLimitSpinBox->setValue(set->value("integrationLimit", 0).toInt());
+    ui->integrateBox->setChecked(set->value("integrate", false).toBool());
+    ui->calculateBox->setChecked(set->value("calc", false).toBool());
+    if(file == 0 || file == 1){
+        offsets[file]->setValue(set->value("phi1", 0.0).toDouble());
+        parallel[file]->setChecked(set->value("phiChecked", false).toBool());
+        ui->rawBox->setEnabled(true);
+        ui->zeroBox->setEnabled(true);
+        ui->normBox->setEnabled(true);
+    }else{
+        for(int i = 0; i < 2; ++i){
+            offsets[i]->setValue(set->value("phi1", 0.0).toDouble());
+            parallel[i]->setChecked(set->value("phiChecked", false).toBool());
+        }
+    }
+    bool state = ui->normBox->isChecked() && (file == 0 || file == 1);
+    norm[0].setVisible(state);
+    norm[1].setVisible(state);
+    if(state){
+        rescale();
+        ui->smoothSpinBox->setMaximum(norm[0].pointsVector().size());
+    }
+    ui->mulBox->setChecked(false);
+    ui->shadowSpinBox->setEnabled(state);
+    ui->zeroShadowSpinBox->setEnabled(state);
+    ui->smoothSpinBox->setEnabled(state);
+    ui->mulBox->setEnabled(state);
+    delete set;
 }
 
 QString MainWindow::defaults(){
@@ -557,7 +707,6 @@ QString MainWindow::defaults(){
     res += name + ".ini";
     QSettings *set = new QSettings(res, QSettings::IniFormat);
     set->setValue("filename", "");
-    set->setValue("path", "");
     set->setValue("isChecked", false);
     set->setValue("isRaw", false);
     set->setValue("isZero", false);
@@ -565,6 +714,7 @@ QString MainWindow::defaults(){
     set->setValue("shadow", 0.0);
     set->setValue("zeroShadow", 0.0);
     set->setValue("isMult", false);
+    set->setValue("mulCoeff", 0.0);
     set->setValue("smooth", 1);
     set->setValue("cropL", 0);
     set->setValue("cropR", 0);
@@ -575,24 +725,22 @@ QString MainWindow::defaults(){
     set->setValue("linear", false);
     set->setValue("stepped", false);
     set->setValue("xmcd", false);
+    set->setValue("integrationLimit", 0);
     set->setValue("integrate", false);
     set->setValue("calc", false);
-    set->setValue("phi1", 0.0);
-    set->setValue("phi2", 0.0);
-    set->setValue("shift", 0.0);
-    set->setValue("angle=holder", false);
+    set->setValue("phi", 0.0);
+    set->setValue("phiChecked", false);
     delete set;
     return res;
 }
 
 void MainWindow::saveSession(){
-    qDebug() << "yep";
+    rescale();
+    //save here
 }
 
 void MainWindow::setPath(){
-    QString dir = QFileDialog::getExistingDirectory(this, tr("Select data directory"),
-                                                        dataDir,
-                                                         QFileDialog::DontUseNativeDialog);
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Select data directory"), dataDir);
     if(dir.length() != 0){
         refresh->removePath(dataDir);
         dataDir = dir;

@@ -21,6 +21,8 @@ public:
     Ui::Form ui;
     int id;
     QString state[2];
+    QLabel *fileLabels[2];
+    QRadioButton *fileButtons[2];
 
 public slots:
 

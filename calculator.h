@@ -19,13 +19,13 @@ public:
 
 signals:
     void dead();
-    void processedData(const QVector<QPair<qreal, QPointF>> points, const int file);
-    void rawData(const QVector<QPair<qreal, QPointF>> points, const int file);
-    void iZero(const QVector<QPair<qreal, QPointF>> points, const int file);
-    void XMCD(const QVector<QPointF> points, const int file);
-    void integrals(const qreal summ, const qreal dl2, const qreal dl3, const qreal mSE, const qreal mO, const int file);
+    void processedData(const QVector<QPair<qreal, QPointF>> points);
+    void rawData(const QVector<QPair<qreal, QPointF>> points);
+    void iZero(const QVector<QPair<qreal, QPointF>> points);
+    void XMCD(const QVector<QPointF> points);
+    void integrals(const qreal summ, const qreal dl2, const qreal dl3, const qreal mSE, const qreal mO);
     void moments(const qreal mOP, const qreal mOO, const qreal ms, const qreal mt);
-    void linCoeffs(const QPointF left, const QPointF right, const int file);
+    void linCoeffs(const QPointF left, const QPointF right);
     void compleated();
 
 public slots:

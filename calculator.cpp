@@ -21,7 +21,7 @@ void Calculator::setLoader(const QString loaderPath, const int file){
             reset();
         }
     }else{
-        qDebug() << "error in " << objectName() << "::" << __FUNCTION__  << ". Variable file == " << file;
+        qDebug() << "error in " << "Calculator" << "::" << __FUNCTION__  << ". Variable file == " << file;
     }
 }
 
@@ -33,7 +33,7 @@ void Calculator::setLimits(const qreal left, const qreal right, const int file){
             reset();
         }
     }else{
-        qDebug() << "error in " << objectName() << "::" << __FUNCTION__  << ". Variable file == " << file;
+        qDebug() << "error in " << "Calculator" << "::" << __FUNCTION__  << ". Variable file == " << file;
     }
 }
 
@@ -53,7 +53,7 @@ void Calculator::setShadowCurrent(const qreal signal, const qreal iZero, const i
             reset();
         }
     }else{
-        qDebug() << "error in " << objectName() << "::" << __FUNCTION__  << ". Variable file == " << file;
+        qDebug() << "error in " << "Calculator" << "::" << __FUNCTION__  << ". Variable file == " << file;
     }
 }
 
@@ -68,12 +68,12 @@ void Calculator::load(const int file){
             tmp = loader[file].getZero().at(i);
             zero[file][i] = QPair< qreal, QPointF>(tmp.first, QPointF(tmp.second.first, tmp.second.second));
         }
-        emit rawData(bare[file], file);
-        emit iZero(zero[file], file);
+        emit rawData(bare[file]);
+        emit iZero(zero[file]);
         loaded[file] = true;
         calcData(file);
     }else{
-        qDebug() << "error in " << objectName() << "::" << __FUNCTION__  << ". Variable file == " << file;
+        qDebug() << "error in " << "Calculator" << "::" << __FUNCTION__  << ". Variable file == " << file;
     }
 }
 
@@ -88,10 +88,10 @@ void Calculator::calcData(const int file){
             }
             smooth(file);
         }else{
-            qDebug() << "error in " << objectName() << "::" << __FUNCTION__  << ". file  " << file << " not loaded.";
+            qDebug() << "error in " << "Calculator" << "::" << __FUNCTION__  << ". file  " << file << " not loaded.";
         }
     }else{
-        qDebug() << "error in " << objectName() << "::" << __FUNCTION__  << ". Variable file == " << file;
+        qDebug() << "error in " << "Calculator" << "::" << __FUNCTION__  << ". Variable file == " << file;
     }
 }
 
@@ -104,10 +104,10 @@ void Calculator::setSmooth(const int count, const int file){
                 reset();
             }
         }else{
-            qDebug() << "error in " << objectName() << "::" << __FUNCTION__  << ". Variable count == " << count;
+            qDebug() << "error in " << "Calculator" << "::" << __FUNCTION__  << ". Variable count == " << count;
         }
     }else{
-        qDebug() << "error in " << objectName() << "::" << __FUNCTION__  << ". Variable file == " << file;
+        qDebug() << "error in " << "Calculator" << "::" << __FUNCTION__  << ". Variable file == " << file;
     }
 }
 
@@ -143,11 +143,12 @@ void Calculator::smooth(const int file){
             normData[file] = smoothedData[file];
             calcDiff(file);
         }else{
+            emit processedData(smoothedData[file]);
             ready = true;
             reset();
         }
     }else{
-        qDebug() << "error in " << objectName() << "::" << __FUNCTION__  << ". Variable file == " << file;
+        qDebug() << "error in " << "Calculator" << "::" << __FUNCTION__  << ". Variable file == " << file;
     }
 }
 
@@ -165,33 +166,34 @@ void Calculator::setNormalizationCoeff(const qreal coeff, bool needed, const int
             reset();
         }
     }else{
-        qDebug() << "error in " << objectName() << "::" << __FUNCTION__  << ". Variable file == " << file;
+        qDebug() << "error in " << "Calculator" << "::" << __FUNCTION__  << ". Variable file == " << file;
     }
 }
 
 void Calculator::normalize(const int file){
     if(file == 0 || file == 1){
+        normData[file].resize(smoothedData[file].size());
         qreal x1 = smoothedData[file].first().first;
         qreal x2 = smoothedData[file].last().first;
         qreal y1 = smoothedData[file].first().second.x()/smoothedData[file].first().second.y();
         qreal y2 = smoothedData[file].last().second.x()/smoothedData[file].last().second.y();
-        normalizationCoeff[file][1] = (normalizationCoeff[file][0]*(qPow(x1, 2) - qPow(x2, 2)) - y1 + y2)/(x2 - x1);
+        normalizationCoeff[file][1] = (y1 - y2 - normalizationCoeff[file][0]*(qPow(x1, 2) - qPow(x2, 2)))/(x1 - x2);
         normalizationCoeff[file][2] = y1 - normalizationCoeff[file][1]*x1 - normalizationCoeff[file][0]*qPow(x1, 2);
         for(int i = 0; i < smoothedData[file].size(); i++){
+            normData[file][i].first = smoothedData[file][i].first;
+            normData[file][i].second.rx() = smoothedData[file][i].second.x();
             normData[file][i].second.ry() = smoothedData[file][i].second.y()*(normalizationCoeff[file][0]*qPow(smoothedData[file][i].first, 2) +
-                    normalizationCoeff[file][1]*smoothedData[file][i].first + normalizationCoeff[file][0]);
-
-            //remove later
-            qDebug() << "if normalisation fails, check here__________________________________________________";
+                    normalizationCoeff[file][1]*smoothedData[file][i].first + normalizationCoeff[file][2]);
         }
         if(diffNeeded[file]){
             calcDiff(file);
         }else{
+            emit processedData(normData[file]);
             ready = true;
             reset();
         }
     }else{
-        qDebug() << "error in " << objectName() << "::" << __FUNCTION__  << ". Variable file == " << file;
+        qDebug() << "error in " << "Calculator" << "::" << __FUNCTION__  << ". Variable file == " << file;
     }
 }
 
@@ -203,7 +205,7 @@ void Calculator::setDiff(const bool needed, const int file){
             reset();
         }
     }else{
-        qDebug() << "error in " << objectName() << "::" << __FUNCTION__  << ". Variable file == " << file;
+        qDebug() << "error in " << "Calculator" << "::" << __FUNCTION__  << ". Variable file == " << file;
     }
 }
 
@@ -220,6 +222,7 @@ void Calculator::calcDiff(const int file){
                 rEdges[file] = i;
             }
         }
+        emit XMCD(diff[file]);//edit after box1
         if(linearNeeded[file]){
             linear(file);
         }else{
@@ -227,7 +230,7 @@ void Calculator::calcDiff(const int file){
             reset();
         }
     }else{
-        qDebug() << "error in " << objectName() << "::" << __FUNCTION__  << ". Variable file == " << file;
+        qDebug() << "error in " << "Calculator" << "::" << __FUNCTION__  << ". Variable file == " << file;
     }
 }
 
@@ -245,7 +248,7 @@ void Calculator::setLinearIntervals(const QPointF interval, bool needed, const i
             reset();
         }
     }else{
-        qDebug() << "error in " << objectName() << "::" << __FUNCTION__  << ". Variable file == " << file;
+        qDebug() << "error in " << "Calculator" << "::" << __FUNCTION__  << ". Variable file == " << file;
     }
 }
 
@@ -298,7 +301,7 @@ void Calculator::linear(const int file){
                 linearCoeff[file][i].rx() = (integer[i]*xySum[i] - xSum[i]*ySum[i])/(integer[i]*x2Sum[i] - pow(xSum[i], 2));
                 linearCoeff[file][i].ry() = (ySum[i] - linearCoeff[file][i].rx()*xSum[i])/integer[i];
             }
-            emit linCoeffs(linearCoeff[file][0], linearCoeff[file][1], file);
+            emit linCoeffs(linearCoeff[file][0], linearCoeff[file][1]);
             if(stepFitNeeded[file]){
                 //box1
             }else if(steppedNeeded[file]){
@@ -312,10 +315,10 @@ void Calculator::linear(const int file){
                 reset();
             }
         }else{
-            qDebug() << "error in " << objectName() << "::" << __FUNCTION__  << ". Variable linearIntervals[file].y() == " << linearIntervals[file].y();
+            qDebug() << "error in " << "Calculator" << "::" << __FUNCTION__  << ". Variable linearIntervals[file].y() == " << linearIntervals[file].y();
         }
     }else{
-        qDebug() << "error in " << objectName() << "::" << __FUNCTION__  << ". Variable linearIntervals[file].x() == " << linearIntervals[file].x();
+        qDebug() << "error in " << "Calculator" << "::" << __FUNCTION__  << ". Variable linearIntervals[file].x() == " << linearIntervals[file].x();
     }
 }
 
@@ -333,7 +336,7 @@ void Calculator::setStepped(const qreal coeff, bool needed, const int file){
             reset();
         }
     }else{
-        qDebug() << "error in " << objectName() << "::" << __FUNCTION__  << ". Variable file == " << file;
+        qDebug() << "error in " << "Calculator" << "::" << __FUNCTION__  << ". Variable file == " << file;
     }
 }
 
@@ -352,6 +355,7 @@ void Calculator::stepped(const int file){
             qreal y2 = fitData[file][i].second.y() - linearBackground - steppedBackground;
             finalData[file][i] = QPair<qreal, QPointF>(x, QPointF(y1, y2));
         }
+        emit processedData(finalData[file]);
         if(integrateNeeded[file]){
             integrate(file);
         }else{
@@ -359,7 +363,7 @@ void Calculator::stepped(const int file){
             reset();
         }
     }else{
-        qDebug() << "error in " << objectName() << "::" << __FUNCTION__  << ". Variable file == " << file;
+        qDebug() << "error in " << "Calculator" << "::" << __FUNCTION__  << ". Variable file == " << file;
     }
 }
 
@@ -371,10 +375,10 @@ void Calculator::setIntegrate(const bool needed, const int index, const int file
             integrationChanged[file] = true;
             reset();
         }else{
-            qDebug() << "error in " << objectName() << "::" << __FUNCTION__  << ". Variable index == " << index;
+            qDebug() << "error in " << "Calculator" << "::" << __FUNCTION__  << ". Variable index == " << index;
         }
     }else{
-        qDebug() << "error in " << objectName() << "::" << __FUNCTION__  << ". Variable file == " << file;
+        qDebug() << "error in " << "Calculator" << "::" << __FUNCTION__  << ". Variable file == " << file;
     }
 }
 
@@ -385,7 +389,7 @@ void Calculator::setIntegrationConstants(const qreal newPc, const qreal newNh){
             constantsChanged = true;
             reset();
         }else{
-           qDebug() << "error in " << objectName() << "::" << __FUNCTION__  << ". Variable newPc == " << newPc;
+           qDebug() << "error in " << "Calculator" << "::" << __FUNCTION__  << ". Variable newPc == " << newPc;
         }
     }
 }
@@ -410,7 +414,7 @@ void Calculator::integrate(const int file){
                 }
                 mSEff[file] = -2.0*constant*(dl3Int[file] - 2.0*dl2Int[file])/summInt[file];
                 mOrb[file] = -(4.0/3.0)*constant*(dl3Int[file] + dl2Int[file])/summInt[file];
-                emit integrals(summInt[file], dl2Int[file], dl3Int[file], mSEff[file], mOrb[file], file);
+                emit integrals(summInt[file], dl2Int[file], dl3Int[file], mSEff[file], mOrb[file]);
                 if(calculateNeeded){
                     calculate();
                 }else{
@@ -418,13 +422,13 @@ void Calculator::integrate(const int file){
                     reset();
                 }
             }else{
-                qDebug() << "error in " << objectName() << "::" << __FUNCTION__  << ". Variable diffNeeded == " << diffNeeded[file];
+                qDebug() << "error in " << "Calculator" << "::" << __FUNCTION__  << ". Variable diffNeeded == " << diffNeeded[file];
             }
         }else{
-            qDebug() << "error in " << objectName() << "::" << __FUNCTION__  << ". Variable steppedNeeded == " << steppedNeeded[file];
+            qDebug() << "error in " << "Calculator" << "::" << __FUNCTION__  << ". Variable steppedNeeded == " << steppedNeeded[file];
         }
     }else{
-        qDebug() << "error in " << objectName() << "::" << __FUNCTION__  << ". Variable file == " << file;
+        qDebug() << "error in " << "Calculator" << "::" << __FUNCTION__  << ". Variable file == " << file;
     }
 }
 
@@ -463,7 +467,7 @@ void Calculator::calculate(){
         ready = true;
         reset();
     }else{
-        qDebug() << "error in " << objectName() << "::" << __FUNCTION__  << ". Variable integrateNeeded == " << integrateNeeded[0] << integrateNeeded[1];
+        qDebug() << "error in " << "Calculator" << "::" << __FUNCTION__  << ". Variable integrateNeeded == " << integrateNeeded[0] << integrateNeeded[1];
     }
 }
 
@@ -473,6 +477,7 @@ int Calculator::reset(){
         for(int file = 0; file < 2; file++){
             if(loaderChanged[file]){
                 loaderChanged[file] = false;
+                qDebug() << path[file] << file << "loader path";
                 loader[file] = FileLoader(path[file]);
                 limits[file] = tmpLimits[file];
                 energyShift[file] = tmpEnergyShift[file];
@@ -503,7 +508,7 @@ int Calculator::reset(){
             }
             if(normalizationChanged[file]){
                 normalizationChanged[file] = false;
-                normalizationCoeff[file][0] = tmpNormalizationCoeff[file][0];
+                normalizationCoeff[file][0] = tmpNormalizationCoeff[file][0]*1E-4;
                 normalizationNeeded[file] = tmpNormalizationNeeded[file];
                 if(loaded[file] && normalizationNeeded[file]){
                     if(stage > 3 || stage == 0){
@@ -632,24 +637,6 @@ int Calculator::reset(){
                 default:
                     emit compleated();
                     return -1;
-            }
-
-            if(loaded[file]){
-                if(linearNeeded[file]){
-                    emit XMCD(finalDiff[file], file);
-                }else if(diffNeeded[file]){
-                    emit XMCD(diff[file], file);
-                }
-                if(stepFitNeeded[file]){
-                    emit processedData(finalData[file], file);
-                }else if(stepFitNeeded[file]){
-                    emit processedData(fitData[file], file);
-                }else if(normalizationNeeded[file]){
-                    emit processedData(normData[file], file);
-                }else{
-
-                    emit processedData(smoothedData[file], file);
-                }
             }
             return stage;
         }
