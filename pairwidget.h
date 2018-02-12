@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QString>
+#include <QButtonGroup>
 
 #include "ui_pairwidget.h"
 
@@ -23,6 +24,7 @@ public:
     QString state[2];
     QLabel *fileLabels[2];
     QRadioButton *fileButtons[2];
+    QButtonGroup buttons;
 
 public slots:
 

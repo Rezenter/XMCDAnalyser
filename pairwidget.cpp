@@ -10,6 +10,9 @@ PairWidget::PairWidget(QWidget *parent)
     fileLabels[1] = ui.file2Label;
     fileButtons[0] = ui.file1Button;
     fileButtons[1] = ui.file2Button;
+    for(int i = 0; i < 2; ++i){
+        buttons.addButton(fileButtons[i], i);
+    }
     QString  style = "QGroupBox {"
                      "border:1px solid #3A3939;"
                      "border-radius: 7px;"
@@ -23,9 +26,11 @@ PairWidget::PairWidget(QWidget *parent)
                      "}";
     ui.groupBox->setStyleSheet(style);
     ui.deleteButton->setStyleSheet("background-color: red;");
-    QObject::connect(ui.fileGroup, static_cast<void(QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked), this, [=](int i){
-        selected(id);
-        fileSelected(i);
+    QObject::connect(&buttons, static_cast<void(QButtonGroup::*)(int, bool)>(&QButtonGroup::buttonToggled), this, [=](int i, bool state){
+        if(state){
+            selected(id);
+            fileSelected(i);
+        }
     });
     QObject::connect(ui.deleteButton, &QPushButton::clicked, this, [this]{ deletePressed(id); });
     setMouseTracking(true);
