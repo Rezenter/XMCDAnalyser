@@ -7,6 +7,7 @@ Calculator::Calculator(QObject *parent) : QObject(parent){
 /*to-do:
  * clean+optimize
  * implement box1
+ * fix some actions availiable after last pair deleting
 */
 
 Calculator::~Calculator(){
@@ -177,12 +178,17 @@ void Calculator::normalize(const int file){
         qreal x2 = smoothedData[file].last().first;
         qreal y1 = smoothedData[file].first().second.x()/smoothedData[file].first().second.y();
         qreal y2 = smoothedData[file].last().second.x()/smoothedData[file].last().second.y();
-        normalizationCoeff[file][1] = (y1 - y2 - normalizationCoeff[file][0]*(qPow(x1, 2) - qPow(x2, 2)))/(x1 - x2);
-        normalizationCoeff[file][2] = y1 - normalizationCoeff[file][1]*x1 - normalizationCoeff[file][0]*qPow(x1, 2);
+        qreal a = (y1 - y2)/(x1 - x2);
+        qreal b = y1 - a*x1;
+        normalizationCoeff[file][1] = (normalizationCoeff[file][0]*(qPow(x1, 2.0) - qPow(x2, 2.0)))/(x2 - x1);
+        normalizationCoeff[file][2] = 1 - normalizationCoeff[file][1]*x1 - normalizationCoeff[file][0]*qPow(x1, 2.0);
         for(int i = 0; i < smoothedData[file].size(); i++){
             normData[file][i].first = smoothedData[file][i].first;
-            normData[file][i].second.rx() = smoothedData[file][i].second.x();
-            normData[file][i].second.ry() = smoothedData[file][i].second.y()*(normalizationCoeff[file][0]*qPow(smoothedData[file][i].first, 2) +
+            normData[file][i].second.rx() = (smoothedData[file][i].second.x())*
+                    (normalizationCoeff[file][0]*qPow(smoothedData[file][i].first, 2.0) +
+                    normalizationCoeff[file][1]*smoothedData[file][i].first + normalizationCoeff[file][2]);
+            normData[file][i].second.ry() = (smoothedData[file][i].second.y()*(a*smoothedData[file][i].first + b))*
+                    (normalizationCoeff[file][0]*qPow(smoothedData[file][i].first, 2.0) +
                     normalizationCoeff[file][1]*smoothedData[file][i].first + normalizationCoeff[file][2]);
         }
         if(diffNeeded[file]){
@@ -213,7 +219,7 @@ void Calculator::calcDiff(const int file){
     if(file == 0 || file == 1){
         diff[file].resize(normData[file].size());
         lEdges[file] = 0;
-        rEdges[file] = diff[file].size() - 1;
+        rEdges[file] = 0;
         for(int i = 0; i < normData[file].size(); ++i){
             diff[file][i] = QPointF(normData[file][i].first, normData[file][i].second.y() - normData[file][i].second.x());
             if(diff[file][i].y() < diff[file][lEdges[file]].y()){
@@ -266,7 +272,7 @@ void Calculator::linear(const int file){
             qreal y[2];
             for(int i = 0; i < integer[0]; i++){
                 xSum[0] += normData[file][i].first;
-                x2Sum[0] += qPow(normData[file][i].first, 2);
+                x2Sum[0] += qPow(normData[file][i].first, 2.0);
                 ySum[0] += (normData[file][i].second.x() + normData[file][i].second.y())/2.0;
                 xySum[0] += normData[file][i].first*(normData[file][i].second.x() + normData[file][i].second.y())/2.0;
             }
@@ -278,14 +284,14 @@ void Calculator::linear(const int file){
                         normData[file][integer[0] - 1].second.y() +
                         (normData[file][integer[0]].second.y() - normData[file][integer[0] - 1].second.y())*rest[0])/2.0;
                 xSum[0] += x[0];
-                x2Sum[0] += qPow(x[0], 2);
+                x2Sum[0] += qPow(x[0], 2.0);
                 ySum[0] += y[0];
                 xySum[0] += x[0]*y[0];
                 integer[0] += 1;
             }
             for(int i = normData[file].size() - 1; i > normData[file].size() - 1 - integer[1]; i--){
                 xSum[1] += normData[file][i].first;
-                x2Sum[1] += qPow(normData[file][i].first, 2);
+                x2Sum[1] += qPow(normData[file][i].first, 2.0);
                 ySum[1] += (normData[file][i].second.x() + normData[file][i].second.y())/2;
                 xySum[1] += normData[file][i].first*(normData[file][i].second.x() + normData[file][i].second.y())/2;
             }
@@ -300,7 +306,7 @@ void Calculator::linear(const int file){
                         (normData[file][normData[file].size() - integer[1]].second.y() -
                         normData[file][normData[file].size() - integer[1] - 1].second.y())*rest[1])/2.0;
                 xSum[1] += x[1];
-                x2Sum[1] += qPow(x[1], 2);
+                x2Sum[1] += qPow(x[1], 2.0);
                 ySum[1] += y[1];
                 xySum[1] += x[1]*y[1];
                 integer[1] += 1;
@@ -436,13 +442,20 @@ void Calculator::integrate(const int file){
                             (finalData[file][i + 1].second.x() + finalData[file][i].second.x() +
                              finalData[file][i + 1].second.y() + finalData[file][i].second.y())/2.0;
                 }
+                qreal a = (finalDiff[file][0].y() - finalDiff[file][separator[file]].y())/(finalDiff[file][0].x() - finalDiff[file][separator[file]].x());
+                qreal b = finalDiff[file][0].y() - a*finalDiff[file][0].x();
                 dl3Int[file] = 0.0;
                 for(int i = 0; i < separator[file]; i++){
                     dl3Int[file] += (finalDiff[file][i+1].x() - finalDiff[file][i].x())*(finalDiff[file][i+1].y() + finalDiff[file][i].y())/2.0;
+                    dl3Int[file] -= (finalDiff[file][i+1].x() - finalDiff[file][i].x())*(a*(finalDiff[file][i+1].x() + finalDiff[file][i].x())/2.0 + b);
                 }
+                a = (finalDiff[file][separator[file]].y() - finalDiff[file][finalData[file].size() - 1].y())/
+                        (finalDiff[file][separator[file]].x() - finalDiff[file][finalData[file].size() - 1].x());
+                b = finalDiff[file][separator[file]].y() - a*finalDiff[file][separator[file]].x();
                 dl2Int[file] = 0.0;
                 for(int i = separator[file]; i < finalData[file].size() - 1; i++){
                     dl2Int[file] += (finalDiff[file][i+1].x() - finalDiff[file][i].x())*(finalDiff[file][i+1].y() + finalDiff[file][i].y())/2.0;
+                    dl2Int[file] -= (finalDiff[file][i+1].x() - finalDiff[file][i].x())*(a*(finalDiff[file][i+1].x() + finalDiff[file][i].x())/2.0 + b);
                 }
                 mSEff[file] = -2.0*constant*(dl3Int[file] - 2.0*dl2Int[file])/summInt[file];
                 mOrb[file] = -(4.0/3.0)*constant*(dl3Int[file] + dl2Int[file])/summInt[file];

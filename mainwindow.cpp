@@ -78,9 +78,6 @@ MainWindow::MainWindow(QWidget *parent) :
         line[file].attachAxis(&axisX);
         line[file].attachAxis(&axisY);
         line[file].setVisible(false);
-        QPen tmp = line[file].pen();
-        tmp.setWidth(5);
-        line[file].setPen(tmp);
         chart.addSeries(&norm[file]);
         norm[file].attachAxis(&axisX);
         norm[file].attachAxis(&axisY);
@@ -181,7 +178,7 @@ MainWindow::MainWindow(QWidget *parent) :
         setSmooth(val, file);
     });
     QObject::connect(ui->mulBox, &QRadioButton::toggled, this, [=](bool state){
-        //ui->mulCoeffSpinBox->setEnabled(state); //disabled in current version
+        ui->mulCoeffSpinBox->setEnabled(state);
         ui->linearBox->setEnabled(state);
         setNormalizationCoeff(ui->mulCoeffSpinBox->value(), state, file);
         if(state){
@@ -320,7 +317,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->energyShiftSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, [=](double d){setEnergyShift(d, file);});
     QObject::connect(ui->tabWidget, static_cast<void(QTabWidget::*)(int)>(&QTabWidget::currentChanged), this, &MainWindow::myResize);
     QObject::connect(ui->swapButton, &QPushButton::pressed, this, &MainWindow::swap);
-    //QObject::connect(ui->sessionButton, &QPushButton::pressed, this, &MainWindow::loadState);
+
     QObject::connect(ui->selectPathButton, &QPushButton::pressed, this, &MainWindow::setPath);
     QObject::connect(refresh, &QFileSystemWatcher::directoryChanged, this, &MainWindow::open);
     QObject::connect(ui->pairButton, &QPushButton::pressed, this, &MainWindow::newPair);
@@ -461,7 +458,10 @@ void MainWindow::paintItBlack(const int id){
 }
 
 void MainWindow::deletePair(const int id){
-    ui->scrollAreaInternals->layout()->removeWidget(pairs.at(id));
+    PairWidget *curr = pairs.at(id);
+    QFile::remove(curr->state[0]);
+    QFile::remove(curr->state[1]);
+    ui->scrollAreaInternals->layout()->removeWidget(curr);
     if(pairs.size() > 1){
         if(100 * this->id > ui->scrollArea->height() - 36){
             ui->scrollAreaInternals->resize(230, ui->scrollAreaInternals->height() - 100);
@@ -469,8 +469,7 @@ void MainWindow::deletePair(const int id){
         for(int i = id; i < pairs.size(); i++){
            pairs.at(i)->id--;
         }
-        QFile::remove(pairs.at(id)->state[0]);
-        QFile::remove(pairs.takeAt(id)->state[1]);
+        pairs.removeAt(id);
         if(id == this->id){
             if(id != 0){
                 paintItBlack(id - 1);
@@ -483,14 +482,14 @@ void MainWindow::deletePair(const int id){
         ui->rawBox->setEnabled(false);
         ui->zeroBox->setEnabled(false);
         ui->normBox->setEnabled(false);
-        QFile::remove(pairs.at(id)->state[0]);
-        QFile::remove(pairs.takeAt(id)->state[1]);
+        pairs.removeAt(id);
         this->id = -1;
         file = 0;
         QString tmp = defaults();
         loadState(tmp, -1);
         QFile::remove(tmp);
     }
+    delete curr;
 }
 
 void MainWindow::rawData(const QVector<QPair<qreal, QPointF>> points){
@@ -548,14 +547,15 @@ void MainWindow::XMCD(const QVector<QPointF> points){
 }
 
 void MainWindow::linCoeffs(const QPointF left, const QPointF right, QPointF x){
+    Q_UNUSED(x);
     line[0].blockSignals(true);
     line[0].clear();
     line[1].blockSignals(true);
     line[1].clear();
     line[0].append(norm[0].at(0).x(), norm[0].at(0).x() * left.x() + left.y());
-    line[0].append(x.x(), x.x() * left.x() + left.y());
-    line[1].append(x.y(), x.y() * right.x() + right.y());
-    line[1].append(norm[1].at(norm[1].points().size() - 1).x(), norm[1].at(norm[1].points().size() - 1).x() * right.x() + right.y());
+    line[0].append(norm[0].at(norm[0].points().size() - 1).x(), norm[0].at(norm[0].points().size() - 1).x() * left.x() + left.y());
+    line[1].append(norm[0].at(0).x(), norm[0].at(0).x() * right.x() + right.y());
+    line[1].append(norm[0].at(norm[0].points().size() - 1).x(), norm[0].at(norm[0].points().size() - 1).x() * right.x() + right.y());
     line[0].blockSignals(false);
     line[1].blockSignals(false);
     ui->lkLabel->setText(QString::number(left.x()));
@@ -863,8 +863,8 @@ void MainWindow::loadState(QString session, const int file){
     ui->linearBackgroundBox->setChecked(set->value("linear", false).toBool());
     ui->steppedBackgroundBox->setChecked(set->value("stepped", false).toBool());
     ui->diffBox->setChecked(set->value("xmcd", false).toBool());
-    ui->integrationLimitSpinBox->setValue(set->value("integrationLimit", 0).toInt());
     ui->integrateBox->setChecked(set->value("integrate", false).toBool());
+    ui->integrationLimitSpinBox->setValue(set->value("integrationLimit", 0).toInt());
     if(file == 0 || file == 1){
         offsets[file]->setValue(set->value("phiOff", 0.0).toDouble());
         ui->bSpinBox->setEnabled(true);

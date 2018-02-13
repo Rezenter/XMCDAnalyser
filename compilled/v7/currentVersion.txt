@@ -22,8 +22,3 @@ v7
 		calculations moved to a separete thread
 		better button sequence
 		multipair support
-
-v8	
-	integration changed
-	added ax2+bx+c multiplyier
-	fixed pair deleting
