@@ -873,7 +873,7 @@
              </widget>
             </item>
             <item row="16" column="0">
-             <widget class="QPushButton" name="setExportPath1Button">
+             <widget class="QPushButton" name="setExportPathButton">
               <property name="text">
                <string>set Export Path</string>
               </property>
@@ -1819,17 +1819,16 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="fileGroup">
-   <property name="exclusive">
-    <bool>true</bool>
-   </property>
-  </buttongroup>
-  <buttongroup name="angleGroup"/>
-  <buttongroup name="dataTypeGroup"/>
   <buttongroup name="filterGroup">
    <property name="exclusive">
     <bool>false</bool>
    </property>
   </buttongroup>
+  <buttongroup name="fileGroup">
+   <property name="exclusive">
+    <bool>true</bool>
+   </property>
+  </buttongroup>
+  <buttongroup name="dataTypeGroup"/>
  </buttongroups>
 </ui>

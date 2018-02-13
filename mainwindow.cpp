@@ -98,7 +98,7 @@ MainWindow::MainWindow(QWidget *parent) :
     xmcd.attachAxis(&axisX);
     xmcd.attachAxis(&axisY2);
     xmcd.setVisible(false);
-    xmcd.setName("XMCD Zero");
+    xmcdZero.setName("XMCD Zero");
     chart.addSeries(&xmcdZero);
     xmcdZero.attachAxis(&axisX);
     xmcdZero.attachAxis(&axisY2);
@@ -373,6 +373,8 @@ MainWindow::MainWindow(QWidget *parent) :
     session.setValue("normalExit", false);
     ui->sessionButton->setEnabled(false); //disabled in current version
     ui->unitBox_2->setEnabled(false); //same
+    ui->setExportPathButton->setEnabled(false);//
+    ui->setExportPath2Button->setEnabled(false);//
     setIntegrationConstants(ui->pSpinBox->value(), ui->nSpinBox->value());
 }
 
@@ -602,25 +604,25 @@ void MainWindow::rescale(){
         if(ser->isVisible()){
             if(ser && ser != &dot){
                 lineSer = dynamic_cast<QtCharts::QLineSeries *>(ser);
-            }
-            if(lineSer){
-                QVector<QPointF> tmp = lineSer->pointsVector();
-                for(int i = 0; i < tmp.size(); i++){
-                    if(tmp[i].y() > y.y()){
-                        y.ry() = tmp[i].y();
+                if(lineSer){
+                    QVector<QPointF> tmp = lineSer->pointsVector();
+                    for(int i = 0; i < tmp.size(); i++){
+                        if(tmp[i].y() > y.y()){
+                            y.ry() = tmp[i].y();
+                        }
+                        if(tmp[i].y() < y.x()){
+                            y.rx() = tmp[i].y();
+                        }
+                        if(tmp[i].x() > x.y()){
+                            x.ry() = tmp[i].x();
+                        }
+                        if(tmp[i].x() < x.x()){
+                            x.rx() = tmp[i].x();
+                        }
                     }
-                    if(tmp[i].y() < y.x()){
-                        y.rx() = tmp[i].y();
-                    }
-                    if(tmp[i].x() > x.y()){
-                        x.ry() = tmp[i].x();
-                    }
-                    if(tmp[i].x() < x.x()){
-                        x.rx() = tmp[i].x();
-                    }
+                }else{
+                    qDebug() << "error in " << this->metaObject()->className() << "::" << __FUNCTION__  << "unable to cast to QLineSeries";
                 }
-            }else{
-                qDebug() << "error in " << this->metaObject()->className() << "::" << __FUNCTION__  << "unable to cast to QLineSeries";
             }
         }
     });
@@ -786,13 +788,32 @@ void MainWindow::exportCharts(){
     if(!QDir(exPath).exists()){
         QDir().mkdir(exPath);
     }
-    QFile outFile(exPath + "/common.txt");
-    outFile.open(QIODevice::WriteOnly);
-    QTextStream outStream(&outFile);
-    //...
-    outFile.close();
+    if(!QDir(exPath + "/" + QString::number(file)).exists()){
+        QDir().mkdir(exPath + "/" + QString::number(file));
+    }
+    QList<QtCharts::QAbstractSeries*>::iterator end = chart.series().end()--;
+    std::for_each(chart.series().begin(), end, [=](QtCharts::QAbstractSeries* const ser){
+        if(ser->isVisible()){
+            QtCharts::QLineSeries *lineSer;
+            if(ser && (ser != &xmcdZero) && (ser != &line[0]) && (ser != &line[1])){
+                lineSer = dynamic_cast<QtCharts::QLineSeries *>(ser);
+                if(lineSer){
+                    QFile outFile(exPath + "/" + QString::number(file) + "/" + lineSer->name() + ".txt");
+                    outFile.open(QIODevice::WriteOnly);
+                    QTextStream outStream(&outFile);
+                    QVector<QPointF> tmp = lineSer->pointsVector();
+                    for(int i = 0; i < tmp.size(); ++i){
+                        outStream << tmp[i].x() << "    " << tmp[i].y() << "\n";
+                    }
+                    outFile.close();
 
-    QSettings expSession(exPath + "/session.ini", QSettings::IniFormat);
+                }else{
+                    qDebug() << "error in " << this->metaObject()->className() << "::" << __FUNCTION__  << "unable to cast to QLineSeries";
+                }
+            }
+        }
+    });
+    //QSettings expSession(exPath + "/session.ini", QSettings::IniFormat);
     //...
 }
 
@@ -858,6 +879,7 @@ void MainWindow::loadState(QString session, const int file){
     phiLabels[file]->setText(QString::number(theta[file] + offsets[file]->value()));
     ui->calculateBox->setChecked(set->value("calc", false).toBool());
     if(file == 0 || file == 1){
+        ui->exportLine->setText(dataDir + "/" + QString::number(id));
         ui->swapButton->setEnabled(true);
         ui->rawBox->setEnabled(true);
         ui->zeroBox->setEnabled(true);
