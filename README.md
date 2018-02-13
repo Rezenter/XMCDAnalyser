@@ -10,15 +10,18 @@ v3
 		half-sum normalisation
 		load session button
 		angle calculations
+		
 v4
 	fixed integration limits
 	disabled calibration level
 	added phi offset spin boxes
 	fixed export
+	
 v5
 	fixed XMCD integration
 	a bit reworked MainWindow::reCalc()
 	removed stepped normalisation
+	
 v6
 	cosmetic fixes
 	added "to-do" section
@@ -29,6 +32,7 @@ v7
 		calculations moved to a separete thread
 		better button sequence
 		multipair support
+		
 
 v8	
 	integration changed
