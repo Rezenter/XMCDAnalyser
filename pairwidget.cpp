@@ -13,17 +13,6 @@ PairWidget::PairWidget(QWidget *parent)
     for(int i = 0; i < 2; ++i){
         buttons.addButton(fileButtons[i], i);
     }
-    QString  style = "QGroupBox {"
-                     "border:1px solid #3A3939;"
-                     "border-radius: 7px;"
-                     "margin-top: 20px;"
-                     "}"
-
-                     "QGroupBox::title {"
-                     "subcontrol-origin: margin;"
-                     "subcontrol-position: top center;"
-                     "padding-top: 10px;"
-                     "}";
     ui.groupBox->setStyleSheet(style);
     ui.deleteButton->setStyleSheet("background-color: red;");
     QObject::connect(&buttons, static_cast<void(QButtonGroup::*)(int, bool)>(&QButtonGroup::buttonToggled), this, [=](int i, bool state){
@@ -32,7 +21,7 @@ PairWidget::PairWidget(QWidget *parent)
             fileSelected(i);
         }
     });
-    QObject::connect(ui.deleteButton, &QPushButton::clicked, this, [this]{ deletePressed(id); });
+    QObject::connect(ui.deleteButton, &QPushButton::clicked, this, [this]{ deletePressed(id);});
     setMouseTracking(true);
 }
 

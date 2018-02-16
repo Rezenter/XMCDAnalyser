@@ -27,3 +27,9 @@ v8
 	integration changed
 	added ax2+bx+c multiplyier
 	fixed pair deleting
+v9
+	state refactored to QHash
+	added only positive integration support
+	fixed dot behavior
+	added relative curv
+	small gui fixes

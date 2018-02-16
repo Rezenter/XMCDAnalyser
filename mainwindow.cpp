@@ -45,7 +45,7 @@ MainWindow::MainWindow(QWidget *parent) :
     thetaLabels[1] = ui->theta2Label;
     refresh = new QFileSystemWatcher(this);
     QSettings session(QApplication::applicationDirPath() + "/session.ini", QSettings::IniFormat);
-    session.setValue("exePath", QCoreApplication::applicationDirPath());
+    session.setValue("exePath", QCoreApplication::applicationDirPath());//wtf i need this?
     ui->tabWidget->setCurrentIndex(0);
     axisX.setMinorGridLineVisible(true);
     chart.setTitle("XAS");
@@ -54,8 +54,10 @@ MainWindow::MainWindow(QWidget *parent) :
     chart.addAxis(&axisY2, Qt::AlignRight);
     axisY.setGridLineColor(QColor(150, 250 , 150));
     axisY.setLinePenColor(QColor(0, 150 , 0));
+    axisY.setLabelFormat("%2.2e");
     axisY2.setGridLineColor(QColor(150, 150 , 250));
     axisY2.setLinePenColor(QColor(0, 0 , 150));
+    axisY2.setLabelFormat("%2.2e");
     axisX.setMinorTickCount(4);
     axisX.setTickCount(20);
     axisX.setTitleText("primary photons energy, eV");
@@ -177,12 +179,14 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->smoothSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, [=](int val){
         setSmooth(val, file);
     });
-    QObject::connect(ui->mulBox, &QRadioButton::toggled, this, [=](bool state){
+    QObject::connect(ui->mulBox, &QCheckBox::toggled, this, [=](bool state){
         ui->mulCoeffSpinBox->setEnabled(state);
         ui->linearBox->setEnabled(state);
+        ui->particularCurvatureSpinBox->setEnabled(state);
         setNormalizationCoeff(ui->mulCoeffSpinBox->value(), state, file);
         if(state){
             buttons.append(ui->mulBox);
+            setRelativeCurv(ui->particularCurvatureSpinBox->value(), file);
         }else{
             buttons.takeLast()->setChecked(false);
         }
@@ -190,7 +194,10 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->mulCoeffSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, [=](double val){
         setNormalizationCoeff(val, ui->mulBox->isChecked(), file);
     });
-    QObject::connect(ui->linearBox, &QRadioButton::toggled, this, [=](bool state){
+    QObject::connect(ui->particularCurvatureSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, [=](double val){
+        setRelativeCurv(val, file);
+    });
+    QObject::connect(ui->linearBox, &QCheckBox::toggled, this, [=](bool state){
         ui->llSpinBox->setEnabled(state);
         ui->rlSpinBox->setEnabled(state);
         ui->linearBackgroundBox->setEnabled(state);
@@ -199,10 +206,10 @@ MainWindow::MainWindow(QWidget *parent) :
         line[1].setVisible(state);
         if(state){
             buttons.append(ui->linearBox);
-            rescale();
         }else{
             buttons.takeLast()->setChecked(false);
         }
+        rescale();
     });
     QObject::connect(ui->llSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, [=](double val){
         setLinearIntervals(QPointF(val, ui->rlSpinBox->value()), ui->linearBox->isChecked(), file);
@@ -210,7 +217,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->rlSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, [=](double val){
         setLinearIntervals(QPointF(ui->llSpinBox->value(), val), ui->linearBox->isChecked(), file);
     });
-    QObject::connect(ui->linearBackgroundBox, &QRadioButton::toggled, this, [=](bool state){
+    QObject::connect(ui->linearBackgroundBox, &QCheckBox::toggled, this, [=](bool state){
         setLin(state, file);
         ui->filletSpinBox->setEnabled(state);
         ui->steppedBackgroundBox->setEnabled(state);
@@ -218,45 +225,39 @@ MainWindow::MainWindow(QWidget *parent) :
         line[1].setVisible(!state);
         if(state){
             buttons.append(ui->linearBackgroundBox);
-            rescale();
         }else{
             buttons.takeLast()->setChecked(false);
         }
+        rescale();
     });
     QObject::connect(ui->filletSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, [=](double val){
         setStepped(val, ui->steppedBackgroundBox->isChecked(), file);
     });
-    QObject::connect(ui->steppedBackgroundBox, &QRadioButton::toggled, this, [=](bool state){
+    QObject::connect(ui->steppedBackgroundBox, &QCheckBox::toggled, this, [=](bool state){
         setStepped(ui->filletSpinBox->value(), state, file);
         ui->diffBox->setEnabled(state);
         if(state){
             buttons.append(ui->steppedBackgroundBox);
-            rescale();
         }else{
             buttons.takeLast()->setChecked(false);
         }
     });
-    QObject::connect(ui->diffBox, &QRadioButton::toggled, this, [=](bool state){
+    QObject::connect(ui->diffBox, &QCheckBox::toggled, this, [=](bool state){
         ui->integrationLimitSpinBox->setValue(raw[file].pointsVector().size()/2);
         xmcd.setVisible(state);
         xmcdZero.setVisible(state);
-        dot.setVisible(state);
         axisY2.setVisible(state);
-        ui->integrationLimitSpinBox->setEnabled(state);
         ui->integrateBox->setEnabled(state);
         if(state){
-            dot.replace(0, xmcd.at(ui->integrationLimitSpinBox->value()));
             buttons.append(ui->diffBox);
-            rescale();
         }else{
             buttons.takeLast()->setChecked(false);
         }
     });
-    QObject::connect(ui->integrationLimitSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, [=](int val){
-        dot.replace(0, xmcd.at(ui->integrationLimitSpinBox->value()));
-        setIntegrate(ui->integrateBox->isChecked(), val, file);
-    });
-    QObject::connect(ui->integrateBox, &QRadioButton::toggled, this, [=](bool state){
+    QObject::connect(ui->integrateBox, &QCheckBox::toggled, this, [=](bool state){
+        ui->integrationLimitSpinBox->setEnabled(state);
+        ui->positiveCheckBox->setEnabled(state);
+        dot.setVisible(state);
         setIntegrate(state, ui->integrationLimitSpinBox->value(), file);
         integrated[file] = state;
         if(integrated[0] && integrated[1]){
@@ -265,8 +266,8 @@ MainWindow::MainWindow(QWidget *parent) :
             ui->calculateBox->setEnabled(false);
         }
         if(state){
+            dot.replace(0, xmcd.at(ui->integrationLimitSpinBox->value()));
             buttons.append(ui->integrateBox);
-            rescale();
         }else{
             summLabels[file]->setText("");
             dl2Labels[file]->setText("");
@@ -276,13 +277,22 @@ MainWindow::MainWindow(QWidget *parent) :
             buttons.takeLast()->setChecked(false);
         }
     });
-    QObject::connect(ui->calculateBox, &QRadioButton::toggled, this, [=](bool state){
-        qreal phi1 = qDegreesToRadians(theta[0] + ui->phi1OffsetSpinBox->value());
+    QObject::connect(ui->integrationLimitSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, [=](int val){
+        dot.replace(0, xmcd.at(ui->integrationLimitSpinBox->value()));
+        setIntegrate(ui->integrateBox->isChecked(), val, file);
+    });
+    QObject::connect(ui->positiveCheckBox, &QCheckBox::toggled, this, [=](bool state){
+        setPositiveIntegrals(state, file);
+    });
+    QObject::connect(ui->calculateBox, &QCheckBox::toggled, this, [=](bool state){
+        qreal phi1 = qDegreesToRadians(theta[0] + ui->phi1OffsetSpinBox->value());//may fail
         qreal phi2 = qDegreesToRadians(theta[1] + ui->phi2OffsetSpinBox->value());
+        state = state && integrated[0] && integrated[1];
         setCalculate(state, QPointF(phi1, phi2), QPointF(qDegreesToRadians(theta[0]), qDegreesToRadians(theta[1])));
         if(state){
             buttons.append(ui->calculateBox);
-            rescale();
+            pairs.at(id)->state[0].insert("calc", ui->calculateBox->isChecked());
+            pairs.at(id)->state[1].insert("calc", ui->calculateBox->isChecked());
         }else{
             ui->mOrbPLabel_2->setText("");
             ui->mOrbOLabel_2->setText("");
@@ -317,12 +327,11 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->energyShiftSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, [=](double d){setEnergyShift(d, file);});
     QObject::connect(ui->tabWidget, static_cast<void(QTabWidget::*)(int)>(&QTabWidget::currentChanged), this, &MainWindow::myResize);
     QObject::connect(ui->swapButton, &QPushButton::pressed, this, &MainWindow::swap);
-
+    QObject::connect(ui->setExportPathButton, &QPushButton::pressed, this, &MainWindow::exportDialog);
+    QObject::connect(ui->setExportPath2Button, &QPushButton::pressed, this, &MainWindow::exportDialog);
     QObject::connect(ui->selectPathButton, &QPushButton::pressed, this, &MainWindow::setPath);
     QObject::connect(refresh, &QFileSystemWatcher::directoryChanged, this, &MainWindow::open);
     QObject::connect(ui->pairButton, &QPushButton::pressed, this, &MainWindow::newPair);
-
-    //holder buttons!!!
 
     //this to calc
     QObject::connect(this, &MainWindow::setEnergyShift, calculator, &Calculator::setEnergyShift);
@@ -338,6 +347,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(this, &MainWindow::setIntegrationConstants, calculator, &Calculator::setIntegrationConstants);
     QObject::connect(this, &MainWindow::update, calculator, &Calculator::update);
     QObject::connect(this, &MainWindow::setCalculate, calculator, &Calculator::setCalculate);
+    QObject::connect(this, &MainWindow::setPositiveIntegrals, calculator, &Calculator::setIntegratePositiveOnly);
+    QObject::connect(this, &MainWindow::setRelativeCurv, calculator, &Calculator::setRelativeCurv);
 
     //calc to this
     qRegisterMetaType<QVector<QPair<qreal,QPointF>>>("QVector<QPair<qreal,QPointF>>");
@@ -352,40 +363,28 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(calculator, &Calculator::completed, this, &MainWindow::saveSession);
     QObject::connect(calculator, &Calculator::integrals, this, &MainWindow::integrals);
 
-
     loadSettings();
     ui->scrollAreaInternals->resize(ui->scrollArea->width() - 5, ui->scrollArea->height());
     calcThread->start();
-    if(session.value("normalExit", false).toBool()){
-        //clear tmp folder
-        QString tmp = defaults();
-        loadState(tmp, -1);
-        QFile::remove(tmp);
+    if(session.value("normalExit", false).toBool() || true){//debug
+        loadState(defaults());
     }else{
         //load all nods
-        //loadState();//1
-        //2
+        //loadState();
         //clear unused ini files
     }
     session.setValue("normalExit", false);
     ui->sessionButton->setEnabled(false); //disabled in current version
     ui->unitBox_2->setEnabled(false); //same
-    ui->setExportPathButton->setEnabled(false);//
-    ui->setExportPath2Button->setEnabled(false);//
     setIntegrationConstants(ui->pSpinBox->value(), ui->nSpinBox->value());
 }
 
 MainWindow::~MainWindow()
 {
-    for(int i = 0; i < pairs.size(); ++i){
-        QFile::remove(pairs.at(i)->state[0]);
-        QFile::remove(pairs.takeAt(i)->state[1]);
-    }
     delete refresh;
     calcThread->quit();
     calcThread->requestInterruption();
     if(calcThread->wait()){
-        //qDebug() << "OK";
     }else{
         qDebug() << "thread error";
     }
@@ -393,6 +392,14 @@ MainWindow::~MainWindow()
     //session.setValue("normalExit", true);//debug
     saveSettings();
     delete ui;
+}
+
+void MainWindow::exportDialog(){
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Select export directory"), dataDir);
+    if(dir.length() != 0){
+        ui->exportLine->setText(dir);
+        ui->summaryPathLineEdit->setText(dir);
+    }
 }
 
 void MainWindow::newPair(){
@@ -411,31 +418,37 @@ void MainWindow::newPair(){
             fileNameLabel[file]->setText("");
             pairs.last()->state[file] = defaults();
             pairs.last()->fileLabels[file]->setText(fileName[file]);
-            QSettings tmp(pairs.last()->state[file], QSettings::IniFormat);
-            tmp.setValue("filename", filePath[file] + "/" + fileName[file]);
+            pairs.last()->state[file].insert("filename", filePath[file] + "/" + fileName[file]);
             if(holderBox[file]->isChecked() && (theta[file] <= 2) && (theta[file] >= 0)){
-                tmp.setValue("theta", angle[(int)theta[file]]);
+                pairs.last()->state[file].insert("theta", angle[(int)theta[file]]);
             }else{
-                tmp.setValue("theta", theta[file]);
+                pairs.last()->state[file].insert("theta", theta[file]);
             }
+            pairs.last()->state[file].insert("loaded", true);
+            pairs.last()->state[file].insert("sample", sample);
+            pairs.last()->state[file].insert("energy", energy);
             fileName[file] = "";
             filePath[file] = "";
         }
-        pairs.last()->ui.groupBox->setTitle(QString::number(id));//fix
+        pairs.last()->ui.groupBox->setTitle(sample + " " + energy + " " +
+                                            QString::number(pairs.last()->state[0].value("theta", -1.0).toDouble()) + "/" +
+                                            QString::number(pairs.last()->state[1].value("theta", -1.0).toDouble()));
         pairs.at(id)->fileButtons[0]->setChecked(true);
         ui->file1Button->setChecked(true);
         QObject::connect(pairs.last(), &PairWidget::selected, this, &MainWindow::paintItBlack);
         QObject::connect(pairs.last(), &PairWidget::deletePressed, this, &MainWindow::deletePair);
-        QObject::connect(pairs.last(), &PairWidget::fileSelected, this, &MainWindow::fileSelected);
+        QObject::connect(pairs.last(), &PairWidget::fileSelected, this, [=](int file){
+            this->file = file;
+            loadState(pairs.at(id)->state[file]);
+            chart.setTitle(pairs.last()->state[file].value("sample", "null").toString() + " " +
+                    pairs.last()->state[file].value("energy", "null").toString() + " " +
+                    QString::number(pairs.last()->state[file].value("theta", -1.0).toDouble()));
+            update(file);
+        });
+        integrated[0] = false;
+        integrated[1] = false;
         paintItBlack(id);
     }
-}
-
-void MainWindow::fileSelected(const int file){
-    this->file = file;
-    loadState(pairs.at(id)->state[file], file);
-    chart.setTitle("XMCD " + QString::number(id) + " " + QString::number(file));
-    update(file);
 }
 
 void MainWindow::paintItBlack(const int id){
@@ -453,14 +466,12 @@ void MainWindow::paintItBlack(const int id){
         }else{
             file = 1;
         }
-        loadState(pairs.at(id)->state[file], file);
+        loadState(pairs.at(id)->state[file]);
     }
 }
 
 void MainWindow::deletePair(const int id){
     PairWidget *curr = pairs.at(id);
-    QFile::remove(curr->state[0]);
-    QFile::remove(curr->state[1]);
     ui->scrollAreaInternals->layout()->removeWidget(curr);
     if(pairs.size() > 1){
         if(100 * this->id > ui->scrollArea->height() - 36){
@@ -485,9 +496,7 @@ void MainWindow::deletePair(const int id){
         pairs.removeAt(id);
         this->id = -1;
         file = 0;
-        QString tmp = defaults();
-        loadState(tmp, -1);
-        QFile::remove(tmp);
+        loadState(defaults());
     }
     delete curr;
 }
@@ -543,6 +552,7 @@ void MainWindow::XMCD(const QVector<QPointF> points){
     xmcd.pointsReplaced();
     xmcdZero.replace(0, QPointF(xmcd.at(0).x(), 0));
     xmcdZero.replace(1, QPointF(xmcd.at(xmcd.points().size() - 1).x(), 0));
+    dot.replace(0, xmcd.at(ui->integrationLimitSpinBox->value()));
     axisY2.setRange(min, max);
 }
 
@@ -602,7 +612,7 @@ void MainWindow::rescale(){
     QList<QtCharts::QAbstractSeries*>::iterator end = chart.series().end()--;
     std::for_each(chart.series().begin(), end, [&x, &y, &lineSer, this](QtCharts::QAbstractSeries* const ser){//"this" for debug
         if(ser->isVisible()){
-            if(ser && ser != &dot){
+            if(ser && ser != &dot && ser != &xmcd && ser != &xmcdZero){
                 lineSer = dynamic_cast<QtCharts::QLineSeries *>(ser);
                 if(lineSer){
                     QVector<QPointF> tmp = lineSer->pointsVector();
@@ -764,7 +774,6 @@ void MainWindow::load(QModelIndex index){
     if(fileCheckBox[0]->isChecked()){
         file = 0;
         sample = table->data(table->index(index.row(), 1), Qt::DisplayRole).toString();
-        ui->exportLine->setText(filePath[file] + "/" + sample + "_output");
         geom = table->data(table->index(index.row(), 2), Qt::DisplayRole).toString();
         QFile currentFile(filePath[file] + "/" + table->data(table->index(index.row(), 0), Qt::DisplayRole).toString());
         currentFile.open(QIODevice::ReadOnly);
@@ -784,6 +793,9 @@ void MainWindow::resizeEvent(QResizeEvent* event){
 }
 
 void MainWindow::exportCharts(){
+    if(ui->exportLine->text().size() == 0){
+        exportDialog();
+    }
     QString exPath = ui->exportLine->text();
     if(!QDir(exPath).exists()){
         QDir().mkdir(exPath);
@@ -817,114 +829,121 @@ void MainWindow::exportCharts(){
     //...
 }
 
-void MainWindow::forget(int file){
-    loaded[file] = false;
-    QString tmp = defaults();
-    loadState(tmp, file);
-    if(pairs.size() != 0){
-        QFile::remove(pairs.at(id)->state[file]);
-        pairs.at(id)->state[file] = tmp;
-    }
-}
-
-void MainWindow::loadState(QString session, const int file){  
-    QSettings *set = new QSettings(session, QSettings::IniFormat);
-    if(file == 0 || file == 1){
-        fileName[file] = set->value("filename", "").toString();
-        QString tmp = fileName[file].split("/").last();
-        pairs.at(id)->fileLabels[file]->setText(tmp);
-        filePath[file] = fileName[file].chopped(tmp.size() + 1);
+void MainWindow::loadState(const QHash<QString, QVariant> state){
+    bool loaded = state.value("loaded", false).toBool();
+    if(loaded){
+        fileName[file] = state.value("filename", "").toString();
         pairs.at(id)->fileButtons[file]->setChecked(true);
         setLoader(fileName[file], file);
-        theta[file] = set->value("theta", 0.0).toDouble();
+        theta[file] = state.value("theta", 0.0).toDouble();
         thetaLabels[file]->setText(QString::number(theta[file]));
+        ui->swapButton->setEnabled(true);
+        ui->rawBox->setEnabled(true);
+        ui->zeroBox->setEnabled(true);
+        ui->normBox->setEnabled(true);
+        //fix
     }
-    if(set->value("isRaw", false).toBool()){
+    ui->bSpinBox->setEnabled(loaded);
+    ui->tSpinBox->setEnabled(loaded);
+    if(state.value("isRaw", false).toBool()){
         ui->zeroBox->setChecked(true);
         ui->rawBox->setChecked(true);
-    }else if(set->value("isZero", false).toBool()){
+    }else if(state.value("isZero", false).toBool()){
         ui->rawBox->setChecked(true);
         ui->zeroBox->setChecked(true);
     }else{
         ui->rawBox->setChecked(true);
         ui->normBox->setChecked(true); //default
     }
-    ui->shadowSpinBox->setValue(set->value("shadow", 0.0).toDouble());
-    ui->zeroShadowSpinBox->setValue(set->value("zeroShadow", 0.0).toDouble());
-    ui->mulBox->setChecked(set->value("isMult", false).toBool());
-    ui->mulCoeffSpinBox->setValue(set->value("mulCoeff", 0.0).toDouble());
-    ui->smoothSpinBox->setValue(set->value("smooth", 1).toInt());
-    ui->bSpinBox->setValue(set->value("cropL", 0).toInt());
-    ui->tSpinBox->setValue(set->value("cropR", 0).toInt());
-    ui->linearBox->setChecked(set->value("linearShow", false).toBool());
-    ui->llSpinBox->setValue(set->value("linearL", 2.0).toDouble());
-    ui->rlSpinBox->setValue(set->value("linearR", 2.0).toDouble());
-    ui->filletSpinBox->setValue(set->value("steppedMul", 10.0).toDouble());
-    ui->linearBackgroundBox->setChecked(set->value("linear", false).toBool());
-    ui->steppedBackgroundBox->setChecked(set->value("stepped", false).toBool());
-    ui->diffBox->setChecked(set->value("xmcd", false).toBool());
-    ui->integrateBox->setChecked(set->value("integrate", false).toBool());
-    ui->integrationLimitSpinBox->setValue(set->value("integrationLimit", 0).toInt());
-    if(file == 0 || file == 1){
-        offsets[file]->setValue(set->value("phiOff", 0.0).toDouble());
-        ui->bSpinBox->setEnabled(true);
-        ui->tSpinBox->setEnabled(true);
+    ui->shadowSpinBox->setValue(state.value("shadow", 0.0).toDouble());
+    ui->zeroShadowSpinBox->setValue(state.value("zeroShadow", 0.0).toDouble());
+    ui->mulBox->setChecked(state.value("isMult", false).toBool());
+    ui->mulCoeffSpinBox->setValue(state.value("mulCoeff", 0.0).toDouble());
+    ui->particularCurvatureSpinBox->setValue(state.value("relativeCurv", 0.0).toDouble());
+    ui->smoothSpinBox->setValue(state.value("smooth", 1).toInt());
+    ui->bSpinBox->setValue(state.value("cropL", 0).toInt());
+    ui->tSpinBox->setValue(state.value("cropR", 0).toInt());
+    ui->linearBox->setChecked(state.value("linearShow", false).toBool());
+    ui->llSpinBox->setValue(state.value("linearL", 2.0).toDouble());
+    ui->rlSpinBox->setValue(state.value("linearR", 2.0).toDouble());
+    ui->filletSpinBox->setValue(state.value("steppedMul", 10.0).toDouble());
+    ui->linearBackgroundBox->setChecked(state.value("linear", false).toBool());
+    ui->steppedBackgroundBox->setChecked(state.value("stepped", false).toBool());
+    ui->diffBox->setChecked(state.value("xmcd", false).toBool());
+    ui->integrateBox->setChecked(state.value("integrate", false).toBool());
+    ui->integrationLimitSpinBox->setValue(state.value("integrationLimit", 0).toInt());
+    ui->positiveCheckBox->setChecked(state.value("positiveIntegrals", false).toBool());
+    if(loaded){
+        offsets[file]->setValue(state.value("phiOff", 0.0).toDouble());
     }else{
-        ui->bSpinBox->setEnabled(false);
-        ui->tSpinBox->setEnabled(false);
         for(int i = 0; i < 2; ++i){
-            offsets[i]->setValue(set->value("phiOff", 0.0).toDouble());
+            offsets[i]->setValue(state.value("phiOff", 0.0).toDouble());
         }
     }
     phiLabels[file]->setText(QString::number(theta[file] + offsets[file]->value()));
-    ui->calculateBox->setChecked(set->value("calc", false).toBool());
-    if(file == 0 || file == 1){
-        ui->exportLine->setText(dataDir + "/" + QString::number(id));
-        ui->swapButton->setEnabled(true);
-        ui->rawBox->setEnabled(true);
-        ui->zeroBox->setEnabled(true);
-        ui->normBox->setEnabled(true);
-        rescale();
-    }
-    delete set;
+    ui->calculateBox->setChecked(state.value("calc", false).toBool());
+    rescale();
 }
 
-QString MainWindow::defaults(){
-    QString res = QApplication::applicationDirPath() + "/tmp/";
-    QString name = QString::number(lastFile);
-    while(QFile::exists(res + name + ".ini")){
-        name = QString::number(++lastFile);
-    }
-    res += name + ".ini";
-    return res;
+
+QHash<QString, QVariant> MainWindow::defaults(){
+    QHash<QString, QVariant> tmp;
+    tmp.insert("loaded", false);
+    tmp.insert("isRaw", false);
+    tmp.insert("isZero", false);
+    tmp.insert("isNorm", true);
+    tmp.insert("shadow", 0.0);
+    tmp.insert("zeroShadow", 0.0);
+    tmp.insert("isMult", false);
+    tmp.insert("mulCoeff", 0.0);
+    tmp.insert("relativeCurv", 0.0);
+    tmp.insert("smooth", 1);
+    tmp.insert("cropL", 0);
+    tmp.insert("cropR", 0);
+    tmp.insert("linearShow", false);
+    tmp.insert("linearL", 2.0);
+    tmp.insert("linearR", 2.0);
+    tmp.insert("steppedMul", 10.0);
+    tmp.insert("linear", false);
+    tmp.insert("stepped", false);
+    tmp.insert("xmcd", false);
+    tmp.insert("integrationLimit", 0);
+    tmp.insert("integrate", false);
+    tmp.insert("positiveIntegrals", false);
+    tmp.insert("calc", false);
+    tmp.insert("phiOff", 0.0);
+    tmp.insert("theta", 0.0);
+    tmp.insert("sample", "null");
+    tmp.insert("energy", "null");
+    return tmp;
 }
 
 void MainWindow::saveSession(){
     rescale();
     if(pairs.size() != 0){
-        QSettings *set = new QSettings(pairs.at(id)->state[file], QSettings::IniFormat);
-        set->setValue("isRaw", ui->rawBox->isChecked());
-        set->setValue("isZero", ui->zeroBox->isChecked());
-        set->setValue("isNorm", ui->normBox->isChecked());
-        set->setValue("shadow", ui->shadowSpinBox->value());
-        set->setValue("zeroShadow", ui->zeroShadowSpinBox->value());
-        set->setValue("isMult", ui->mulBox->isChecked());
-        set->setValue("mulCoeff", ui->mulCoeffSpinBox->value());
-        set->setValue("smooth", ui->smoothSpinBox->value());
-        set->setValue("cropL", ui->bSpinBox->value());
-        set->setValue("cropR", ui->tSpinBox->value());
-        set->setValue("linearShow", ui->linearBox->isChecked());
-        set->setValue("linearL", ui->llSpinBox->value());
-        set->setValue("linearR", ui->rlSpinBox->value());
-        set->setValue("steppedMul", ui->filletSpinBox->value());
-        set->setValue("linear", ui->linearBackgroundBox->isChecked());
-        set->setValue("stepped", ui->steppedBackgroundBox->isChecked());
-        set->setValue("xmcd", ui->diffBox->isChecked());
-        set->setValue("integrationLimit", ui->integrationLimitSpinBox->value());
-        set->setValue("integrate", ui->integrateBox->isChecked());
-        set->setValue("calc", ui->calculateBox->isChecked());
-        set->setValue("phiOff", offsets[file]->value());
-        delete set;
+        pairs.at(id)->state[file].insert("isRaw", ui->rawBox->isChecked());
+        pairs.at(id)->state[file].insert("isZero", ui->zeroBox->isChecked());
+        pairs.at(id)->state[file].insert("isNorm", ui->normBox->isChecked());
+        pairs.at(id)->state[file].insert("shadow", ui->shadowSpinBox->value());
+        pairs.at(id)->state[file].insert("zeroShadow", ui->zeroShadowSpinBox->value());
+        pairs.at(id)->state[file].insert("isMult", ui->mulBox->isChecked());
+        pairs.at(id)->state[file].insert("mulCoeff", ui->mulCoeffSpinBox->value());
+        pairs.at(id)->state[file].insert("relativeCurv", ui->particularCurvatureSpinBox->value());
+        pairs.at(id)->state[file].insert("smooth", ui->smoothSpinBox->value());
+        pairs.at(id)->state[file].insert("cropL", ui->bSpinBox->value());
+        pairs.at(id)->state[file].insert("cropR", ui->tSpinBox->value());
+        pairs.at(id)->state[file].insert("linearShow", ui->linearBox->isChecked());
+        pairs.at(id)->state[file].insert("linearL", ui->llSpinBox->value());
+        pairs.at(id)->state[file].insert("linearR", ui->rlSpinBox->value());
+        pairs.at(id)->state[file].insert("steppedMul", ui->filletSpinBox->value());
+        pairs.at(id)->state[file].insert("linear", ui->linearBackgroundBox->isChecked());
+        pairs.at(id)->state[file].insert("stepped", ui->steppedBackgroundBox->isChecked());
+        pairs.at(id)->state[file].insert("xmcd", ui->diffBox->isChecked());
+        pairs.at(id)->state[file].insert("integrationLimit", ui->integrationLimitSpinBox->value());
+        pairs.at(id)->state[file].insert("integrate", ui->integrateBox->isChecked());
+        pairs.at(id)->state[file].insert("positiveIntegrals", ui->positiveCheckBox->isChecked());
+        pairs.at(id)->state[file].insert("calc", ui->calculateBox->isChecked());
+        pairs.at(id)->state[file].insert("phiOff", offsets[file]->value());
     }
 }
 

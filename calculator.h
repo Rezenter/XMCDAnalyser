@@ -37,10 +37,12 @@ public slots:
     void setDiff(const bool needed, const int file);//unused
     void setLinearIntervals(const QPointF interval, bool needed, const int file);
     void setNormalizationCoeff(const qreal coeff, bool needed, const int file);
+    void setRelativeCurv(const qreal a, const int file);
     void setLin(const bool needed, const int file);
     void setStepped(const qreal coeff, bool needed, const int file);
     void setIntegrate(const bool needed, const int index, const int file);
     void setIntegrationConstants(const qreal newPc, const qreal newNh);
+    void setIntegratePositiveOnly(const bool needed, const int file);
     void setCalculate(const bool needed, const QPointF newPhi, const QPointF newTheta);
     void update(const int file);
 
@@ -79,6 +81,8 @@ private:
     bool integrationChanged[2] = {false, false};
     bool integrateNeeded[2] = {false, false};
     bool tmpIntegrateNeeded[2] = {false, false};
+    bool integratePositiveOnly[2] = {false, false};
+    bool tmpIntegratePositiveOnly[2] = {false, false};
     bool stepFitNeeded[2] = {false, false};//currently constantly false
     bool ready = true;
     bool constantsChanged = false;
@@ -101,6 +105,8 @@ private:
     qreal tmpEnergyShift[2] = {0.0, 0.0};
     qreal normalizationCoeff[2][3]; //[file][a, b, c]
     qreal tmpNormalizationCoeff[2][3];
+    qreal relativeCurv[2];
+    qreal tmpRelativeCurv[2];
     qreal steppedCoeff[2] = {10.0, 10.0};
     qreal tmpSteppedCoeff[2] = {10.0, 10.0};
     qreal summInt[2] = {0.0, 0.0};

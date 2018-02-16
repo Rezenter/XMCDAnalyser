@@ -171,6 +171,18 @@ void Calculator::setNormalizationCoeff(const qreal coeff, bool needed, const int
     }
 }
 
+void Calculator::setRelativeCurv(const qreal a, const int file){
+    if(file == 0 || file == 1){
+        if(a != tmpRelativeCurv[file]){
+            tmpRelativeCurv[file] = a;
+            normalizationChanged[file] = true;
+            reset();
+        }
+    }else{
+        qDebug() << "error in " << this->metaObject()->className() << "::" << __FUNCTION__  << ". Variable file == " << file;
+    }
+}
+
 void Calculator::normalize(const int file){
     if(file == 0 || file == 1){
         normData[file].resize(smoothedData[file].size());
@@ -178,16 +190,19 @@ void Calculator::normalize(const int file){
         qreal x2 = smoothedData[file].last().first;
         qreal y1 = smoothedData[file].first().second.x()/smoothedData[file].first().second.y();
         qreal y2 = smoothedData[file].last().second.x()/smoothedData[file].last().second.y();
-        qreal a = (y1 - y2)/(x1 - x2);
-        qreal b = y1 - a*x1;
+        //insert relative curv here
         normalizationCoeff[file][1] = (normalizationCoeff[file][0]*(qPow(x1, 2.0) - qPow(x2, 2.0)))/(x2 - x1);
         normalizationCoeff[file][2] = 1 - normalizationCoeff[file][1]*x1 - normalizationCoeff[file][0]*qPow(x1, 2.0);
+        qreal relB = (y2 - y1 + relativeCurv[file]*(qPow(x1, 2.0) - qPow(x2, 2.0)))/(x2 - x1);
+        qreal relC = y1 - relB*x1 - relativeCurv[file]*qPow(x1, 2.0);
         for(int i = 0; i < smoothedData[file].size(); i++){
             normData[file][i].first = smoothedData[file][i].first;
             normData[file][i].second.rx() = (smoothedData[file][i].second.x())*
                     (normalizationCoeff[file][0]*qPow(smoothedData[file][i].first, 2.0) +
                     normalizationCoeff[file][1]*smoothedData[file][i].first + normalizationCoeff[file][2]);
-            normData[file][i].second.ry() = (smoothedData[file][i].second.y()*(a*smoothedData[file][i].first + b))*
+            normData[file][i].second.ry() = (smoothedData[file][i].second.y()*
+                                             (relativeCurv[file]*qPow(smoothedData[file][i].first, 2.0) +
+                                              relB*smoothedData[file][i].first + relC))*
                     (normalizationCoeff[file][0]*qPow(smoothedData[file][i].first, 2.0) +
                     normalizationCoeff[file][1]*smoothedData[file][i].first + normalizationCoeff[file][2]);
         }
@@ -432,6 +447,18 @@ void Calculator::setIntegrationConstants(const qreal newPc, const qreal newNh){
     }
 }
 
+void Calculator::setIntegratePositiveOnly(const bool needed, const int file){
+    if(file == 0 || file == 1){
+        if(needed != tmpIntegratePositiveOnly[file]){
+            tmpIntegratePositiveOnly[file] = needed;
+            integrationChanged[file] = true;
+            reset();
+        }
+    }else{
+        qDebug() << "error in " << this->metaObject()->className() << "::" << __FUNCTION__  << ". Variable file == " << file;
+    }
+}
+
 void Calculator::integrate(const int file){
     if(file == 0 || file == 1){
         if(steppedNeeded[file]){
@@ -446,16 +473,22 @@ void Calculator::integrate(const int file){
                 qreal b = finalDiff[file][0].y() - a*finalDiff[file][0].x();
                 dl3Int[file] = 0.0;
                 for(int i = 0; i < separator[file]; i++){
-                    dl3Int[file] += (finalDiff[file][i+1].x() - finalDiff[file][i].x())*(finalDiff[file][i+1].y() + finalDiff[file][i].y())/2.0;
-                    dl3Int[file] -= (finalDiff[file][i+1].x() - finalDiff[file][i].x())*(a*(finalDiff[file][i+1].x() + finalDiff[file][i].x())/2.0 + b);
+                    qreal trap = ((finalDiff[file][i+1].x() - finalDiff[file][i].x())*(finalDiff[file][i+1].y() + finalDiff[file][i].y())/2.0) -
+                            (finalDiff[file][i+1].x() - finalDiff[file][i].x())*(a*(finalDiff[file][i+1].x() + finalDiff[file][i].x())/2.0 + b);
+                    if(!integratePositiveOnly[file] || trap < 0.0){
+                        dl3Int[file] += trap;
+                    }
                 }
                 a = (finalDiff[file][separator[file]].y() - finalDiff[file][finalData[file].size() - 1].y())/
                         (finalDiff[file][separator[file]].x() - finalDiff[file][finalData[file].size() - 1].x());
                 b = finalDiff[file][separator[file]].y() - a*finalDiff[file][separator[file]].x();
                 dl2Int[file] = 0.0;
                 for(int i = separator[file]; i < finalData[file].size() - 1; i++){
-                    dl2Int[file] += (finalDiff[file][i+1].x() - finalDiff[file][i].x())*(finalDiff[file][i+1].y() + finalDiff[file][i].y())/2.0;
-                    dl2Int[file] -= (finalDiff[file][i+1].x() - finalDiff[file][i].x())*(a*(finalDiff[file][i+1].x() + finalDiff[file][i].x())/2.0 + b);
+                    qreal trap = ((finalDiff[file][i+1].x() - finalDiff[file][i].x())*(finalDiff[file][i+1].y() + finalDiff[file][i].y())/2.0) -
+                            (finalDiff[file][i+1].x() - finalDiff[file][i].x())*(a*(finalDiff[file][i+1].x() + finalDiff[file][i].x())/2.0 + b);
+                    if(!integratePositiveOnly[file] || trap > 0.0){
+                        dl2Int[file] += trap;
+                    }
                 }
                 mSEff[file] = -2.0*constant*(dl3Int[file] - 2.0*dl2Int[file])/summInt[file];
                 mOrb[file] = -(4.0/3.0)*constant*(dl3Int[file] + dl2Int[file])/summInt[file];
@@ -538,6 +571,7 @@ void Calculator::reset(){
                 }else if(normalizationChanged[file]){
                     normalizationChanged[file] = false;
                     normalizationCoeff[file][0] = tmpNormalizationCoeff[file][0]*1E-4;
+                    relativeCurv[file] = tmpRelativeCurv[file]*1E-4;
                     normalizationNeeded[file] = tmpNormalizationNeeded[file];
                     if(normalizationNeeded[file]){
                         normalize(file);
@@ -574,6 +608,7 @@ void Calculator::reset(){
                     integrationChanged[file] = false;
                     separator[file] = tmpSeparator[file];
                     integrateNeeded[file] = tmpIntegrateNeeded[file];
+                    integratePositiveOnly[file] = tmpIntegratePositiveOnly[file];
                     if(integrateNeeded[file]){
                         integrate(file);
                     }

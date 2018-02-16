@@ -47,6 +47,8 @@ signals:
     void setIntegrationConstants(const qreal newPc, const qreal newNh);
     void setCalculate(const bool needed, const QPointF newPhi, const QPointF newTheta);
     void setLin(const bool needed, const int file);
+    void setPositiveIntegrals(const bool needed, const int file);
+    void setRelativeCurv(const qreal a, const int file);
     void update(const int file);
 
 private:
@@ -81,7 +83,6 @@ private:
     QString energy = "not found";
     qreal angle[3] = {0.0, 55.0, 65.0};
     QSettings session;
-    bool loaded[2];
     bool integrated[2];
     QLabel *fileNameLabel[2];
     QRadioButton *fileCheckBox[2];
@@ -92,8 +93,8 @@ private:
     int id = -1;
     int file = 0;
     QList<PairWidget *> pairs;
-    QString defaults();
-    void loadState(QString state, const int file);//file = -1, 0 , 1// -1 -> ui changes only
+    QHash<QString, QVariant> defaults();
+    void loadState(const QHash<QString, QVariant> state);
     int lastFile = 0;
     QLinkedList<QAbstractButton *> buttons;
     QLabel *summLabels[2];
@@ -108,7 +109,6 @@ private slots:
     void open(QString);
     void load(QModelIndex);
     void exportCharts();
-    void forget(int buttonID);
     void myResize();//?
     void swap();
     void setPath();
@@ -122,8 +122,8 @@ private slots:
     void moments(const qreal mOP, const qreal mOO, const qreal ms, const qreal mt);
     void paintItBlack(const int id);
     void deletePair(const int id);
-    void fileSelected(const int file);
     void saveSession();
+    void exportDialog();
 };
 
 #endif // MAINWINDOW_H

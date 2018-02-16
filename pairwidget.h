@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QString>
 #include <QButtonGroup>
+#include <QHash>
 
 #include "ui_pairwidget.h"
 
@@ -21,10 +22,10 @@ public:
     PairWidget(const int index);
     Ui::Form ui;
     int id;
-    QString state[2];
     QLabel *fileLabels[2];
     QRadioButton *fileButtons[2];
     QButtonGroup buttons;
+    QHash<QString, QVariant> state[2];
 
 public slots:
 
@@ -35,6 +36,19 @@ signals:
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;
+
+private:
+    QString  style = "QGroupBox {"
+                     "border:1px solid #3A3939;"
+                     "border-radius: 7px;"
+                     "margin-top: 20px;"
+                     "}"
+
+                     "QGroupBox::title {"
+                     "subcontrol-origin: margin;"
+                     "subcontrol-position: top center;"
+                     "padding-top: 10px;"
+                     "}";
 };
 
 #endif // PAIRWIDGET_H
