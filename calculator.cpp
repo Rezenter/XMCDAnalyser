@@ -69,8 +69,8 @@ void Calculator::load(const int file){
             tmp = loader[file].getZero().at(i);
             zero[file][i] = QPair< qreal, QPointF>(tmp.first, QPointF(tmp.second.first, tmp.second.second));
         }
-        emit rawData(bare[file]);
-        emit iZero(zero[file]);
+        emit rawData(&bare[file]);
+        emit iZero(&zero[file]);
         loaded[file] = true;
         calcData(file);
     }else{
@@ -144,7 +144,7 @@ void Calculator::smooth(const int file){
             normData[file] = smoothedData[file];
             calcDiff(file);
         }else{
-            emit processedData(smoothedData[file]);
+            emit processedData(&smoothedData[file]);
             ready = true;
             reset();
         }
@@ -209,7 +209,7 @@ void Calculator::normalize(const int file){
         if(diffNeeded[file]){
             calcDiff(file);
         }else{
-            emit processedData(normData[file]);
+            emit processedData(&normData[file]);
             ready = true;
             reset();
         }
@@ -243,11 +243,11 @@ void Calculator::calcDiff(const int file){
                 rEdges[file] = i;
             }
         }
-        emit XMCD(diff[file]);//edit after box1
+        emit XMCD(&diff[file]);//edit after box1
         if(linearNeeded[file]){
             linear(file);
         }else{
-            emit processedData(normData[file]);
+            emit processedData(&normData[file]);
             ready = true;
             reset();
         }
@@ -330,7 +330,8 @@ void Calculator::linear(const int file){
                 linearCoeff[file][i].rx() = (integer[i]*xySum[i] - xSum[i]*ySum[i])/(integer[i]*x2Sum[i] - pow(xSum[i], 2));
                 linearCoeff[file][i].ry() = (ySum[i] - linearCoeff[file][i].rx()*xSum[i])/integer[i];
             }
-            emit linCoeffs(linearCoeff[file][0], linearCoeff[file][1], QPointF(x[0], x[1]));
+            xPoint[file] = QPointF(x[0], x[1]);
+            emit linCoeffs(&linearCoeff[file][0], &linearCoeff[file][1], &xPoint[file]);
             linData[file].resize(normData[file].size());
             for(int i = 0; i < normData[file].size(); i++){
                 qreal x = normData[file][i].first;
@@ -340,27 +341,46 @@ void Calculator::linear(const int file){
                 linData[file][i] = QPair<qreal, QPointF>(x, QPointF(y1, y2));
             }
             if(linNeeded[file]){
-                emit processedData(linData[file]);
+                emit processedData(&linData[file]);
             }else{
-                emit processedData(normData[file]);
+                emit processedData(&normData[file]);
             }
             fitData[file].resize(linData[file].size()); //
             fitData[file] = linData[file];              //remove after box1 patch
             finalDiff[file].resize(diff[file].size());  //
-            finalDiff[file] = diff[file];               //
-            if(stepFitNeeded[file] && linNeeded){
-                //box1
-            }else if(steppedNeeded[file] && linNeeded){
-                stepped(file);
-            }else{
-                ready = true;
-                reset();
-            }
+            finalDiff[file] = diff[file];
+            calcSteps(file);
         }else{
             qDebug() << "error in " << this->metaObject()->className() << "::" << __FUNCTION__  << ". Variable linearIntervals[file].y() == " << linearIntervals[file].y();
         }
     }else{
         qDebug() << "error in " << this->metaObject()->className() << "::" << __FUNCTION__  << ". Variable linearIntervals[file].x() == " << linearIntervals[file].x();
+    }
+}
+
+void Calculator::calcSteps(const int file){
+    if(file == 0 || file == 1){
+        steps[file].resize(fitData[file].size());
+        qreal m = ((fitData[file].last().second.x() - fitData[file][0].second.x()) +
+                    (fitData[file].last().second.y() - fitData[file][0].second.y()))/(6 * M_PI);
+        for(int i = 0; i < fitData[file].size(); i++){
+            qreal x = fitData[file][i].first;
+            steps[file][i].setX(fitData[file][i].first);
+            steps[file][i].setY((fitData[file][0].second.x() + fitData[file][0].second.y())/2.0 +
+                    m * (M_PI_2 + qAtan(steppedCoeff[file]*(x - fitData[file][lEdges[file]].first))) * 2 +
+                    m * (M_PI_2 + qAtan(steppedCoeff[file]*(x - fitData[file][rEdges[file]].first))));
+        }
+        emit stepData(&steps[file]);
+        if(stepFitNeeded[file] && linNeeded){
+            //box1
+        }else if(steppedNeeded[file] && linNeeded){
+            stepped(file);
+        }else{
+            ready = true;
+            reset();
+        }
+    }else{
+        qDebug() << "error in " << this->metaObject()->className() << "::" << __FUNCTION__  << ". Variable file == " << file;
     }
 }
 
@@ -397,18 +417,13 @@ void Calculator::setStepped(const qreal coeff, const bool needed, const int file
 void Calculator::stepped(const int file){
     if(file == 0 || file == 1){
         finalData[file].resize(fitData[file].size());
-        qreal m = ((fitData[file].last().second.x() - fitData[file][0].second.x()) +
-                    (fitData[file].last().second.y() - fitData[file][0].second.y()))/(6 * M_PI);
         for(int i = 0; i < fitData[file].size(); i++){
             qreal x = fitData[file][i].first;
-            qreal steppedBackground = (fitData[file][0].second.x() + fitData[file][0].second.y())/2.0 +
-                    m * (M_PI_2 + qAtan(steppedCoeff[file]*(x - fitData[file][lEdges[file]].first))) * 2 +
-                    m * (M_PI_2 + qAtan(steppedCoeff[file]*(x - fitData[file][rEdges[file]].first)));
-            qreal y1 = fitData[file][i].second.x() - steppedBackground;
-            qreal y2 = fitData[file][i].second.y() - steppedBackground;
+            qreal y1 = fitData[file][i].second.x() - steps[file][i].y();
+            qreal y2 = fitData[file][i].second.y() - steps[file][i].y();
             finalData[file][i] = QPair<qreal, QPointF>(x, QPointF(y1, y2));
         }
-        emit processedData(finalData[file]);
+        emit processedData(&finalData[file]);
         if(integrateNeeded[file]){
             integrate(file);
         }else{
@@ -492,7 +507,8 @@ void Calculator::integrate(const int file){
                 }
                 mSEff[file] = -2.0*constant*(dl3Int[file] - 2.0*dl2Int[file])/summInt[file];
                 mOrb[file] = -(4.0/3.0)*constant*(dl3Int[file] + dl2Int[file])/summInt[file];
-                emit integrals(summInt[file], dl2Int[file], dl3Int[file], mSEff[file], mOrb[file]);
+                relation[file] = 1.5*(dl3Int[file] - 2.0*dl2Int[file])/(dl3Int[file] + dl2Int[file]);
+                emit integrals(&summInt[file], &dl2Int[file], &dl3Int[file], &mSEff[file], &mOrb[file], &relation[file]);
                 if(calculateNeeded){
                     calculate();
                 }else{
@@ -541,7 +557,7 @@ void Calculator::calculate(){
         mT = -0.2857142857*(mSEff[1]*qCos(phi.x() - theta.x()) - mSEff[0]*qCos(phi.y() - theta.y()))/
                 (2*qCos(phi.y() - theta.y())*qCos(theta.x())*qCos(phi.x()) - qCos(phi.y() - theta.y())*qSin(theta.x())*qSin(phi.x()) -
                 2*qCos(theta.y())*qCos(phi.y())*qCos(phi.x() - theta.x()) + qSin(theta.y())*qSin(phi.y())*qCos(phi.x()- theta.x()));
-        emit moments(mOrbO, mOrbP, mS, mT);
+        emit moments(&mOrbO, &mOrbP, &mS, &mT);
         ready = true;
         reset();
     }else{
@@ -600,7 +616,7 @@ void Calculator::reset(){
                     steppedCoeff[file] = tmpSteppedCoeff[file];
                     steppedNeeded[file] = tmpSteppedNeeded[file];
                     if(steppedNeeded[file]){
-                        stepped(file);
+                        calcSteps(file);
                     }else{
                         linear(file);
                     }

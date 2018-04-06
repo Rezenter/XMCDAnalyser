@@ -11,19 +11,20 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = XMCDAnalyser
 TEMPLATE = app
 
-
 SOURCES += main.cpp\
         mainwindow.cpp \
         extfsm.cpp \
     fileloader.cpp \
     calculator.cpp \
-    pairwidget.cpp
+    pairwidget.cpp \
+    calcwrapper.cpp
 
 HEADERS  += mainwindow.h \
         extfsm.h \
     fileloader.h \
     calculator.h \
-    pairwidget.h
+    pairwidget.h \
+    calcwrapper.h
 
 FORMS    += mainwindow.ui \
     pairwidget.ui

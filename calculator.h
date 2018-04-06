@@ -19,13 +19,14 @@ public:
 
 signals:
     void dead();
-    void processedData(const QVector<QPair<qreal, QPointF>> points);
-    void rawData(const QVector<QPair<qreal, QPointF>> points);
-    void iZero(const QVector<QPair<qreal, QPointF>> points);
-    void XMCD(const QVector<QPointF> points);
-    void integrals(const qreal summ, const qreal dl2, const qreal dl3, const qreal mSE, const qreal mO);
-    void moments(const qreal mOP, const qreal mOO, const qreal ms, const qreal mt);
-    void linCoeffs(const QPointF left, const QPointF right, const QPointF x);
+    void processedData(const QVector<QPair<qreal, QPointF>>* points);
+    void rawData(const QVector<QPair<qreal, QPointF>>* points);
+    void iZero(const QVector<QPair<qreal, QPointF>>* points);
+    void stepData(const QVector<QPointF>* points);
+    void XMCD(const QVector<QPointF>* points);
+    void integrals(const qreal* summ, const qreal* dl2, const qreal* dl3, const qreal* mSE, const qreal* mO, const qreal* rel);
+    void moments(const qreal* mOP, const qreal* mOO, const qreal* ms, const qreal* mt);
+    void linCoeffs(const QPointF* left, const QPointF* right, const QPointF* x);
     void completed();
 
 public slots:
@@ -55,6 +56,7 @@ private:
     QVector<QPair<qreal, QPointF>> linData[2];
     QVector<QPair<qreal, QPointF>> fitData[2];
     QVector<QPair<qreal, QPointF>> finalData[2];
+    QVector<QPointF> steps[2];
     QVector<QPointF> diff[2];
     QVector<QPointF> finalDiff[2];
     FileLoader loader[2];
@@ -101,19 +103,21 @@ private:
     QPointF tmpPhi = QPointF(0.0 , 0.0);
     QPointF theta = QPointF(0.0 , 0.0);
     QPointF tmpTheta = QPointF(0.0 , 0.0);
+    QPointF xPoint[2] = {QPointF(0, 0), QPointF(0.0 , 0.0)};
     qreal energyShift[2] = {0.0, 0.0};
     qreal tmpEnergyShift[2] = {0.0, 0.0};
     qreal normalizationCoeff[2][3]; //[file][a, b, c]
     qreal tmpNormalizationCoeff[2][3];
     qreal relativeCurv[2];
     qreal tmpRelativeCurv[2];
-    qreal steppedCoeff[2] = {10.0, 10.0};
-    qreal tmpSteppedCoeff[2] = {10.0, 10.0};
+    qreal steppedCoeff[2] = {1.0, 1.0};
+    qreal tmpSteppedCoeff[2] = {1.0, 1.0};
     qreal summInt[2] = {0.0, 0.0};
     qreal dl2Int[2] = {0.0, 0.0};
     qreal dl3Int[2] = {0.0, 0.0};
     qreal mSEff[2] = {0.0, 0.0};
     qreal mOrb[2] = {0.0, 0.0};
+    qreal relation[2] = {0.0, 0.0};
     qreal mOrbP = 0.0;
     qreal mOrbO = 0.0;
     qreal mS = 0.0;
@@ -125,6 +129,7 @@ private:
     void smooth(const int file);
     void normalize(const int file);
     void linear(const int file);
+    void calcSteps(const int file);
     void calcDiff(const int file);
     void stepped(const int file);
     void integrate(const int file);

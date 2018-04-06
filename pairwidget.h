@@ -21,7 +21,6 @@ public:
     PairWidget(QWidget *parent = 0);
     PairWidget(const int index);
     Ui::Form ui;
-    int id;
     QLabel *fileLabels[2];
     QRadioButton *fileButtons[2];
     QButtonGroup buttons;
@@ -30,9 +29,9 @@ public:
 public slots:
 
 signals:
-    void selected(const int id);
+    void selected();
     void fileSelected(const int file);
-    void deletePressed(const int id);
+    void deletePressed();
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;

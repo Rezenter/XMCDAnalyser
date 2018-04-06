@@ -33,3 +33,8 @@ v9
 	fixed dot behavior
 	added relative curv
 	small gui fixes
+v10
+	pairs now shown in tableWidget
+	slots replaced with lambda-functions where possible
+	revisioned stepped multiplyier value interval
+	added moments relation
