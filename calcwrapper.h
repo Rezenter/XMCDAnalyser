@@ -1,7 +1,7 @@
 #ifndef CALCWARPER_H
 #define CALCWARPER_H
 
-#include <QDebug>
+#include <QDebug>//wtf i need this?
 
 #include <QObject>
 
@@ -17,15 +17,17 @@ public:
 
 signals:
     void dead();
-    void processedData(const QVector<QPair<qreal, QPointF>>* points, const int id);
-    void rawData(const QVector<QPair<qreal, QPointF>>* points, const int id);
-    void iZero(const QVector<QPair<qreal, QPointF>>* points, const int id);
-    void stepData(const QVector<QPointF>* points, const int id);
-    void XMCD(const QVector<QPointF>* points, const int id);
-    void integrals(const qreal* summ, const qreal* dl2, const qreal* dl3, const qreal* mSE, const qreal* mO, const qreal* rel, const int id);
-    void moments(const qreal* mOP, const qreal* mOO, const qreal* ms, const qreal* mt, const int id);
-    void linCoeffs(const QPointF* left, const QPointF* right, const QPointF* x, const int id);
-    void completed(const int id);
+    void processedData(const QVector<QPair<qreal, QPointF>>* points, const int id, const int file);
+    void rawData(const QVector<QPair<qreal, QPointF>>* points, const int id, const int file);
+    void iZero(const QVector<QPair<qreal, QPointF>>* points, const int id, const int file);
+    void stepData(const QVector<QPointF>* points, const int id, const int file);
+    void XMCD(const QVector<QPointF>* points, const int id, const int file);
+    void integrals(const qreal* summ, const qreal* dl2, const qreal* dl3, const qreal* mSE,
+                   const qreal* mO, const qreal* rel, const int id, const int file);
+    void moments(const qreal* mOP, const qreal* mOO, const qreal* ms, const qreal* mt, const int id, const int file);
+    void linCoeffs(const QPointF* left, const QPointF* right, const QPointF* x, const int id, const int file);
+    void completed(const int id, const int file);
+    void log(QString out);
 
 public slots:
     void setLoader(const QString loaderPath, const int file, const int id);

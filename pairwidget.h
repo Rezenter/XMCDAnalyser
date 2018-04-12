@@ -32,6 +32,7 @@ signals:
     void selected();
     void fileSelected(const int file);
     void deletePressed();
+    void log(QString);
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;

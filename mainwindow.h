@@ -8,7 +8,6 @@
 #include <QValueAxis>
 #include <QCoreApplication>
 #include <QSettings>
-#include <QFileSystemModel>
 #include <QItemSelection>
 #include <QThread>
 #include <QFileSystemWatcher>
@@ -19,6 +18,7 @@
 #include "calcwrapper.h"
 #include "calculator.h" //remove later
 #include "pairwidget.h"
+#include "logger.h"
 
 namespace Ui {
 class MainWindow;
@@ -53,6 +53,7 @@ signals:
     void update(const int file, const int id);
     void appendCalc();
     void removeCalc(const int id);
+    void log(QString);
 
 private:
     QThread *calcThread;
@@ -60,9 +61,11 @@ private:
     Ui::MainWindow *ui;
     void loadSettings();
     void saveSettings();
-    void resizeEvent(QResizeEvent*);
+    void updateSummary();
     QtCharts::QChartView chartView;
     QtCharts::QChart chart;
+    QtCharts::QChartView summaryChartView;
+    QtCharts::QChart summaryChart;
     QtCharts::QLineSeries raw[2];
     QtCharts::QLineSeries norm[2];
     QtCharts::QLineSeries zero[2];
@@ -74,7 +77,8 @@ private:
     QtCharts::QValueAxis axisX;
     QtCharts::QValueAxis axisY;
     QtCharts::QValueAxis axisY2;
-    QFileSystemModel model;
+    QtCharts::QValueAxis summaryAxisX;
+    QtCharts::QValueAxis summaryAxisY;
     ExtFSM *table = new ExtFSM(this);
     QString dataDir;
     QString filePath[2];
@@ -86,23 +90,18 @@ private:
     QString geom = "not found";
     QString energy = "not found";
     qreal angle[3] = {0.0, 55.0, 65.0};
-    QSettings session;
+    QSettings* session;
     bool integrated[2];
     void rescale();
     QFileSystemWatcher *refresh;
     int id = -1;
     int file = 0;
     QList<PairWidget *> pairs;
-    QList<QVector<QPair<qreal, QPointF>> const *> dataPointers;
-    QList<QVector<QPair<qreal, QPointF>> const *> rawPointers;
-    QList<QVector<QPair<qreal, QPointF>> const *> zeroPointers;
-    QList<QVector<QPointF> const *> stepPointers;
-    QList<QVector<QPointF> const *> xmcdPointers;
-    QList<qreal const *> mopPointers;
-    QList<qreal const *> mooPointers;
-    QList<qreal const *> msPointers;
-    QList<qreal const *> mtPointers;
-    QList<qreal const *> moPointers;
+    QList<QVector<QPair<qreal, QPointF>> const *> dataPointers[2];
+    QList<QVector<QPair<qreal, QPointF>> const *> rawPointers[2];
+    QList<QVector<QPair<qreal, QPointF>> const *> zeroPointers[2];
+    QList<QVector<QPointF> const *> stepPointers[2];
+    QList<QVector<QPointF> const *> xmcdPointers[2];
     QHash<QString, QVariant> defaults();
     void loadState(const QHash<QString, QVariant> state);
     void selectPair(const int id);
@@ -120,6 +119,17 @@ private:
     QRadioButton *fileCheckBox[2];
     QCheckBox *holderBox[2];
     QDoubleSpinBox *offsets[2];
+    Logger* logger;
+    bool logEnabled = false;
+    QString logPath = "";
+    bool useExeLocation = true;
+    bool debugMode = false;
+    bool debugCopy = false;
+    qreal rawOffsetMult = 1E-11;
+    qreal zeroOffsetMult = 1E-5;
+    qreal normOffsetMult = 1E-6;
+    qreal XMCDOffsetMult = 1E0;
+    qreal stepSize = 10.0;
 
 private slots:
     void open(QString);

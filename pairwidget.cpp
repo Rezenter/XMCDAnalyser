@@ -1,5 +1,4 @@
 #include <QtWidgets>
-
 #include "pairwidget.h"
 
 PairWidget::PairWidget(QWidget *parent)
@@ -15,13 +14,15 @@ PairWidget::PairWidget(QWidget *parent)
     }
     ui.groupBox->setStyleSheet(style);
     ui.deleteButton->setStyleSheet("background-color: red;");
-    QObject::connect(&buttons, static_cast<void(QButtonGroup::*)(int, bool)>(&QButtonGroup::buttonToggled), this, [=](int i){
+    QObject::connect(&buttons, static_cast<void(QButtonGroup::*)(int, bool)>(&QButtonGroup::buttonToggled), this, [=](int i, bool state){
         if(state){
+            log(QString(this->metaObject()->className()) + ":: toggled" + ". i == " + QString::number(i) + ". state == " + state);
             selected();
             fileSelected(i);
         }
     });
     QObject::connect(ui.deleteButton, &QPushButton::clicked, this, [=]{
+        log(QString(this->metaObject()->className()) + ":: dalete pressed");
         deletePressed();
     });
     setMouseTracking(true);
@@ -30,5 +31,6 @@ PairWidget::PairWidget(QWidget *parent)
 void PairWidget::mousePressEvent(QMouseEvent *event)
 {
     Q_UNUSED(event);
+    log(QString(this->metaObject()->className()) + ":: mousePressEvent");
     emit selected();
 }

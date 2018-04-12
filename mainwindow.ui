@@ -51,7 +51,7 @@
        <number>100000</number>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab">
        <property name="sizePolicy">
@@ -1087,7 +1087,7 @@
               </widget>
              </item>
              <item row="2" column="5">
-              <widget class="QLabel" name="mOrb1Label_2">
+              <widget class="QLabel" name="mOrb1Label">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
                  <horstretch>0</horstretch>
@@ -1106,7 +1106,7 @@
               </widget>
              </item>
              <item row="1" column="5">
-              <widget class="QLabel" name="msEff1Label_2">
+              <widget class="QLabel" name="msEff1Label">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
                  <horstretch>0</horstretch>
@@ -1153,7 +1153,7 @@
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QLabel" name="sum1Label_2">
+              <widget class="QLabel" name="sum1Label">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
                  <horstretch>0</horstretch>
@@ -1200,7 +1200,7 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QLabel" name="l31Label_2">
+              <widget class="QLabel" name="l31Label">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
                  <horstretch>0</horstretch>
@@ -1247,7 +1247,7 @@
               </widget>
              </item>
              <item row="2" column="1">
-              <widget class="QLabel" name="l21Label_2">
+              <widget class="QLabel" name="l21Label">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
                  <horstretch>0</horstretch>
@@ -1421,7 +1421,7 @@
             </property>
             <layout class="QGridLayout" name="gridLayout_13">
              <item row="4" column="4">
-              <widget class="QLabel" name="mOrbOLabel_2">
+              <widget class="QLabel" name="mOrbOLabel">
                <property name="toolTip">
                 <string>Normal component of orbital moment</string>
                </property>
@@ -1450,7 +1450,7 @@
               </widget>
              </item>
              <item row="5" column="1">
-              <widget class="QLabel" name="mTLabel_2">
+              <widget class="QLabel" name="mTLabel">
                <property name="toolTip">
                 <string/>
                </property>
@@ -1479,7 +1479,7 @@
               </widget>
              </item>
              <item row="5" column="4">
-              <widget class="QLabel" name="mOrbPLabel_2">
+              <widget class="QLabel" name="mOrbPLabel">
                <property name="toolTip">
                 <string>Paralel component of orbital moment</string>
                </property>
@@ -1505,7 +1505,7 @@
               </widget>
              </item>
              <item row="2" column="1">
-              <widget class="QComboBox" name="unitBox_2">
+              <widget class="QComboBox" name="unitBox">
                <property name="enabled">
                 <bool>false</bool>
                </property>
@@ -1621,7 +1621,7 @@
               </widget>
              </item>
              <item row="4" column="1">
-              <widget class="QLabel" name="msLabel_2">
+              <widget class="QLabel" name="msLabel">
                <property name="toolTip">
                 <string>Spin moment value</string>
                </property>
@@ -1666,7 +1666,7 @@
               </widget>
              </item>
              <item row="2" column="4">
-              <widget class="QLabel" name="mOrbLabel_2">
+              <widget class="QLabel" name="mOrbLabel">
                <property name="toolTip">
                 <string>Orbital moment, calculatet from components.</string>
                </property>
@@ -1719,7 +1719,7 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QLabel" name="l32Label_2">
+              <widget class="QLabel" name="l32Label">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                  <horstretch>0</horstretch>
@@ -1760,7 +1760,7 @@
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QLabel" name="sum2Label_2">
+              <widget class="QLabel" name="sum2Label">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                  <horstretch>0</horstretch>
@@ -1801,7 +1801,7 @@
               </widget>
              </item>
              <item row="2" column="1" rowspan="2">
-              <widget class="QLabel" name="l22Label_2">
+              <widget class="QLabel" name="l22Label">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                  <horstretch>0</horstretch>
@@ -1966,7 +1966,7 @@
               </widget>
              </item>
              <item row="1" column="4" rowspan="2">
-              <widget class="QLabel" name="msEff2Label_2">
+              <widget class="QLabel" name="msEff2Label">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                  <horstretch>0</horstretch>
@@ -1985,7 +1985,7 @@
               </widget>
              </item>
              <item row="3" column="4">
-              <widget class="QLabel" name="mOrb2Label_2">
+              <widget class="QLabel" name="mOrb2Label">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                  <horstretch>0</horstretch>
@@ -2025,62 +2025,37 @@
         <string>Summary</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_5">
-        <item row="1" column="2">
-         <widget class="QDoubleSpinBox" name="energyShiftSpinBox">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="suffix">
-           <string>[eV]</string>
-          </property>
-          <property name="decimals">
-           <number>4</number>
-          </property>
-          <property name="minimum">
-           <double>-2.000000000000000</double>
-          </property>
-          <property name="maximum">
-           <double>2.000000000000000</double>
-          </property>
-          <property name="singleStep">
-           <double>0.010000000000000</double>
-          </property>
-          <property name="value">
-           <double>0.000000000000000</double>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QLabel" name="label_18">
-          <property name="text">
-           <string>energy shift</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="3">
+        <item row="2" column="0">
          <widget class="QPushButton" name="exportSummaryButton">
           <property name="text">
            <string>export</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="0">
-         <widget class="QComboBox" name="fileComboBox">
-          <property name="enabled">
-           <bool>false</bool>
+        <item row="2" column="1">
+         <widget class="QPushButton" name="setExportPath2Button">
+          <property name="text">
+           <string>set Export Path</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="5">
+        <item row="0" column="0" colspan="3">
+         <widget class="QTableWidget" name="summaryTable">
+          <property name="minimumSize">
+           <size>
+            <width>400</width>
+            <height>0</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="2" colspan="2">
          <widget class="QLineEdit" name="summaryPathLineEdit"/>
         </item>
-        <item row="0" column="1" colspan="2">
+        <item row="0" column="3" rowspan="2">
          <widget class="QWidget" name="summaryChartWidget" native="true">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -2099,11 +2074,83 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="4">
-         <widget class="QPushButton" name="setExportPath2Button">
-          <property name="text">
-           <string>set Export Path</string>
+        <item row="1" column="0" colspan="3">
+         <widget class="QGroupBox" name="summaryGroupBox">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
           </property>
+          <property name="minimumSize">
+           <size>
+            <width>400</width>
+            <height>85</height>
+           </size>
+          </property>
+          <property name="title">
+           <string>Data  to compare</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_7">
+           <item row="0" column="0">
+            <widget class="QRadioButton" name="summaryRawButton">
+             <property name="text">
+              <string>Raw</string>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+             <property name="autoExclusive">
+              <bool>false</bool>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">summaryButtonGroup</string>
+             </attribute>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QRadioButton" name="summaryNormButton">
+             <property name="text">
+              <string>Normalized</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+             <property name="autoExclusive">
+              <bool>false</bool>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">summaryButtonGroup</string>
+             </attribute>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QRadioButton" name="summaryZeroButton">
+             <property name="text">
+              <string>i-Zero</string>
+             </property>
+             <property name="autoExclusive">
+              <bool>false</bool>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">summaryButtonGroup</string>
+             </attribute>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QRadioButton" name="summaryDiffButton">
+             <property name="text">
+              <string>XMCD</string>
+             </property>
+             <property name="autoExclusive">
+              <bool>false</bool>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">summaryButtonGroup</string>
+             </attribute>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </item>
        </layout>
@@ -2117,6 +2164,7 @@
  <resources/>
  <connections/>
  <buttongroups>
+  <buttongroup name="summaryButtonGroup"/>
   <buttongroup name="filterGroup">
    <property name="exclusive">
     <bool>false</bool>

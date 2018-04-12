@@ -17,14 +17,16 @@ SOURCES += main.cpp\
     fileloader.cpp \
     calculator.cpp \
     pairwidget.cpp \
-    calcwrapper.cpp
+    calcwrapper.cpp \
+    logger.cpp
 
 HEADERS  += mainwindow.h \
         extfsm.h \
     fileloader.h \
     calculator.h \
     pairwidget.h \
-    calcwrapper.h
+    calcwrapper.h \
+    logger.h
 
 FORMS    += mainwindow.ui \
     pairwidget.ui

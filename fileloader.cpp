@@ -1,5 +1,4 @@
 #include "fileloader.h"
-#include <QDebug>
 
 FileLoader::FileLoader(QString path){
     QFile file(path);

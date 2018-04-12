@@ -1,13 +1,12 @@
 #ifndef CALCULATOR_H
 #define CALCULATOR_H
 
-#include <QDebug>
-
 #include <QObject>
-#include "fileloader.h"
 #include <QPointF>
 #include <QtMath>
 #include <QDateTime>
+
+#include "fileloader.h"
 
 class Calculator : public QObject{
 
@@ -19,15 +18,16 @@ public:
 
 signals:
     void dead();
-    void processedData(const QVector<QPair<qreal, QPointF>>* points);
-    void rawData(const QVector<QPair<qreal, QPointF>>* points);
-    void iZero(const QVector<QPair<qreal, QPointF>>* points);
-    void stepData(const QVector<QPointF>* points);
-    void XMCD(const QVector<QPointF>* points);
-    void integrals(const qreal* summ, const qreal* dl2, const qreal* dl3, const qreal* mSE, const qreal* mO, const qreal* rel);
-    void moments(const qreal* mOP, const qreal* mOO, const qreal* ms, const qreal* mt);
-    void linCoeffs(const QPointF* left, const QPointF* right, const QPointF* x);
-    void completed();
+    void processedData(const QVector<QPair<qreal, QPointF>>* points, const int file);
+    void rawData(const QVector<QPair<qreal, QPointF>>* points, const int file);
+    void iZero(const QVector<QPair<qreal, QPointF>>* points, const int file);
+    void stepData(const QVector<QPointF>* points, const int file);
+    void XMCD(const QVector<QPointF>* points, const int file);
+    void integrals(const qreal* summ, const qreal* dl2, const qreal* dl3, const qreal* mSE, const qreal* mO, const qreal* rel, const int file);
+    void moments(const qreal* mOP, const qreal* mOO, const qreal* ms, const qreal* mt, const int file);
+    void linCoeffs(const QPointF* left, const QPointF* right, const QPointF* x, const int file);
+    void completed(const int file);
+    void log(QString out);
 
 public slots:
     void setLoader(const QString loaderPath, const int file);
@@ -133,7 +133,7 @@ private:
     void calcDiff(const int file);
     void stepped(const int file);
     void integrate(const int file);
-    void calculate();
+    void calculate(const int file);
     void reset();
     int smoothPoints[2] = {1, 1};
     int tmpSmoothPoints[2] = {1, 1};
