@@ -23,7 +23,7 @@ private:
     bool copy = true;
 
 public slots:
-    void print(QString data);
+    void print(QVariant data);
 };
 
 #endif // LOGGER_H

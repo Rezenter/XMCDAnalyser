@@ -53,7 +53,7 @@ signals:
     void update(const int file, const int id);
     void appendCalc();
     void removeCalc(const int id);
-    void log(QString);
+    void log(QVariant);
 
 private:
     QThread *calcThread;
@@ -90,7 +90,6 @@ private:
     QString geom = "not found";
     QString energy = "not found";
     qreal angle[3] = {0.0, 55.0, 65.0};
-    QSettings* session;
     bool integrated[2];
     void rescale();
     QFileSystemWatcher *refresh;
@@ -125,6 +124,7 @@ private:
     bool useExeLocation = true;
     bool debugMode = false;
     bool debugCopy = false;
+    bool normalExit = false;
     qreal rawOffsetMult = 1E-11;
     qreal zeroOffsetMult = 1E-5;
     qreal normOffsetMult = 1E-6;

@@ -15,8 +15,7 @@ MainWindow::MainWindow(QWidget *parent) :
     /*To-do list:
      *
      * !!!!!!!!!swap broken
-     * separate energy shift for each file
-     * all rows merged in summary
+     * add summary export
         * prevent crash
         * save/load session
         * add sample filter
@@ -67,7 +66,6 @@ MainWindow::MainWindow(QWidget *parent) :
     summaryLabels.append("I. shift");
     ui->summaryTable->setColumnCount(summaryLabels.size());
     ui->summaryTable->setHorizontalHeaderLabels(summaryLabels);
-    session = new QSettings(QApplication::applicationDirPath() + "/session.ini", QSettings::IniFormat);
     ui->tabWidget->setCurrentIndex(0);
     chart.setTitle("XAS");
     chart.setAxisX(&axisX);
@@ -195,7 +193,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(wrapper, &CalcWrapper::processedData, this, [=](const QVector<QPair<qreal, QPointF>>* points,
                      const int id, const int file){
         log(QString(this->metaObject()->className()) + "<- processedData:: id == "  + QString::number(id) +
-            ". file == " + QString::number(file)+ ".");
+            ". file == " + QString::number(file));
         norm[0].blockSignals(true);
         norm[0].clear();
         norm[1].blockSignals(true);
@@ -212,7 +210,7 @@ MainWindow::MainWindow(QWidget *parent) :
     }, Qt::QueuedConnection);
     QObject::connect(wrapper, &CalcWrapper::rawData, this, [=](const QVector<QPair<qreal,QPointF>>* points, const int id, const int file){
         log(QString(this->metaObject()->className()) + "<- rawData:: id == "  + QString::number(id) +
-            ". file == " + QString::number(file)+ ".");
+            ". file == " + QString::number(file));
         raw[0].blockSignals(true);
         raw[0].clear();
         raw[1].blockSignals(true);
@@ -233,7 +231,7 @@ MainWindow::MainWindow(QWidget *parent) :
     }, Qt::QueuedConnection);
     QObject::connect(wrapper, &CalcWrapper::iZero, this, [=](const QVector<QPair<qreal,QPointF>>* points, const int id, const int file){
         log(QString(this->metaObject()->className()) + "<- iZeroData:: id == "  + QString::number(id) +
-            ". file == " + QString::number(file)+ ".");
+            ". file == " + QString::number(file));
         zero[0].blockSignals(true);
         zero[0].clear();
         zero[1].blockSignals(true);
@@ -250,7 +248,7 @@ MainWindow::MainWindow(QWidget *parent) :
     }, Qt::QueuedConnection);
     QObject::connect(wrapper, &CalcWrapper::stepData, this, [=](const QVector<QPointF>* points, const int id, const int file){
         log(QString(this->metaObject()->className()) + "<- stepData:: id == "  + QString::number(id) +
-            ". file == " + QString::number(file)+ ".");
+            ". file == " + QString::number(file));
         steps.blockSignals(true);
         steps.clear();
         for(int i = 0; i < points->size(); ++i){
@@ -262,7 +260,7 @@ MainWindow::MainWindow(QWidget *parent) :
     }, Qt::QueuedConnection);
     QObject::connect(wrapper, &CalcWrapper::XMCD, this, [=](const QVector<QPointF>* points, const int id, const int file){
         log(QString(this->metaObject()->className()) + "<- XMCD:: id == "  + QString::number(id) +
-            ". file == " + QString::number(file)+ ".");
+            ". file == " + QString::number(file));
         xmcd.blockSignals(true);
         xmcd.clear();
         qreal min = std::numeric_limits<double>::max();
@@ -286,7 +284,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(wrapper, &CalcWrapper::linCoeffs, this, [=](const QPointF* left, const QPointF* right,
                      const QPointF* x, const int id, const int file){
         log(QString(this->metaObject()->className()) + "<- linCoeffs:: id == "  + QString::number(id) +
-            ". file == " + QString::number(file)+ ".");
+            ". file == " + QString::number(file));
         Q_UNUSED(x);
         Q_UNUSED(id);
         Q_UNUSED(file);
@@ -309,7 +307,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(wrapper, &CalcWrapper::integrals, this, [=](const qreal* summ, const qreal* dl2, const qreal* dl3,
                      const qreal* mSE, const qreal* mO, const qreal* relation, const int id, const int file){
         log(QString(this->metaObject()->className()) + "<- integrals:: id == "  + QString::number(id) +
-            ". file == " + QString::number(file)+ ".");
+            ". file == " + QString::number(file));
         Q_UNUSED(id);
         summLabels[file]->setText(QString::number(*summ));
         dl2Labels[file]->setText(QString::number(*dl2));
@@ -321,7 +319,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(wrapper, &CalcWrapper::moments, this, [=](const qreal* mOP, const qreal* mOO,
                      const qreal* ms, const qreal* mt, const int id, const int file){
         log(QString(this->metaObject()->className()) + "<- moments:: id == "  + QString::number(id) +
-            ". file == " + QString::number(file)+ ".");
+            ". file == " + QString::number(file));
         ui->mOrbPLabel->setText(QString::number(*mOP));
         ui->mOrbOLabel->setText(QString::number(*mOO));
         ui->msLabel->setText(QString::number(*ms));
@@ -335,39 +333,74 @@ MainWindow::MainWindow(QWidget *parent) :
     }, Qt::QueuedConnection);
     QObject::connect(wrapper, &CalcWrapper::completed, this, [=](const int id, const int file){
         log(QString(this->metaObject()->className()) + "<- completed:: id == "  + QString::number(id) +
-            ". file == " + QString::number(file)+ ".");
-        rescale();
-        updateSummary();
-        if(pairs.size() != 0){
-            pairs.at(id)->state[file].insert("isRaw", ui->rawBox->isChecked());
-            pairs.at(id)->state[file].insert("isZero", ui->zeroBox->isChecked());
-            pairs.at(id)->state[file].insert("isNorm", ui->normBox->isChecked());
-            pairs.at(id)->state[file].insert("shadow", ui->shadowSpinBox->value());
-            pairs.at(id)->state[file].insert("zeroShadow", ui->zeroShadowSpinBox->value());
-            pairs.at(id)->state[file].insert("isMult", ui->mulBox->isChecked());
-            pairs.at(id)->state[file].insert("mulCoeff", ui->mulCoeffSpinBox->value());
-            pairs.at(id)->state[file].insert("relativeCurv", ui->particularCurvatureSpinBox->value());
-            pairs.at(id)->state[file].insert("smooth", ui->smoothSpinBox->value());
-            pairs.at(id)->state[file].insert("cropL", ui->bSpinBox->value());
-            pairs.at(id)->state[file].insert("cropR", ui->tSpinBox->value());
-            pairs.at(id)->state[file].insert("linearShow", ui->linearBox->isChecked());
-            pairs.at(id)->state[file].insert("linearL", ui->llSpinBox->value());
-            pairs.at(id)->state[file].insert("linearR", ui->rlSpinBox->value());
-            pairs.at(id)->state[file].insert("steppedMul", ui->filletSpinBox->value());
-            pairs.at(id)->state[file].insert("linear", ui->linearBackgroundBox->isChecked());
-            pairs.at(id)->state[file].insert("stepped", ui->steppedBackgroundBox->isChecked());
-            pairs.at(id)->state[file].insert("xmcd", ui->diffBox->isChecked());
-            pairs.at(id)->state[file].insert("integrationLimit", ui->integrationLimitSpinBox->value());
-            pairs.at(id)->state[file].insert("integrate", ui->integrateBox->isChecked());
-            pairs.at(id)->state[file].insert("positiveIntegrals", ui->positiveCheckBox->isChecked());
-            pairs.at(id)->state[file].insert("calc", ui->calculateBox->isChecked());
-            pairs.at(id)->state[file].insert("phiOff", offsets[file]->value());
+            ". file == " + QString::number(file));
+        if(file == this->file && id == this->id){
+            rescale();
+            updateSummary();
+            if(pairs.size() != 0){
+                pairs.at(id)->state[file].insert("isRaw", ui->rawBox->isChecked());
+                pairs.at(id)->state[file].insert("isZero", ui->zeroBox->isChecked());
+                pairs.at(id)->state[file].insert("isNorm", ui->normBox->isChecked());
+                pairs.at(id)->state[file].insert("shadow", ui->shadowSpinBox->value());
+                pairs.at(id)->state[file].insert("zeroShadow", ui->zeroShadowSpinBox->value());
+                pairs.at(id)->state[file].insert("isMult", ui->mulBox->isChecked());
+                pairs.at(id)->state[file].insert("mulCoeff", ui->mulCoeffSpinBox->value());
+                pairs.at(id)->state[file].insert("relativeCurv", ui->particularCurvatureSpinBox->value());
+                pairs.at(id)->state[file].insert("smooth", ui->smoothSpinBox->value());
+                pairs.at(id)->state[file].insert("cropL", ui->bSpinBox->value());
+                pairs.at(id)->state[file].insert("cropR", ui->tSpinBox->value());
+                pairs.at(id)->state[file].insert("linearShow", ui->linearBox->isChecked());
+                pairs.at(id)->state[file].insert("linearL", ui->llSpinBox->value());
+                pairs.at(id)->state[file].insert("linearR", ui->rlSpinBox->value());
+                pairs.at(id)->state[file].insert("steppedMul", ui->filletSpinBox->value());
+                pairs.at(id)->state[file].insert("linear", ui->linearBackgroundBox->isChecked());
+                pairs.at(id)->state[file].insert("stepped", ui->steppedBackgroundBox->isChecked());
+                pairs.at(id)->state[file].insert("xmcd", ui->diffBox->isChecked());
+                pairs.at(id)->state[file].insert("integrationLimit", ui->integrationLimitSpinBox->value());
+                pairs.at(id)->state[file].insert("integrate", ui->integrateBox->isChecked());
+                pairs.at(id)->state[file].insert("positiveIntegrals", ui->positiveCheckBox->isChecked());
+                pairs.at(id)->state[file].insert("calc", ui->calculateBox->isChecked());
+                pairs.at(id)->state[file].insert("phiOff", offsets[file]->value());
+            }
         }
     }, Qt::QueuedConnection);
 
 
     //ui to this
+    QObject::connect(ui->exportSummaryButton, &QPushButton::pressed, this, [=]{
+        log(QString(this->metaObject()->className()) + "<- exportSummaryButton::pressed");
+        QFile outFile(ui->summaryPathLineEdit->text() + "/summary.csv");
+        outFile.open(QIODevice::WriteOnly);
+        QTextStream outStream(&outFile);
+        for(int i = 0; i < summaryChart.series().size(); ++i){
+            outStream << summaryChart.series().at(i)->name() + "_X" << "," << summaryChart.series().at(i)->name() + "_Y";
+            if(i != summaryChart.series().size() - 1){
+                outStream << ",";
+            }
+        }
+        int row = 0;
+        bool done = false;
+        while(!done){
+            done = true;
+            outStream << endl;
+            for(int i = 0; i < summaryChart.series().size(); ++i){
+                QList<QPointF> points = dynamic_cast<QtCharts::QLineSeries *>(summaryChart.series().at(i))->points();
+                if(i != 0){
+                    outStream << ",";
+                }
+                if(row < points.size()){
+                    done = false;
+                    outStream <<  points.at(row).x() << "," << points.at(row).y();
+                }else{
+                    outStream <<  ",";
+                }
+            }
+            row++;
+        }
+        outFile.close();
+    });
     QObject::connect(ui->fileTable, &QTableView::doubleClicked, this, [=](QModelIndex index){
+        log(QString(this->metaObject()->className()) + "<- fileTable::doubleClicked");
         int file = 1;
         if(fileCheckBox[0]->isChecked()){
             file = 0;
@@ -385,15 +418,19 @@ MainWindow::MainWindow(QWidget *parent) :
         theta[file] = table->data(index = table->index(index.row(), 2), Qt::DisplayRole).toDouble();
     });
     QObject::connect(ui->file1Button, &QRadioButton::toggled, this, [=]{
+        log(QString(this->metaObject()->className()) + "<- file1Button::toggled");
         open(dataDir);
     });
     QObject::connect(ui->tSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, [=](int val){
+        log(QString(this->metaObject()->className()) + "<- tSpinBox::valueChanged val == "  + QString::number(val));
         setLimits(ui->bSpinBox->value(), val, file, id);
     });
     QObject::connect(ui->bSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, [=](int val){
+        log(QString(this->metaObject()->className()) + "<- bSpinBox::valueChanged val == "  + QString::number(val));
         setLimits(val, ui->tSpinBox->value(), file, id);
     });
     QObject::connect(ui->rawBox, &QRadioButton::toggled, this, [=](bool state){
+        log(QString(this->metaObject()->className()) + "<- rawBox::toggled state == "  + QString::number(state));
         raw[0].setVisible(state);
         raw[1].setVisible(state);
         if(state){
@@ -405,6 +442,7 @@ MainWindow::MainWindow(QWidget *parent) :
         }
     });
     QObject::connect(ui->zeroBox, &QRadioButton::toggled, this, [=](bool state){
+        log(QString(this->metaObject()->className()) + "<- zeroBox::toggled state == "  + QString::number(state));
         zero[0].setVisible(state);
         zero[1].setVisible(state);
         if(state){
@@ -416,6 +454,7 @@ MainWindow::MainWindow(QWidget *parent) :
         }
     });
     QObject::connect(ui->normBox, &QRadioButton::toggled, this, [=](bool state){
+        log(QString(this->metaObject()->className()) + "<- normBox::toggled state == "  + QString::number(state));
         norm[0].setVisible(state);
         norm[1].setVisible(state);
         ui->shadowSpinBox->setEnabled(state);
@@ -431,15 +470,19 @@ MainWindow::MainWindow(QWidget *parent) :
         }
     });
     QObject::connect(ui->shadowSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, [=](double val){
+        log(QString(this->metaObject()->className()) + "<- shadowSpinBox::valueChanged val == "  + QString::number(val));
         setShadowCurrent(val, ui->zeroShadowSpinBox->value(), file, id);
     });
     QObject::connect(ui->zeroShadowSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, [=](double val){
+        log(QString(this->metaObject()->className()) + "<- zeroShadowSpinBox::valueChanged val == "  + QString::number(val));
         setShadowCurrent(ui->shadowSpinBox->value(), val, file, id);
     });
     QObject::connect(ui->smoothSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, [=](int val){
+        log(QString(this->metaObject()->className()) + "<- smoothSpinBox::valueChanged val == "  + QString::number(val));
         setSmooth(val, file, id);
     });
     QObject::connect(ui->mulBox, &QCheckBox::toggled, this, [=](bool state){
+        log(QString(this->metaObject()->className()) + "<- mulBox::toggled state == "  + QString::number(state));
         ui->mulCoeffSpinBox->setEnabled(state);
         ui->linearBox->setEnabled(state);
         ui->particularCurvatureSpinBox->setEnabled(state);
@@ -452,12 +495,15 @@ MainWindow::MainWindow(QWidget *parent) :
         }
     });
     QObject::connect(ui->mulCoeffSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, [=](double val){
+        log(QString(this->metaObject()->className()) + "<- mulCoeffSpinBox::valueChanged val == "  + QString::number(val));
         setNormalizationCoeff(val, ui->mulBox->isChecked(), file, id);
     });
     QObject::connect(ui->particularCurvatureSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, [=](double val){
+        log(QString(this->metaObject()->className()) + "<- particularCurvatureSpinBox::valueChanged val == "  + QString::number(val));
         setRelativeCurv(val, file, id);
     });
     QObject::connect(ui->linearBox, &QCheckBox::toggled, this, [=](bool state){
+        log(QString(this->metaObject()->className()) + "<- linearBox::toggled state == "  + QString::number(state));
         ui->llSpinBox->setEnabled(state);
         ui->rlSpinBox->setEnabled(state);
         ui->linearBackgroundBox->setEnabled(state);
@@ -472,12 +518,15 @@ MainWindow::MainWindow(QWidget *parent) :
         rescale();
     });
     QObject::connect(ui->llSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, [=](double val){
+        log(QString(this->metaObject()->className()) + "<- llSpinBox::valueChanged val == "  + QString::number(val));
         setLinearIntervals(QPointF(val, ui->rlSpinBox->value()), ui->linearBox->isChecked(), file, id);
     });
     QObject::connect(ui->rlSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, [=](double val){
+        log(QString(this->metaObject()->className()) + "<- rlSpinBox::valueChanged val == "  + QString::number(val));
         setLinearIntervals(QPointF(ui->llSpinBox->value(), val), ui->linearBox->isChecked(), file, id);
     });
     QObject::connect(ui->linearBackgroundBox, &QCheckBox::toggled, this, [=](bool state){
+        log(QString(this->metaObject()->className()) + "<- linearBackgroundBox::toggled state == "  + QString::number(state));
         setLin(state, file, id);
         ui->filletSpinBox->setEnabled(state);
         ui->steppedBackgroundBox->setEnabled(state);
@@ -492,9 +541,11 @@ MainWindow::MainWindow(QWidget *parent) :
         rescale();
     });
     QObject::connect(ui->filletSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, [=](double val){
+        log(QString(this->metaObject()->className()) + "<- filletSpinBox::valueChanged val == "  + QString::number(val));
         setStepped(val, ui->steppedBackgroundBox->isChecked(), file, id);
     });
     QObject::connect(ui->steppedBackgroundBox, &QCheckBox::toggled, this, [=](bool state){
+        log(QString(this->metaObject()->className()) + "<- steppedBackgroundBox::toggled state == "  + QString::number(state));
         setStepped(ui->filletSpinBox->value(), state, file, id);
         ui->diffBox->setEnabled(state);
         if(state){
@@ -505,6 +556,7 @@ MainWindow::MainWindow(QWidget *parent) :
         steps.setVisible(!state);
     });
     QObject::connect(ui->diffBox, &QCheckBox::toggled, this, [=](bool state){
+        log(QString(this->metaObject()->className()) + "<- diffBox::toggled state == "  + QString::number(state));
         ui->integrationLimitSpinBox->setValue(raw[file].pointsVector().size()/2);
         xmcd.setVisible(state);
         xmcdZero.setVisible(state);
@@ -517,6 +569,7 @@ MainWindow::MainWindow(QWidget *parent) :
         }
     });
     QObject::connect(ui->integrateBox, &QCheckBox::toggled, this, [=](bool state){
+        log(QString(this->metaObject()->className()) + "<- integrateBox::toggled state == "  + QString::number(state));
         ui->integrationLimitSpinBox->setEnabled(state);
         ui->positiveCheckBox->setEnabled(state);
         dot.setVisible(state);
@@ -541,13 +594,16 @@ MainWindow::MainWindow(QWidget *parent) :
         }
     });
     QObject::connect(ui->integrationLimitSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, [=](int val){
+        log(QString(this->metaObject()->className()) + "<- integrationLimitSpinBox::valueChanged val == "  + QString::number(val));
         dot.replace(0, xmcd.at(ui->integrationLimitSpinBox->value()));
         setIntegrate(ui->integrateBox->isChecked(), val, file, id);
     });
     QObject::connect(ui->positiveCheckBox, &QCheckBox::toggled, this, [=](bool state){
+        log(QString(this->metaObject()->className()) + "<- positiveBox::toggled state == "  + QString::number(state));
         setPositiveIntegrals(state, file, id);
     });
     QObject::connect(ui->calculateBox, &QCheckBox::toggled, this, [=](bool state){
+        log(QString(this->metaObject()->className()) + "<- calculateBox::toggled state == "  + QString::number(state));
         qreal phi1 = qDegreesToRadians(theta[0] + ui->phi1OffsetSpinBox->value());
         qreal phi2 = qDegreesToRadians(theta[1] + ui->phi2OffsetSpinBox->value());
         state = state && integrated[0] && integrated[1];
@@ -570,14 +626,18 @@ MainWindow::MainWindow(QWidget *parent) :
             buttons.takeLast()->setChecked(false);
         }
     });
-    QObject::connect(ui->phi1OffsetSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, [=]{
+    QObject::connect(ui->phi1OffsetSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
+                     this, [=](double val){
+        log(QString(this->metaObject()->className()) + "<- phi1OffsetSpinBox::valueChanged val == "  + QString::number(val));
         qreal phi1 = qDegreesToRadians(theta[0] + ui->phi1OffsetSpinBox->value());
         qreal phi2 = qDegreesToRadians(theta[1] + ui->phi2OffsetSpinBox->value());
         bool state = ui->calculateBox->isChecked() && integrated[0] && integrated[1];
         setCalculate(state, QPointF(phi1, phi2), QPointF(qDegreesToRadians(theta[0]), qDegreesToRadians(theta[1])), id);
         phiLabels[0]->setText(QString::number(theta[0] + offsets[0]->value()));
     });
-    QObject::connect(ui->phi2OffsetSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, [=]{
+    QObject::connect(ui->phi2OffsetSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
+                     this, [=](double val){
+        log(QString(this->metaObject()->className()) + "<- phi2OffsetSpinBox::valueChanged val == "  + QString::number(val));
         qreal phi1 = qDegreesToRadians(theta[0] + ui->phi1OffsetSpinBox->value());
         qreal phi2 = qDegreesToRadians(theta[1] + ui->phi2OffsetSpinBox->value());
         bool state = ui->calculateBox->isChecked() && integrated[0] && integrated[1];
@@ -585,12 +645,15 @@ MainWindow::MainWindow(QWidget *parent) :
         phiLabels[1]->setText(QString::number(theta[1] + offsets[1]->value()));
     });
     QObject::connect(ui->pSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, [=](double val){
+        log(QString(this->metaObject()->className()) + "<- pSpinBox::valueChanged val == "  + QString::number(val));
         setIntegrationConstants(val, ui->nSpinBox->value(), id);
     });
     QObject::connect(ui->nSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, [=](double val){
+        log(QString(this->metaObject()->className()) + "<- nSpinBox::valueChanged val == "  + QString::number(val));
         setIntegrationConstants(ui->pSpinBox->value(), val, id);
     });
     QObject::connect(ui->exportButton, &QPushButton::pressed, this, [=](){
+        log(QString(this->metaObject()->className()) + "<- exportBox::pressed");
         if(ui->exportLine->text().size() == 0){
             exportDialog();
         }
@@ -624,22 +687,8 @@ MainWindow::MainWindow(QWidget *parent) :
             }
         });
     });
-    QObject::connect(ui->bSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, [=]{
-        setLimits(ui->bSpinBox->value(), ui->tSpinBox->value(), file, id);
-    });
-    QObject::connect(ui->tSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, [=]{
-        setLimits(ui->bSpinBox->value(), ui->tSpinBox->value(), file, id);
-    });
-    QObject::connect(ui->smoothSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, [=](int i){
-        setSmooth(i, file, id);
-    });
-    QObject::connect(ui->shadowSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, [=]{
-        setShadowCurrent(ui->shadowSpinBox->value(), ui->zeroShadowSpinBox->value(), file, id);
-    });
-    QObject::connect(ui->zeroShadowSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, [=]{
-        setShadowCurrent(ui->shadowSpinBox->value(), ui->zeroShadowSpinBox->value(), file, id);
-    });
     QObject::connect(ui->swapButton, &QPushButton::pressed, this, [=](){
+        log(QString(this->metaObject()->className()) + "<- swapBox::pressed");
         if(file == 0){
             pairs[id]->ui.file2Button->setChecked(true);
         }else{
@@ -649,6 +698,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->setExportPathButton, &QPushButton::pressed, this, &MainWindow::exportDialog);
     QObject::connect(ui->setExportPath2Button, &QPushButton::pressed, this, &MainWindow::exportDialog);
     QObject::connect(ui->selectPathButton, &QPushButton::pressed, this, [=](){
+        log(QString(this->metaObject()->className()) + "<- selectPathButton::pressed");
         QString dir = QFileDialog::getExistingDirectory(this, tr("Select data directory"), dataDir);
         if(dir.length() != 0){
             refresh->removePath(dataDir);
@@ -659,6 +709,7 @@ MainWindow::MainWindow(QWidget *parent) :
     });
     QObject::connect(refresh, &QFileSystemWatcher::directoryChanged, this, &MainWindow::open);
     QObject::connect(ui->pairButton, &QPushButton::pressed, this, [=](){
+        log(QString(this->metaObject()->className()) + "<- pairButton::pressed");
         if(fileName[0].size() != 0 && fileName[1].size() != 0){
             pairs.append(new PairWidget());
             wrapper->appendCalc();
@@ -695,10 +746,12 @@ MainWindow::MainWindow(QWidget *parent) :
             pairs.at(id)->fileButtons[1]->setChecked(true);
             ui->file1Button->setChecked(true);
             QObject::connect(pairs.last(), &PairWidget::selected, this, [=]{
+                log(QString(this->metaObject()->className()) + "<- pair::selected");
                 selectPair(pairs.indexOf(dynamic_cast<PairWidget *>(sender())));
             });
             QObject::connect(pairs.last(), &PairWidget::deletePressed, this, [=]{
                 int id = pairs.indexOf(dynamic_cast<PairWidget *>(sender()));
+                log(QString(this->metaObject()->className()) + "<- pair::deletePressed. id == " + id);
                 PairWidget *curr = pairs.at(id);
                 ui->pairTable->removeRow(id);
                 if(pairs.size() > 1){
@@ -727,6 +780,7 @@ MainWindow::MainWindow(QWidget *parent) :
                 delete curr;
             });
             QObject::connect(pairs.last(), &PairWidget::fileSelected, this, [=](int file){
+                log(QString(this->metaObject()->className()) + "<- pair::fileSelected. file == " + QString::number(file));
                 this->file = file;
                 loadState(pairs.at(id)->state[file]);
                 chart.setTitle(pairs.last()->state[file].value("sample", "null").toString() + " " +
@@ -736,61 +790,73 @@ MainWindow::MainWindow(QWidget *parent) :
             });
             integrated[0] = false;
             integrated[1] = false;
-            selectPair(id);
-            ui->summaryTable->insertRow(id);
-            ui->summaryTable->insertRow(id + 1);
+            int did = 2*id;
+            ui->summaryTable->insertRow(did);
+            ui->summaryTable->insertRow(did + 1);
             QCheckBox* use = new QCheckBox(pairs.last());
-            QDoubleSpinBox* xOffset = new QDoubleSpinBox(pairs.last());
+            QDoubleSpinBox* x1Offset = new QDoubleSpinBox(pairs.last());
+            QDoubleSpinBox* x2Offset = new QDoubleSpinBox(pairs.last());
             QDoubleSpinBox* yOffset = new QDoubleSpinBox(pairs.last());
-            use->setChecked(true);
-            //use->setMaximumWidth(10);
             use->connect(use, &QCheckBox::toggled, this, [=](bool state){
-               xOffset->setEnabled(state);
+               x1Offset->setEnabled(state);
+               x2Offset->setEnabled(state);
                yOffset->setEnabled(state);
                updateSummary();
             });
-            ui->summaryTable->setCellWidget(id, 0, use);
-            ui->summaryTable->setSpan(id, 0, 2, 1);
-            ui->summaryTable->setItem(id, 1, new QTableWidgetItem(sample + " " + energy + " " +
+            ui->summaryTable->setCellWidget(did, 0, use);
+            ui->summaryTable->setSpan(did, 0, 2, 1);
+            ui->summaryTable->setItem(did, 1, new QTableWidgetItem(sample + " " + energy + " " +
                                                                   QString::number(pairs.last()->state[0].value("theta",
                                                                                                                -1.0).toDouble())));
-            ui->summaryTable->setItem(id + 1, 1, new QTableWidgetItem(sample + " " + energy + " " +
+            ui->summaryTable->setItem(did + 1, 1, new QTableWidgetItem(sample + " " + energy + " " +
                                                                   QString::number(pairs.last()->state[1].value("theta",
                                                                                                                -1.0).toDouble())));
-            ui->summaryTable->setItem(id, 2, new QTableWidgetItem("mS/mO"));
-            ui->summaryTable->setItem(id + 1, 2, new QTableWidgetItem("mS/mO"));
-            ui->summaryTable->setItem(id, 3, new QTableWidgetItem("mS"));
-            ui->summaryTable->setSpan(id, 3, 2, 1);
-            ui->summaryTable->setItem(id, 4, new QTableWidgetItem("mT"));
-            ui->summaryTable->setSpan(id, 4, 2, 1);
-            ui->summaryTable->setItem(id, 5, new QTableWidgetItem("mOrb∥"));
-            ui->summaryTable->setSpan(id, 5, 2, 1);
-            ui->summaryTable->setItem(id, 6, new QTableWidgetItem("mOrb⊥"));
-            ui->summaryTable->setSpan(id, 6, 2, 1);
-            ui->summaryTable->setItem(id, 7, new QTableWidgetItem("mOrb"));
-            ui->summaryTable->setSpan(id, 7, 2, 1);
-            xOffset->setMinimum(-10.0);
-            xOffset->setMaximum(10.0);
-            xOffset->setSingleStep(0.1);
-            xOffset->connect(xOffset, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, [=](){
-                log("xOffset changed");
+            ui->summaryTable->setItem(did, 2, new QTableWidgetItem("mS/mO"));
+            ui->summaryTable->setItem(did + 1, 2, new QTableWidgetItem("mS/mO"));
+            ui->summaryTable->setItem(did, 3, new QTableWidgetItem("mS"));
+            ui->summaryTable->setSpan(did, 3, 2, 1);
+            ui->summaryTable->setItem(did, 4, new QTableWidgetItem("mT"));
+            ui->summaryTable->setSpan(did, 4, 2, 1);
+            ui->summaryTable->setItem(did, 5, new QTableWidgetItem("mOrb∥"));
+            ui->summaryTable->setSpan(did, 5, 2, 1);
+            ui->summaryTable->setItem(did, 6, new QTableWidgetItem("mOrb⊥"));
+            ui->summaryTable->setSpan(did, 6, 2, 1);
+            ui->summaryTable->setItem(did, 7, new QTableWidgetItem("mOrb"));
+            ui->summaryTable->setSpan(did, 7, 2, 1);
+            x1Offset->setMinimum(-10.0);
+            x1Offset->setMaximum(10.0);
+            x1Offset->setSingleStep(0.1);
+            x1Offset->connect(x1Offset, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
+                              this, [=](double val){
+                log(QString(this->metaObject()->className()) + "<- x1Offset::valueChanged val == "  + QString::number(val));
                 updateSummary();
             });
-            ui->summaryTable->setCellWidget(id, 8, xOffset);
-            ui->summaryTable->setSpan(id, 8, 2, 1);
+            ui->summaryTable->setCellWidget(did, 8, x1Offset);
+            x2Offset->setMinimum(-10.0);
+            x2Offset->setMaximum(10.0);
+            x2Offset->setSingleStep(0.1);
+            x2Offset->connect(x2Offset, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
+                              this, [=](double val){
+                log(QString(this->metaObject()->className()) + "<- x2Offset::valueChanged val == "  + QString::number(val));
+                updateSummary();
+            });
+            ui->summaryTable->setCellWidget(did + 1, 8, x2Offset);
             yOffset->setMinimum(-10.0);
             yOffset->setMaximum(10.0);
             yOffset->setSingleStep(0.1);
-            yOffset->connect(yOffset, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, [=](){
-                log("yOffset changed");
+            yOffset->connect(yOffset, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
+                             this, [=](double val){
+                log(QString(this->metaObject()->className()) + "<- yOffset::valueChanged val == "  + QString::number(val));
                 updateSummary();
             });
-            ui->summaryTable->setCellWidget(id, 9, yOffset);
-            ui->summaryTable->setSpan(id, 9, 2, 1);
+            ui->summaryTable->setCellWidget(did, 9, yOffset);
+            ui->summaryTable->setSpan(did, 9, 2, 1);
+            selectPair(id);
             emit ui->swapButton->pressed();
         }
     });
     QObject::connect(ui->summaryButtonGroup, QOverload<int, bool>::of(&QButtonGroup::buttonToggled), this, [=](bool state){
+        log(QString(this->metaObject()->className()) + "<- summaryButtonGroup::toggled. state == " + state);
         if(state){//wtf?
             updateSummary();
         }
@@ -801,7 +867,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->pairTable->horizontalHeader()->setHidden(true);
     ui->pairTable->setColumnWidth(0, 220);
     calcThread->start();
-    if(session->value("normalExit", false).toBool()){
+    if(normalExit){
         loadState(defaults());
     }else{
         log("crash detected");
@@ -810,7 +876,6 @@ MainWindow::MainWindow(QWidget *parent) :
         //loadState();
         //clear unused ini files
     }
-    session->setValue("normalExit", false);
     ui->sessionButton->setEnabled(false); //disabled in current version
     ui->unitBox->setEnabled(false); //same
 }
@@ -828,8 +893,6 @@ MainWindow::~MainWindow()
     delete calcThread;
     saveSettings();
     delete table;
-    session->setValue("normalExit", true);
-    delete session;
     delete ui;
 }
 
@@ -839,11 +902,12 @@ void MainWindow::exportDialog(){
     if(dir.length() != 0){
         ui->exportLine->setText(dir);
         ui->summaryPathLineEdit->setText(dir);
+        ui->exportSummaryButton->setEnabled(true);
     }
 }
 
 void MainWindow::selectPair(const int id){
-    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + QString::number(id));
+    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". " + QString::number(id));
     if(this->id != id && id >= 0){
         for(int i = 0; i < pairs.size(); ++i){
             if(id != i){
@@ -852,6 +916,7 @@ void MainWindow::selectPair(const int id){
                 pairs.at(i)->setStyleSheet("background-color: rgb(200, 200, 220);");
             }
         }
+        log("inside select pair. id == " + QString::number(id) + ". this->id = " + QString::number(this->id));
         this->id = id;
         if(pairs.at(id)->ui.file1Button->isChecked()){
             file = 0;
@@ -866,13 +931,19 @@ void MainWindow::rescale(){
     log(QString(this->metaObject()->className()) + "::" + __FUNCTION__);
     QPointF x(std::numeric_limits<double>::max(), std::numeric_limits<double>::min());
     QPointF y(std::numeric_limits<double>::max(), std::numeric_limits<double>::min());
-    QtCharts::QLineSeries *lineSer;
-    QList<QtCharts::QAbstractSeries*>::iterator end = chart.series().end()--;
-    std::for_each(chart.series().begin(), end, [&x, &y, &lineSer, this](QtCharts::QAbstractSeries* const ser){//"this" for debug
-        if(ser->isVisible()){
-            if(ser && ser != &dot && ser != &xmcd && ser != &xmcdZero){
-                lineSer = dynamic_cast<QtCharts::QLineSeries *>(ser);
+    log("still alive 0, series.size() = " + QString::number(chart.series().size()));
+    QList<QtCharts::QAbstractSeries*> series = chart.series();
+    for(int i = 0; i < series.size(); ++i){
+        log("still alive 0.5. i = " + QString::number(i));
+        QtCharts::QAbstractSeries* ser = series.at(i);
+        if(ser && ser != &dot && ser != &xmcd && ser != &xmcdZero){
+            log("still alive 1, ser = " + ser->name());
+            if(ser->isVisible()){
+                log("still alive 2");
+                QtCharts::QLineSeries * lineSer = dynamic_cast<QtCharts::QLineSeries *>(ser);
+                log("still alive 3");
                 if(lineSer){
+                    log("still alive 4");
                     QVector<QPointF> tmp = lineSer->pointsVector();
                     for(int i = 0; i < tmp.size(); i++){
                         if(tmp[i].y() > y.y()){
@@ -888,12 +959,15 @@ void MainWindow::rescale(){
                             x.rx() = tmp[i].x();
                         }
                     }
+                    log("still alive after for");
                 }else{
                     log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + " unable to cast to QLineSeries");
                 }
             }
         }
-    });
+
+    }
+
     if(axisX.min() != x.x() && axisX.max() != x.y()){
         axisX.setRange(x.x(), x.y());
     }else if(axisX.min() != x.x()){
@@ -908,10 +982,13 @@ void MainWindow::rescale(){
     }else if(axisY.max() != y.y()){
         axisY.setMax(y.y());
     }
+    log("done");
 }
 
 void MainWindow::loadSettings(){
     QSettings settings(QApplication::applicationDirPath() + "/settings.ini", QSettings::IniFormat);
+    normalExit = settings.value("normalExit", false).toBool();
+    settings.setValue("normalExit", false);
     settings.beginGroup("gui");
         resize(settings.value("windowSize", QSize(800, 600)).toSize());
         move(settings.value("windowPosition", QPoint(0, 0)).toPoint());
@@ -937,6 +1014,11 @@ void MainWindow::loadSettings(){
     settings.beginGroup("defaultValues");
         ui->nSpinBox->setValue(settings.value("nh", 2.49).toDouble());
         ui->pSpinBox->setValue(settings.value("pc", 0.7).toDouble());
+        ui->pSpinBox->setValue(settings.value("rawOffsetMult", 1E-11).toDouble());
+        ui->pSpinBox->setValue(settings.value("normOffsetMult", 1E-6).toDouble());
+        ui->pSpinBox->setValue(settings.value("zeroOffsetMult", 1E-5).toDouble());
+        ui->pSpinBox->setValue(settings.value("XMCDOffsetMult", 1E0).toDouble());
+        ui->pSpinBox->setValue(settings.value("stepSize", 10.0).toDouble());
     settings.endGroup();
     settings.beginGroup("logging");
         logEnabled = settings.value("enabled", false).toBool();
@@ -944,15 +1026,22 @@ void MainWindow::loadSettings(){
         useExeLocation = settings.value("useExeLocation", true).toBool();
         debugMode = settings.value("debug", false).toBool();
         debugCopy = settings.value("copy", false).toBool();
+        if(useExeLocation){
+            logPath = QApplication::applicationDirPath();
+        }
         if(logEnabled){
             if(debugMode){
                 logger = new Logger("", debugCopy, this);
             }else{
-                if(useExeLocation){
-                    logger = new Logger(QApplication::applicationDirPath(), debugCopy, this);
-                }else{
-                    logger = new Logger(logPath, debugCopy, this);
+                if(!normalExit && QFile(logPath + "/log.txt").exists()){
+                    QString debugLogs = logPath + "/crashLogs/";
+                    if(!QDir(debugLogs).exists()){
+                        QDir().mkdir(debugLogs);
+                    }
+                    QFile old(logPath + "/log.txt");
+                    old.copy(debugLogs + old.fileTime(QFileDevice::FileModificationTime).toString("dMMMMhhmmss") + ".txt");
                 }
+                logger = new Logger(logPath, debugCopy, this);
             }
             QObject::connect(this, &MainWindow::log, logger, &Logger::print);
         }
@@ -963,6 +1052,7 @@ void MainWindow::saveSettings(){
     log(QString(this->metaObject()->className()) + "::" + __FUNCTION__);
     QSettings settings(QApplication::applicationDirPath() + "/settings.ini", QSettings::IniFormat);
     settings.clear();
+    settings.setValue("normalExit", true);
     settings.beginGroup("gui");
         settings.setValue("windowSize", this->size());
         settings.setValue("windowPosition", this->pos());
@@ -988,6 +1078,11 @@ void MainWindow::saveSettings(){
     settings.beginGroup("defaultValues");
         settings.setValue("nh", ui->nSpinBox->value());
         settings.setValue("pc", ui->pSpinBox->value());
+        settings.setValue("rawOffsetMult", rawOffsetMult);
+        settings.setValue("normOffsetMult", normOffsetMult);
+        settings.setValue("zeroOffsetMult", zeroOffsetMult);
+        settings.setValue("XMCDOffsetMult", XMCDOffsetMult);
+        settings.setValue("stepSize", stepSize);
     settings.endGroup();
     settings.beginGroup("logging");
         settings.setValue("enabled", logEnabled);
@@ -1070,15 +1165,11 @@ void MainWindow::open(QString selectedPath){
 void MainWindow::loadState(const QHash<QString, QVariant> state){
     log(QString(this->metaObject()->className()) + "::" + __FUNCTION__);
     bool loaded = state.value("loaded", false).toBool();
-    if(id >= 0){
-        setIntegrationConstants(ui->pSpinBox->value(), ui->nSpinBox->value(), id);
-    }else{
-        //reset gui only
-    }
     if(loaded){
         fileName[file] = state.value("filename", "").toString();
         pairs.at(id)->fileButtons[file]->setChecked(true);
         setLoader(fileName[file], file, id);
+        setIntegrationConstants(ui->pSpinBox->value(), ui->nSpinBox->value(), id);
         theta[file] = state.value("theta", 0.0).toDouble();
         thetaLabels[file]->setText(QString::number(theta[file]));
         offsets[file]->setEnabled(true);
@@ -1127,6 +1218,7 @@ void MainWindow::loadState(const QHash<QString, QVariant> state){
     phiLabels[file]->setText(QString::number(theta[file] + offsets[file]->value()));
     ui->calculateBox->setChecked(state.value("calc", false).toBool());
     rescale();
+    log("state loaded");
 }
 
 
@@ -1172,10 +1264,11 @@ void MainWindow::updateSummary(){ //mb make it faster, parsing id of the changed
     qreal yMax = std::numeric_limits<double>::min();
     bool badNormalization = false;
     for(int i = 0; i < (int)(ui->summaryTable->rowCount()/2); ++i){
-        if(dynamic_cast<QCheckBox *>(ui->summaryTable->cellWidget(i, 0))->isChecked()){
+        int ii = 2*i;
+        if(dynamic_cast<QCheckBox *>(ui->summaryTable->cellWidget(ii, 0))->isChecked()){
             for(int j = 0; j < 2; ++j){
-                qreal xOff = dynamic_cast<QDoubleSpinBox *>(ui->summaryTable->cellWidget(i, 8))->value();
-                qreal yOff = dynamic_cast<QDoubleSpinBox *>(ui->summaryTable->cellWidget(i, 9))->value();
+                qreal xOff = dynamic_cast<QDoubleSpinBox *>(ui->summaryTable->cellWidget(ii + j, 8))->value();
+                qreal yOff = dynamic_cast<QDoubleSpinBox *>(ui->summaryTable->cellWidget(ii, 9))->value();
                 qreal mult = 1.0;
                 if(ui->summaryButtonGroup->checkedId() != 3){
                     QVector<QPair<qreal, QPointF>> const * data;
@@ -1194,10 +1287,10 @@ void MainWindow::updateSummary(){ //mb make it faster, parsing id of the changed
                         data = dataPointers[j].at(i);
                         if(stepPointers[j].at(i) != nullptr){
                             mult = stepSize/(stepPointers[j].at(i)->last().y() - stepPointers[j].at(i)->first().y());
-                            ui->summaryTable->item(i + j, 2)->setBackgroundColor(Qt::white);
+                            ui->summaryTable->item(ii + j, 2)->setBackgroundColor(Qt::white);
                         }else{
                             badNormalization = true;
-                            ui->summaryTable->item(i + j, 2)->setBackgroundColor(Qt::red);
+                            ui->summaryTable->item(ii + j, 2)->setBackgroundColor(Qt::red);
                         }
                         break;
                     default:
@@ -1207,7 +1300,7 @@ void MainWindow::updateSummary(){ //mb make it faster, parsing id of the changed
                     }
                     if(ok && (data != nullptr)){
                         QtCharts::QLineSeries* line = new QtCharts::QLineSeries(ui->summaryChartWidget);
-                        line->setName(ui->summaryTable->item(i + j, 1)->text());
+                        line->setName(ui->summaryTable->item(ii + j, 1)->text());
                         for(int k = 0; k < data->size(); ++k){
                             line->append(data->at(k).first + xOff, data->at(k).second.x()*mult + yOff);
                             if(xMin > line->points().last().x()){
@@ -1232,7 +1325,7 @@ void MainWindow::updateSummary(){ //mb make it faster, parsing id of the changed
                         summaryChart.addSeries(line);
                         line->attachAxis(&summaryAxisX);
                         line->attachAxis(&summaryAxisY);
-                        ui->summaryTable->item(i + j, 1)->setBackgroundColor(line->color());
+                        ui->summaryTable->item(ii + j, 1)->setBackgroundColor(line->color());
                     }else{
                         //calc thread still working
                     }
@@ -1241,13 +1334,13 @@ void MainWindow::updateSummary(){ //mb make it faster, parsing id of the changed
                     if(data != nullptr){
                         if(stepPointers[j].at(i) != nullptr){
                             mult = stepSize/(stepPointers[j].at(i)->last().y() - stepPointers[j].at(i)->first().y());
-                            ui->summaryTable->item(i + j, 2)->setBackgroundColor(Qt::white);
+                            ui->summaryTable->item(ii + j, 2)->setBackgroundColor(Qt::white);
                         }else{
                             badNormalization = true;
-                            ui->summaryTable->item(i + j, 2)->setBackgroundColor(Qt::red);
+                            ui->summaryTable->item(ii + j, 2)->setBackgroundColor(Qt::red);
                         }
                         QtCharts::QLineSeries* line = new QtCharts::QLineSeries(ui->summaryChartWidget);
-                        line->setName(ui->summaryTable->item(i + j, 1)->text());
+                        line->setName(ui->summaryTable->item(ii + j, 1)->text());
                         for(int k = 0; k < data->size(); ++k){
                             line->append(data->at(k).x() + xOff, data->at(k).y()*mult + yOff);
                             if(xMin > line->points().last().x()){
@@ -1264,15 +1357,15 @@ void MainWindow::updateSummary(){ //mb make it faster, parsing id of the changed
                         summaryChart.addSeries(line);
                         line->attachAxis(&summaryAxisX);
                         line->attachAxis(&summaryAxisY);
-                        ui->summaryTable->item(i + j, 1)->setBackgroundColor(line->color());
+                        ui->summaryTable->item(ii + j, 1)->setBackgroundColor(line->color());
                     }else{
                         //calc thread still working
                     }
                 }
             }
         }else{
-            ui->summaryTable->item(i, 1)->setBackgroundColor(Qt::white);
-            ui->summaryTable->item(i + 1, 1)->setBackgroundColor(Qt::white);
+            ui->summaryTable->item(ii, 1)->setBackgroundColor(Qt::white);
+            ui->summaryTable->item(ii + 1, 1)->setBackgroundColor(Qt::white);
         }
     }
     if(badNormalization){
@@ -1280,6 +1373,22 @@ void MainWindow::updateSummary(){ //mb make it faster, parsing id of the changed
     }else{
         ui->summaryNormButton->setStyleSheet("background-color: white;"); //fix white box
     }
-    summaryAxisX.setRange(xMin, xMax);
-    summaryAxisY.setRange(yMin, yMax);
+    log("reloaded curves");
+    if(xMin != std::numeric_limits<double>::max()){
+        if(xMin != summaryAxisX.min() && xMax != summaryAxisX.max()){
+            summaryAxisX.setRange(xMin, xMax);
+        }else if(xMin != summaryAxisX.min()){
+            summaryAxisX.setMin(xMin);
+        }else if(xMax != summaryAxisX.max()){
+            summaryAxisX.setMax(xMax);
+        }
+        if(yMin != summaryAxisY.min() && yMax != summaryAxisY.max()){
+            summaryAxisY.setRange(yMin, yMax);
+        }else if(yMin != summaryAxisY.min()){
+            summaryAxisY.setMin(yMin);
+        }else if(yMax != summaryAxisY.max()){
+            summaryAxisY.setMax(yMax);
+        }
+    }
+    log("rescaled");
 }

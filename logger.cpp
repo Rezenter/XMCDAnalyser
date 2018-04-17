@@ -19,8 +19,8 @@ Logger::~Logger(){
     }
 }
 
-void Logger::print(QString data){
-    QString tmp = '[' + now.currentDateTime().toString("hh:mm:ss") + "] " + data;
+void Logger::print(QVariant data){
+    QString tmp = '[' + now.currentDateTime().toString("hh:mm:ss.zzz") + "] " + data.toString();
     if(!external || copy){
         qDebug() << tmp;
     }

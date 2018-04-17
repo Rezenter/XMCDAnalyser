@@ -2027,6 +2027,9 @@
        <layout class="QGridLayout" name="gridLayout_5">
         <item row="2" column="0">
          <widget class="QPushButton" name="exportSummaryButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>export</string>
           </property>
@@ -2164,7 +2167,6 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="summaryButtonGroup"/>
   <buttongroup name="filterGroup">
    <property name="exclusive">
     <bool>false</bool>
@@ -2175,6 +2177,7 @@
     <bool>true</bool>
    </property>
   </buttongroup>
+  <buttongroup name="summaryButtonGroup"/>
   <buttongroup name="dataTypeGroup"/>
  </buttongroups>
 </ui>
