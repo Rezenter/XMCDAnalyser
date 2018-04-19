@@ -44,6 +44,7 @@ public slots:
     void setIntegrate(const bool needed, const int index, const int file);
     void setIntegrationConstants(const qreal newPc, const qreal newNh);
     void setIntegratePositiveOnly(const bool needed, const int file);
+    void setIntegrateGround(const bool needed, const int file);
     void setCalculate(const bool needed, const QPointF newPhi, const QPointF newTheta);
     void update(const int file);
 
@@ -85,6 +86,8 @@ private:
     bool tmpIntegrateNeeded[2] = {false, false};
     bool integratePositiveOnly[2] = {false, false};
     bool tmpIntegratePositiveOnly[2] = {false, false};
+    bool integrateGround[2] = {false, false};
+    bool tmpIntegrateGround[2] = {false, false};
     bool stepFitNeeded[2] = {false, false};//currently constantly false
     bool ready = true;
     bool constantsChanged = false;

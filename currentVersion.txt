@@ -38,3 +38,13 @@ v10
 	slots replaced with lambda-functions where possible
 	revisioned stepped multiplyier value interval
 	added moments relation
+	added calcWrapper in order to support multifile comparasion
+	added logger for easier remote debug
+v10.3
+	more tetailed tooltips
+	fonts fix
+	added half-sum normalisation at summary
+	added summary normalisation type switch
+	saving log after crash
+	mb fixed crash at pair creation
+	added integralGround switch

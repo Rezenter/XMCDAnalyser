@@ -13,7 +13,7 @@ Calculator::~Calculator(){
 }
 
 void Calculator::setLoader(const QString loaderPath, const int file){
-    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". path == " + loaderPath + ". file == " + QString::number(file));
+    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". path = " + loaderPath + ". file = " + QString::number(file));
     if(file == 0 || file == 1){
         if(path[file] != loaderPath){
             path[file] = loaderPath;
@@ -21,13 +21,13 @@ void Calculator::setLoader(const QString loaderPath, const int file){
             reset();
         }
     }else{
-        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file == " + QString::number(file));
+        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file = " + QString::number(file));
     }
 }
 
 void Calculator::setLimits(const qreal left, const qreal right, const int file){
-    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". left == " + QString::number(left) +
-        ". right == " + QString::number(right) + ". file == " + QString::number(file));
+    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". left = " + QString::number(left) +
+        ". right = " + QString::number(right) + ". file = " + QString::number(file));
     if(file == 0 || file == 1){
         if(tmpLimits[file] != QPointF(left, right)){
             tmpLimits[file] = QPointF(left, right);
@@ -35,13 +35,13 @@ void Calculator::setLimits(const qreal left, const qreal right, const int file){
             reset();
         }
     }else{
-        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file == " + QString::number(file));
+        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file = " + QString::number(file));
     }
 }
 
 void Calculator::setEnergyShift(const qreal shift, const int file){
-    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". shift == " + QString::number(shift) +
-        ". file == " + QString::number(file));
+    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". shift = " + QString::number(shift) +
+        ". file = " + QString::number(file));
     if(shift != tmpEnergyShift[file]){
         tmpEnergyShift[file] = shift;
         loaderChanged[file] = true;
@@ -50,8 +50,8 @@ void Calculator::setEnergyShift(const qreal shift, const int file){
 }
 
 void Calculator::setShadowCurrent(const qreal signal, const qreal iZero, const int file){
-    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". signal == " + QString::number(signal) +
-        ". iZero == " + QString::number(iZero) + ". file == " + QString::number(file));
+    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". signal = " + QString::number(signal) +
+        ". iZero = " + QString::number(iZero) + ". file = " + QString::number(file));
     if(file == 0 || file == 1){
         if(tmpShadow[file] != QPointF(signal, iZero)){
             tmpShadow[file] = QPointF(signal, iZero);
@@ -59,12 +59,12 @@ void Calculator::setShadowCurrent(const qreal signal, const qreal iZero, const i
             reset();
         }
     }else{
-        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file == " + QString::number(file));
+        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file = " + QString::number(file));
     }
 }
 
 void Calculator::load(const int file){
-    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". file == " + QString::number(file));
+    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". file = " + QString::number(file));
     if(file == 0 || file == 1){
         loader[file].setLimits(floor(limits[file].x()), floor(limits[file].y()), energyShift[file]);
         bare[file].resize(loader[file].getBareData().size());
@@ -80,12 +80,12 @@ void Calculator::load(const int file){
         loaded[file] = true;
         calcData(file);
     }else{
-        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file == " + QString::number(file));
+        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file = " + QString::number(file));
     }
 }
 
 void Calculator::calcData(const int file){
-    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". file == " + QString::number(file));
+    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". file = " + QString::number(file));
     if(file == 0 || file == 1){
         if(loaded[file]){
             data[file].resize(bare[file].size());
@@ -98,17 +98,17 @@ void Calculator::calcData(const int file){
             }
             smooth(file);
         }else{
-            log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file == " +
+            log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file = " +
                 QString::number(file) + "not loaded");
         }
     }else{
-        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file == " + QString::number(file));
+        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file = " + QString::number(file));
     }
 }
 
 void Calculator::setSmooth(const int count, const int file){
-    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". count == " + QString::number(count) +
-        ". file == " + QString::number(file));
+    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". count = " + QString::number(count) +
+        ". file = " + QString::number(file));
     if(file == 0 || file == 1){
         if(count >= 0 && count <= bare[file].size()){
             if(count != tmpSmoothPoints[file]){
@@ -117,15 +117,15 @@ void Calculator::setSmooth(const int count, const int file){
                 reset();
             }
         }else{
-            log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable count == " + QString::number(count));
+            log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable count = " + QString::number(count));
         }
     }else{
-        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file == " + QString::number(file));
+        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file = " + QString::number(file));
     }
 }
 
 void Calculator::smooth(const int file){
-    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". file == " + QString::number(file));
+    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". file = " + QString::number(file));
     if(file == 0 || file == 1){
         if(smoothPoints[file] > 1 && smoothPoints[file] <= data[file].size()){
             smoothedData[file].resize(data[file].size() - smoothPoints[file] + 1);
@@ -163,13 +163,13 @@ void Calculator::smooth(const int file){
             reset();
         }
     }else{
-        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file == " + QString::number(file));
+        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file = " + QString::number(file));
     }
 }
 
 void Calculator::setNormalizationCoeff(const qreal coeff, bool needed, const int file){
-    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". coeff == " + QString::number(coeff) +
-        ". needed == " + QString::number(needed) + ". file == " + QString::number(file));
+    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". coeff = " + QString::number(coeff) +
+        ". needed = " + QString::number(needed) + ". file = " + QString::number(file));
     if(file == 0 || file == 1){
         if(tmpNormalizationCoeff[file][0] != coeff){
             tmpNormalizationCoeff[file][0] = coeff;
@@ -183,13 +183,13 @@ void Calculator::setNormalizationCoeff(const qreal coeff, bool needed, const int
             reset();
         }
     }else{
-        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file == " + QString::number(file));
+        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file = " + QString::number(file));
     }
 }
 
 void Calculator::setRelativeCurv(const qreal a, const int file){
-    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". a == " + QString::number(a) +
-        ". file == " + QString::number(file));
+    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". a = " + QString::number(a) +
+        ". file = " + QString::number(file));
     if(file == 0 || file == 1){
         if(a != tmpRelativeCurv[file]){
             tmpRelativeCurv[file] = a;
@@ -197,12 +197,12 @@ void Calculator::setRelativeCurv(const qreal a, const int file){
             reset();
         }
     }else{
-        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file == " + QString::number(file));
+        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file = " + QString::number(file));
     }
 }
 
 void Calculator::normalize(const int file){
-    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". file == " + QString::number(file));
+    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". file = " + QString::number(file));
     if(file == 0 || file == 1){
         normData[file].resize(smoothedData[file].size());
         qreal x1 = smoothedData[file].first().first;
@@ -232,12 +232,12 @@ void Calculator::normalize(const int file){
             reset();
         }
     }else{
-        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file == " + QString::number(file));
+        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file = " + QString::number(file));
     }
 }
 
 void Calculator::setDiff(const bool needed, const int file){
-    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". needed == " + QString::number(needed) + ". file == " + QString::number(file));
+    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". needed = " + QString::number(needed) + ". file = " + QString::number(file));
     if(file == 0 || file == 1){
         if(tmpDiffNeeded[file] != needed){
             tmpDiffNeeded[file] = needed;
@@ -245,12 +245,12 @@ void Calculator::setDiff(const bool needed, const int file){
             reset();
         }
     }else{
-        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file == " + QString::number(file));
+        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file = " + QString::number(file));
     }
 }
 
 void Calculator::calcDiff(const int file){
-    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". file == " + QString::number(file));
+    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". file = " + QString::number(file));
     if(file == 0 || file == 1){
         diff[file].resize(normData[file].size());
         lEdges[file] = 0;
@@ -272,13 +272,13 @@ void Calculator::calcDiff(const int file){
             reset();
         }
     }else{
-        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file == " + QString::number(file));
+        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file = " + QString::number(file));
     }
 }
 
 void Calculator::setLinearIntervals(const QPointF interval, bool needed, const int file){
     log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". interval == (" + QString::number(interval.x()) +
-        ", " + QString::number(interval.y()) + ")" + ". needed == " + QString::number(needed) + ". file == " + QString::number(file));
+        ", " + QString::number(interval.y()) + ")" + ". needed = " + QString::number(needed) + ". file = " + QString::number(file));
     if(file == 0 || file == 1){
         if(tmpLinearIntervals[file] != interval){
             tmpLinearIntervals[file] = interval;
@@ -292,12 +292,12 @@ void Calculator::setLinearIntervals(const QPointF interval, bool needed, const i
             reset();
         }
     }else{
-        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file == " + QString::number(file));
+        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file = " + QString::number(file));
     }
 }
 
 void Calculator::linear(const int file){
-    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". left == " + ". file == " + QString::number(file));
+    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". left = " + ". file = " + QString::number(file));
     if(linearIntervals[file].x() < normData[file].size() && linearIntervals[file].x() > 1){
         if(linearIntervals[file].y() < normData[file].size() && linearIntervals[file].y() > 1){
             qreal xSum[2] = {0.0, 0.0};
@@ -375,17 +375,17 @@ void Calculator::linear(const int file){
             finalDiff[file] = diff[file];
             calcSteps(file);
         }else{
-            log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable linearIntervals[file].y() == " +
+            log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable linearIntervals[file].y() = " +
                 QString::number(linearIntervals[file].y()));
         }
     }else{
-        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable linearIntervals[file].x() == " +
+        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable linearIntervals[file].x() = " +
             QString::number(linearIntervals[file].x()));
     }
 }
 
 void Calculator::calcSteps(const int file){
-    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". file == " + QString::number(file));
+    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". file = " + QString::number(file));
     if(file == 0 || file == 1){
         steps[file].resize(fitData[file].size());
         qreal m = ((fitData[file].last().second.x() - fitData[file][0].second.x()) +
@@ -407,13 +407,13 @@ void Calculator::calcSteps(const int file){
             reset();
         }
     }else{
-        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file == " + QString::number(file));
+        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file = " + QString::number(file));
     }
 }
 
 void Calculator::setLin(const bool needed, const int file){
-    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". needed == " + QString::number(needed) +
-        ". file == " + QString::number(file));
+    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". needed = " + QString::number(needed) +
+        ". file = " + QString::number(file));
     if(file == 0 || file == 1){
         if(needed != tmpLinNeeded[file]){
             tmpLinNeeded[file] = needed;
@@ -421,13 +421,13 @@ void Calculator::setLin(const bool needed, const int file){
             reset();
         }
     }else{
-        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file == " + QString::number(file));
+        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file = " + QString::number(file));
     }
 }
 
 void Calculator::setStepped(const qreal coeff, const bool needed, const int file){
-    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". coeff == " + QString::number(coeff) +
-        ". needed == " + QString::number(needed) + ". file == " + QString::number(file));
+    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". coeff = " + QString::number(coeff) +
+        ". needed = " + QString::number(needed) + ". file = " + QString::number(file));
     if(file == 0 || file == 1){
         if(tmpSteppedCoeff[file] != coeff){
             tmpSteppedCoeff[file] = coeff;
@@ -441,12 +441,12 @@ void Calculator::setStepped(const qreal coeff, const bool needed, const int file
             reset();
         }
     }else{
-        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file == " + QString::number(file));
+        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file = " + QString::number(file));
     }
 }
 
 void Calculator::stepped(const int file){
-    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". file == " + QString::number(file));
+    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". file = " + QString::number(file));
     if(file == 0 || file == 1){
         finalData[file].resize(fitData[file].size());
         for(int i = 0; i < fitData[file].size(); i++){
@@ -463,13 +463,13 @@ void Calculator::stepped(const int file){
             reset();
         }
     }else{
-        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file == " + QString::number(file));
+        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file = " + QString::number(file));
     }
 }
 
 void Calculator::setIntegrate(const bool needed, const int index, const int file){
-    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". needed == " + QString::number(needed) +
-        ". index == " + QString::number(index) + ". file == " + QString::number(file));
+    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". needed = " + QString::number(needed) +
+        ". index = " + QString::number(index) + ". file = " + QString::number(file));
     if(file == 0 || file == 1){
         if(index > lEdges[file] && index < rEdges[file]){
             tmpSeparator[file] = index;
@@ -477,30 +477,30 @@ void Calculator::setIntegrate(const bool needed, const int index, const int file
             integrationChanged[file] = true;
             reset();
         }else{
-            log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable index == " + QString::number(index));
+            log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable index = " + QString::number(index));
         }
     }else{
-        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file == " + QString::number(file));
+        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file = " + QString::number(file));
     }
 }
 
 void Calculator::setIntegrationConstants(const qreal newPc, const qreal newNh){
-    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". newPc == " + QString::number(newPc) +
-        ". newNh == " + QString::number(newNh));
+    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". newPc = " + QString::number(newPc) +
+        ". newNh = " + QString::number(newNh));
     if(tmpConstant != newNh/newPc){
         if(newPc > 0.0 && newPc <= 1.0){
             tmpConstant = newNh/newPc;
             constantsChanged = true;
             reset();
         }else{
-           log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable newPc == " + QString::number(newPc));
+           log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable newPc = " + QString::number(newPc));
         }
     }
 }
 
 void Calculator::setIntegratePositiveOnly(const bool needed, const int file){
-    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". needed == " + QString::number(needed) +
-        ". file == " + QString::number(file));
+    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". needed = " + QString::number(needed) +
+        ". file = " + QString::number(file));
     if(file == 0 || file == 1){
         if(needed != tmpIntegratePositiveOnly[file]){
             tmpIntegratePositiveOnly[file] = needed;
@@ -508,12 +508,26 @@ void Calculator::setIntegratePositiveOnly(const bool needed, const int file){
             reset();
         }
     }else{
-        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file == " + QString::number(file));
+        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file = " + QString::number(file));
+    }
+}
+
+void Calculator::setIntegrateGround(const bool needed, const int file){
+    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". needed = " + QString::number(needed) +
+        ". file = " + QString::number(file));
+    if(file == 0 || file == 1){
+        if(needed != tmpIntegrateGround[file]){
+            tmpIntegrateGround[file] = needed;
+            integrationChanged[file] = true;
+            reset();
+        }
+    }else{
+        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file = " + QString::number(file));
     }
 }
 
 void Calculator::integrate(const int file){
-    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". file == " + QString::number(file));
+    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". file = " + QString::number(file));
     if(file == 0 || file == 1){
         if(steppedNeeded[file]){
             if(diffNeeded[file]){
@@ -529,9 +543,12 @@ void Calculator::integrate(const int file){
                 dl3Int[file] = 0.0;
                 for(int i = 0; i < separator[file]; i++){
                     qreal trap = ((finalDiff[file][i+1].x() - finalDiff[file][i].x())*
-                            (finalDiff[file][i+1].y() + finalDiff[file][i].y())/2.0) -
-                            (finalDiff[file][i+1].x() - finalDiff[file][i].x())*
-                            (a*(finalDiff[file][i+1].x() + finalDiff[file][i].x())/2.0 + b);
+                            (finalDiff[file][i+1].y() + finalDiff[file][i].y())/2.0);
+
+                    if(integrateGround[file]){
+                        trap -= (finalDiff[file][i+1].x() - finalDiff[file][i].x())*
+                                (a*(finalDiff[file][i+1].x() + finalDiff[file][i].x())/2.0 + b);
+                    }
                     if(!integratePositiveOnly[file] || trap < 0.0){
                         dl3Int[file] += trap;
                     }
@@ -542,9 +559,11 @@ void Calculator::integrate(const int file){
                 dl2Int[file] = 0.0;
                 for(int i = separator[file]; i < finalData[file].size() - 1; i++){
                     qreal trap = ((finalDiff[file][i+1].x() - finalDiff[file][i].x())*
-                            (finalDiff[file][i+1].y() + finalDiff[file][i].y())/2.0) -
-                            (finalDiff[file][i+1].x() - finalDiff[file][i].x())*
-                            (a*(finalDiff[file][i+1].x() + finalDiff[file][i].x())/2.0 + b);
+                            (finalDiff[file][i+1].y() + finalDiff[file][i].y())/2.0);
+                    if(integrateGround[file]){
+                        trap -= (finalDiff[file][i+1].x() - finalDiff[file][i].x())*
+                                (a*(finalDiff[file][i+1].x() + finalDiff[file][i].x())/2.0 + b);
+                    }
                     if(!integratePositiveOnly[file] || trap > 0.0){
                         dl2Int[file] += trap;
                     }
@@ -560,20 +579,20 @@ void Calculator::integrate(const int file){
                     reset();
                 }
             }else{
-                log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable diffNeeded[file] == " +
+                log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable diffNeeded[file] = " +
                     diffNeeded[file]);
             }
         }else{
-            log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable steppedNeeded[file] == " +
+            log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable steppedNeeded[file] = " +
                 steppedNeeded[file]);
         }
     }else{
-        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file == " + QString::number(file));
+        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file = " + QString::number(file));
     }
 }
 
 void Calculator::setCalculate(const bool needed, const QPointF newPhi, const QPointF newTheta){
-    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". needed == " + QString::number(needed) +
+    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". needed = " + QString::number(needed) +
         ". newPhi == (" + QString::number(newPhi.x()) + ", " + QString::number(newPhi.y()) + "). newTheta == ("
         + QString::number(newTheta.x()) + ", " + QString::number(newTheta.y()) + ").");
     if(tmpCalculateNeeded != needed){
@@ -594,7 +613,7 @@ void Calculator::setCalculate(const bool needed, const QPointF newPhi, const QPo
 }
 
 void Calculator::calculate(const int file){
-    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". file == " + QString::number(file));
+    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". file = " + QString::number(file));
     if(integrateNeeded[0] && integrateNeeded[1]){
         mOrbO = -(mOrb[0]*qSin(theta.y())*qSin(phi.y()) - qSin(theta.x())*qSin(phi.x())*mOrb[1])/
                 (qSin(theta.x())*qSin(phi.x())*qCos(theta.y())*qCos(phi.y()) - qSin(theta.y())*
@@ -613,7 +632,7 @@ void Calculator::calculate(const int file){
         ready = true;
         reset();
     }else{
-        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variables integrateNeeded == " +
+        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variables integrateNeeded = " +
             integrateNeeded[0] + integrateNeeded[1]);
     }
 }
@@ -679,6 +698,7 @@ void Calculator::reset(){
                     separator[file] = tmpSeparator[file];
                     integrateNeeded[file] = tmpIntegrateNeeded[file];
                     integratePositiveOnly[file] = tmpIntegratePositiveOnly[file];
+                    integrateGround[file] = tmpIntegrateGround[file];
                     if(integrateNeeded[file]){
                         integrate(file);
                     }

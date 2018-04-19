@@ -32,3 +32,6 @@ FORMS    += mainwindow.ui \
     pairwidget.ui
 
 RC_FILE = XMCDAnalyser.rc
+
+RESOURCES += \
+    tooltipsresources.qrc

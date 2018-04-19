@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>res/AdjustGround.png</file>
+        <file>res/PositiveOnly.png</file>
+        <file>res/Angles.png</file>
+        <file>res/Integrals.png</file>
+        <file>res/EffMoments.png</file>
+        <file>res/SummRule.png</file>
+    </qresource>
+</RCC>

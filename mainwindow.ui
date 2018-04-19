@@ -51,7 +51,7 @@
        <number>100000</number>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
        <property name="sizePolicy">
@@ -258,111 +258,6 @@
         </item>
         <item row="0" column="1" rowspan="2">
          <layout class="QGridLayout" name="gridLayout">
-          <item row="0" column="0">
-           <widget class="QRadioButton" name="rawBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>15</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>Bare data strait from a beamline.</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="statusTip">
-             <string/>
-            </property>
-            <property name="text">
-             <string>raw data</string>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-            <property name="autoExclusive">
-             <bool>true</bool>
-            </property>
-            <attribute name="buttonGroup">
-             <string notr="true">dataTypeGroup</string>
-            </attribute>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QRadioButton" name="normBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>15</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>Raw data normalized on beam intensity</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="text">
-             <string>normalization</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-            <property name="autoExclusive">
-             <bool>true</bool>
-            </property>
-            <attribute name="buttonGroup">
-             <string notr="true">dataTypeGroup</string>
-            </attribute>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QDoubleSpinBox" name="shadowSpinBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>15</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>Shadow current through i-zero sensor.</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="prefix">
-             <string>Shadow current = </string>
-            </property>
-            <property name="decimals">
-             <number>1</number>
-            </property>
-            <property name="minimum">
-             <double>-100.000000000000000</double>
-            </property>
-            <property name="maximum">
-             <double>100.000000000000000</double>
-            </property>
-            <property name="singleStep">
-             <double>0.100000000000000</double>
-            </property>
-           </widget>
-          </item>
           <item row="16" column="1">
            <widget class="QPushButton" name="exportButton">
             <property name="sizePolicy">
@@ -970,7 +865,7 @@
              <bool>false</bool>
             </property>
             <property name="toolTip">
-             <string>Take into account only same sign contribution.</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Take into account only same sign contribution to the integral.&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/PositiveOnly.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="toolTipDuration">
              <number>100000</number>
@@ -1017,7 +912,128 @@
             </property>
            </widget>
           </item>
+          <item row="0" column="0">
+           <widget class="QRadioButton" name="rawBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Bare data strait from a beamline.</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="statusTip">
+             <string/>
+            </property>
+            <property name="text">
+             <string>raw data</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
+            </property>
+            <attribute name="buttonGroup">
+             <string notr="true">dataTypeGroup</string>
+            </attribute>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QRadioButton" name="normBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Raw data normalized on beam intensity</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="text">
+             <string>normalization</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
+            </property>
+            <attribute name="buttonGroup">
+             <string notr="true">dataTypeGroup</string>
+            </attribute>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QDoubleSpinBox" name="shadowSpinBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Shadow current through i-zero sensor.</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="prefix">
+             <string>Shadow current = </string>
+            </property>
+            <property name="decimals">
+             <number>1</number>
+            </property>
+            <property name="minimum">
+             <double>-100.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>100.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.100000000000000</double>
+            </property>
+           </widget>
+          </item>
           <item row="13" column="1">
+           <widget class="QCheckBox" name="groundCheckBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pull the Integration separator to the ground.&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/AdjustGround.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="text">
+             <string>Adjust zero level</string>
+            </property>
+           </widget>
+          </item>
+          <item row="14" column="0">
            <widget class="QCheckBox" name="calculateBox">
             <property name="enabled">
              <bool>false</bool>
@@ -1070,16 +1086,19 @@
              <number>100000</number>
             </property>
             <property name="title">
-             <string>file 1</string>
+             <string>File 1</string>
             </property>
             <layout class="QGridLayout" name="gridLayout_12">
              <item row="0" column="6">
               <widget class="QLabel" name="label">
+               <property name="toolTip">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Angle of beam incidence relative to normal axis.&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/Angles.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
                <property name="toolTipDuration">
                 <number>100000</number>
                </property>
                <property name="text">
-                <string>Θ1 = </string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Θ&lt;/span&gt;&lt;span style=&quot; font-size:10pt; vertical-align:sub;&quot;&gt;1&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; = &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1095,7 +1114,7 @@
                 </sizepolicy>
                </property>
                <property name="toolTip">
-                <string>Orbital moment value</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Orbital moment value&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/EffMoments.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="toolTipDuration">
                 <number>100000</number>
@@ -1114,7 +1133,7 @@
                 </sizepolicy>
                </property>
                <property name="toolTip">
-                <string>Effective spin moment value</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Effective spin moment value&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/EffMoments.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="toolTipDuration">
                 <number>100000</number>
@@ -1139,13 +1158,13 @@
                 </size>
                </property>
                <property name="toolTip">
-                <string>Integral of (normalized r.p. signal + normalized l.p. signal)*dx from left chopped edge to right for the first file.</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Integral of (normalized r.p. signal + normalized l.p. signal)*dE from the left chopped edge to the right.&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/Integrals.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="toolTipDuration">
                 <number>100000</number>
                </property>
                <property name="text">
-                <string>Al3 + Al2 =</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;A&lt;/span&gt;&lt;span style=&quot; font-size:10pt; vertical-align:sub;&quot;&gt;L3&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; + A&lt;/span&gt;&lt;span style=&quot; font-size:10pt; vertical-align:sub;&quot;&gt;L2&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; =&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1161,7 +1180,7 @@
                 </sizepolicy>
                </property>
                <property name="toolTip">
-                <string>Integral of (normalized r.p. signal + normalized l.p. signal)*dx from left chopped edge to right for the first file.</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Integral of (normalized r.p. signal + normalized l.p. signal)*dE from the left chopped edge to the right.&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/Integrals.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="toolTipDuration">
                 <number>100000</number>
@@ -1186,13 +1205,13 @@
                 </size>
                </property>
                <property name="toolTip">
-                <string>Integral of (XMCD)*dx from left chopped edge to local minimum between maximums for the first file.</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Integral of (XMCD)*dE from left chopped edge to the IntegralsSeparator.&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/Integrals.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="toolTipDuration">
                 <number>100000</number>
                </property>
                <property name="text">
-                <string>ΔAl3 = </string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;ΔA&lt;/span&gt;&lt;span style=&quot; font-size:10pt; vertical-align:sub;&quot;&gt;L3&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; = &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1208,7 +1227,7 @@
                 </sizepolicy>
                </property>
                <property name="toolTip">
-                <string>Integral of (XMCD)*dx from left chopped edge to local minimum between maximums for the first file.</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Integral of (XMCD)*dE from left chopped edge to the IntegralsSeparator.&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/Integrals.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="toolTipDuration">
                 <number>100000</number>
@@ -1233,13 +1252,13 @@
                 </size>
                </property>
                <property name="toolTip">
-                <string>Integral of (XMCD)*dx from local minimum between maximums to the chopped right edge for the first file.</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Integral of (XMCD)*dE from the IntegralsSeparator to the right chopped edge.&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/Integrals.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="toolTipDuration">
                 <number>100000</number>
                </property>
                <property name="text">
-                <string>ΔAl2 = </string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;ΔA&lt;/span&gt;&lt;span style=&quot; font-size:10pt; vertical-align:sub;&quot;&gt;L2&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; = &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1255,7 +1274,7 @@
                 </sizepolicy>
                </property>
                <property name="toolTip">
-                <string>Integral of (XMCD)*dx from local minimum between maximums to the chopped right edge for the first file.</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Integral of (XMCD)*dE from the IntegralsSeparator to the right chopped edge.&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/Integrals.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="toolTipDuration">
                 <number>100000</number>
@@ -1274,13 +1293,13 @@
                 </sizepolicy>
                </property>
                <property name="toolTip">
-                <string>Effective spin moment value</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Effective spin moment value&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/EffMoments.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="toolTipDuration">
                 <number>100000</number>
                </property>
                <property name="text">
-                <string>msEff =</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;m&lt;/span&gt;&lt;span style=&quot; font-size:11pt; vertical-align:sub;&quot;&gt;s&lt;/span&gt;&lt;span style=&quot; font-size:11pt; vertical-align:super;&quot;&gt;eff&lt;/span&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt; =&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1296,13 +1315,13 @@
                 </sizepolicy>
                </property>
                <property name="toolTip">
-                <string>Orbital moment value</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Orbital moment value&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/EffMoments.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="toolTipDuration">
                 <number>100000</number>
                </property>
                <property name="text">
-                <string>mOrb =</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;m&lt;/span&gt;&lt;span style=&quot; font-size:11pt; vertical-align:sub;&quot;&gt;orb&lt;/span&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt; =&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1312,13 +1331,13 @@
              <item row="0" column="4">
               <widget class="QLabel" name="label_36">
                <property name="toolTip">
-                <string>Magnetisation angle relative to normal axis gained from calculations, assuming intensity is in proportion to cos(M. angle).</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Magnetisation angle relative to normal axis gained from calculations,&lt;/p&gt;&lt;p&gt;assuming intensity is in proportion to cos(M. angle).&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/Angles.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="toolTipDuration">
                 <number>100000</number>
                </property>
                <property name="text">
-                <string>φ1 =</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;φ&lt;/span&gt;&lt;span style=&quot; font-size:10pt; vertical-align:sub;&quot;&gt;1&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; =&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1334,7 +1353,7 @@
                 </sizepolicy>
                </property>
                <property name="toolTip">
-                <string>Magnetisation angle relative to normal axis gained from calculations, assuming intensity is in proportion to cos(M. angle).</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Magnetisation angle relative to normal axis gained from calculations,&lt;/p&gt;&lt;p&gt;assuming intensity is in proportion to cos(M. angle).&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/Angles.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="toolTipDuration">
                 <number>100000</number>
@@ -1368,6 +1387,9 @@
              </item>
              <item row="0" column="7">
               <widget class="QLabel" name="theta1Label">
+               <property name="toolTip">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Angle of beam incidence relative to normal axis.&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/Angles.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
                <property name="toolTipDuration">
                 <number>100000</number>
                </property>
@@ -1378,6 +1400,12 @@
              </item>
              <item row="1" column="6">
               <widget class="QLabel" name="label_3">
+               <property name="toolTip">
+                <string>Relation of effective moments. Shoul be more reliable, tham pure moments.</string>
+               </property>
+               <property name="toolTipDuration">
+                <number>100000</number>
+               </property>
                <property name="text">
                 <string>ms/mO =</string>
                </property>
@@ -1388,6 +1416,12 @@
              </item>
              <item row="1" column="7">
               <widget class="QLabel" name="relationLabel1">
+               <property name="toolTip">
+                <string>Relation of effective moments. Shoul be more reliable, tham pure moments.</string>
+               </property>
+               <property name="toolTipDuration">
+                <number>100000</number>
+               </property>
                <property name="text">
                 <string>Unknown</string>
                </property>
@@ -1417,13 +1451,13 @@
              <number>100000</number>
             </property>
             <property name="title">
-             <string>results</string>
+             <string>Calculation results</string>
             </property>
             <layout class="QGridLayout" name="gridLayout_13">
              <item row="4" column="4">
               <widget class="QLabel" name="mOrbOLabel">
                <property name="toolTip">
-                <string>Normal component of orbital moment</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Normal component of orbital moment.&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/SummRule.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="toolTipDuration">
                 <number>100000</number>
@@ -1436,13 +1470,13 @@
              <item row="5" column="0">
               <widget class="QLabel" name="label_37">
                <property name="toolTip">
-                <string/>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/SummRule.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="toolTipDuration">
                 <number>100000</number>
                </property>
                <property name="text">
-                <string>mT⊥ =</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;m&lt;/span&gt;&lt;span style=&quot; font-size:11pt; vertical-align:sub;&quot;&gt;T&lt;/span&gt;&lt;span style=&quot; font-size:11pt; vertical-align:super;&quot;&gt;⊥&lt;/span&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt; =&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1452,7 +1486,7 @@
              <item row="5" column="1">
               <widget class="QLabel" name="mTLabel">
                <property name="toolTip">
-                <string/>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/SummRule.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="toolTipDuration">
                 <number>100000</number>
@@ -1465,13 +1499,13 @@
              <item row="5" column="2" colspan="2">
               <widget class="QLabel" name="label_38">
                <property name="toolTip">
-                <string>Paralel component of orbital moment</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Paralel component of orbital moment.&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/SummRule.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="toolTipDuration">
                 <number>100000</number>
                </property>
                <property name="text">
-                <string>mOrb|| =</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;m&lt;/span&gt;&lt;span style=&quot; font-size:11pt; vertical-align:sub;&quot;&gt;orb&lt;/span&gt;&lt;span style=&quot; font-size:11pt; vertical-align:super;&quot;&gt;||&lt;/span&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt; =&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1481,7 +1515,7 @@
              <item row="5" column="4">
               <widget class="QLabel" name="mOrbPLabel">
                <property name="toolTip">
-                <string>Paralel component of orbital moment</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Paralel component of orbital moment.&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/SummRule.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="toolTipDuration">
                 <number>100000</number>
@@ -1501,6 +1535,9 @@
                </property>
                <property name="text">
                 <string>Unit</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                </property>
               </widget>
              </item>
@@ -1552,7 +1589,10 @@
                 <number>100000</number>
                </property>
                <property name="text">
-                <string>Pc</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;P&lt;/span&gt;&lt;span style=&quot; font-size:11pt; vertical-align:sub;&quot;&gt;c&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                </property>
               </widget>
              </item>
@@ -1584,7 +1624,10 @@
                 <number>100000</number>
                </property>
                <property name="text">
-                <string>Nh</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;N&lt;/span&gt;&lt;span style=&quot; font-size:11pt; vertical-align:sub;&quot;&gt;h&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                </property>
               </widget>
              </item>
@@ -1607,13 +1650,13 @@
              <item row="4" column="0">
               <widget class="QLabel" name="label_43">
                <property name="toolTip">
-                <string>Spin moment value</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Spin moment value&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/SummRule.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="toolTipDuration">
                 <number>100000</number>
                </property>
                <property name="text">
-                <string>ms =</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;m&lt;/span&gt;&lt;span style=&quot; font-size:11pt; vertical-align:sub;&quot;&gt;s&lt;/span&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt; =&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1623,7 +1666,7 @@
              <item row="4" column="1">
               <widget class="QLabel" name="msLabel">
                <property name="toolTip">
-                <string>Spin moment value</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Spin moment value&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/SummRule.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="toolTipDuration">
                 <number>100000</number>
@@ -1636,13 +1679,13 @@
              <item row="4" column="2" colspan="2">
               <widget class="QLabel" name="label_44">
                <property name="toolTip">
-                <string>Normal component of orbital moment</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Normal component of orbital moment.&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/SummRule.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="toolTipDuration">
                 <number>100000</number>
                </property>
                <property name="text">
-                <string>mOrb┴ =</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;m&lt;/span&gt;&lt;span style=&quot; font-size:11pt; vertical-align:sub;&quot;&gt;orb&lt;/span&gt;&lt;span style=&quot; font-size:11pt; vertical-align:super;&quot;&gt;⊥&lt;/span&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt; =&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1652,13 +1695,13 @@
              <item row="2" column="3">
               <widget class="QLabel" name="label_40">
                <property name="toolTip">
-                <string>Orbital moment, calculatet from components.</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Orbital moment, calculated as (m&lt;span style=&quot; vertical-align:super;&quot;&gt;┴&lt;/span&gt;&lt;span style=&quot; vertical-align:sub;&quot;&gt;orb&lt;/span&gt;&lt;span style=&quot; vertical-align:super;&quot;&gt;2&lt;/span&gt; + m&lt;span style=&quot; vertical-align:super;&quot;&gt;||&lt;/span&gt;&lt;span style=&quot; vertical-align:sub;&quot;&gt;orb&lt;/span&gt;&lt;span style=&quot; vertical-align:super;&quot;&gt;2&lt;/span&gt;)&lt;span style=&quot; vertical-align:super;&quot;&gt;0.5&lt;/span&gt;.&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/SummRule.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="toolTipDuration">
                 <number>100000</number>
                </property>
                <property name="text">
-                <string>mOrb = </string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;m&lt;/span&gt;&lt;span style=&quot; font-size:11pt; vertical-align:sub;&quot;&gt;orb&lt;/span&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt; = &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1668,7 +1711,7 @@
              <item row="2" column="4">
               <widget class="QLabel" name="mOrbLabel">
                <property name="toolTip">
-                <string>Orbital moment, calculatet from components.</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Orbital moment, calculated as (m&lt;span style=&quot; vertical-align:super;&quot;&gt;┴&lt;/span&gt;&lt;span style=&quot; vertical-align:sub;&quot;&gt;orb&lt;/span&gt;&lt;span style=&quot; vertical-align:super;&quot;&gt;2&lt;/span&gt; + m&lt;span style=&quot; vertical-align:super;&quot;&gt;||&lt;/span&gt;&lt;span style=&quot; vertical-align:sub;&quot;&gt;orb&lt;/span&gt;&lt;span style=&quot; vertical-align:super;&quot;&gt;2&lt;/span&gt;)&lt;span style=&quot; vertical-align:super;&quot;&gt;0.5&lt;/span&gt;.&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/SummRule.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="toolTipDuration">
                 <number>100000</number>
@@ -1702,16 +1745,19 @@
              <number>100000</number>
             </property>
             <property name="title">
-             <string>file 2</string>
+             <string>File 2</string>
             </property>
             <layout class="QGridLayout" name="gridLayout_10">
              <item row="0" column="5">
               <widget class="QLabel" name="label_2">
+               <property name="toolTip">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Angle of beam incidence relative to normal axis.&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/Angles.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
                <property name="toolTipDuration">
                 <number>100000</number>
                </property>
                <property name="text">
-                <string>Θ2 = </string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Θ&lt;/span&gt;&lt;span style=&quot; font-size:10pt; vertical-align:sub;&quot;&gt;2&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; = &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1727,7 +1773,7 @@
                 </sizepolicy>
                </property>
                <property name="toolTip">
-                <string>Integral of (XMCD)*dx from left chopped edge to local minimum between maximums for the second file.</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Integral of (XMCD)*dE from left chopped edge to the IntegralsSeparator.&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/Integrals.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="toolTipDuration">
                 <number>100000</number>
@@ -1746,13 +1792,13 @@
                 </sizepolicy>
                </property>
                <property name="toolTip">
-                <string>Integral of (XMCD)*dx from left chopped edge to local minimum between maximums for the second file.</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Integral of (XMCD)*dE from left chopped edge to the IntegralsSeparator.&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/Integrals.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="toolTipDuration">
                 <number>100000</number>
                </property>
                <property name="text">
-                <string>ΔAl3 = </string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;ΔA&lt;/span&gt;&lt;span style=&quot; font-size:10pt; vertical-align:sub;&quot;&gt;L3&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; = &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1768,7 +1814,7 @@
                 </sizepolicy>
                </property>
                <property name="toolTip">
-                <string>Integral of (normalized r.p. signal + normalized l.p. signal)*dx from left chopped edge to right for the second file.</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Integral of (normalized r.p. signal + normalized l.p. signal)*dE from the left chopped edge to the right.&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/Integrals.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="toolTipDuration">
                 <number>100000</number>
@@ -1787,13 +1833,13 @@
                 </sizepolicy>
                </property>
                <property name="toolTip">
-                <string>Integral of (XMCD)*dx from local minimum between maximums to the chopped right edge for the second file.</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Integral of (XMCD)*dE from the IntegralsSeparator to the right chopped edge.&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/Integrals.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="toolTipDuration">
                 <number>100000</number>
                </property>
                <property name="text">
-                <string>ΔAl2 = </string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;ΔA&lt;/span&gt;&lt;span style=&quot; font-size:10pt; vertical-align:sub;&quot;&gt;L2&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; = &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1809,7 +1855,7 @@
                 </sizepolicy>
                </property>
                <property name="toolTip">
-                <string>Integral of (XMCD)*dx from local minimum between maximums to the chopped right edge for the second file.</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Integral of (XMCD)*dE from the IntegralsSeparator to the right chopped edge.&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/Integrals.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="toolTipDuration">
                 <number>100000</number>
@@ -1828,13 +1874,13 @@
                 </sizepolicy>
                </property>
                <property name="toolTip">
-                <string>Integral of (normalized r.p. signal + normalized l.p. signal)*dx from left chopped edge to right for the second file.</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Integral of (normalized r.p. signal + normalized l.p. signal)*dE from the left chopped edge to the right.&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/Integrals.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="toolTipDuration">
                 <number>100000</number>
                </property>
                <property name="text">
-                <string>Al3 + Al2 =</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;A&lt;/span&gt;&lt;span style=&quot; font-size:10pt; vertical-align:sub;&quot;&gt;L3&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; + A&lt;/span&gt;&lt;span style=&quot; font-size:10pt; vertical-align:sub;&quot;&gt;L2&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; =&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1850,13 +1896,13 @@
                 </sizepolicy>
                </property>
                <property name="toolTip">
-                <string>Effective spin moment value</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Effective spin moment value&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/EffMoments.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="toolTipDuration">
                 <number>100000</number>
                </property>
                <property name="text">
-                <string>msEff =</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;m&lt;/span&gt;&lt;span style=&quot; font-size:11pt; vertical-align:sub;&quot;&gt;s&lt;/span&gt;&lt;span style=&quot; font-size:11pt; vertical-align:super;&quot;&gt;eff&lt;/span&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt; =&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1872,13 +1918,13 @@
                 </sizepolicy>
                </property>
                <property name="toolTip">
-                <string>Orbital moment value</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Orbital moment value&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/EffMoments.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="toolTipDuration">
                 <number>100000</number>
                </property>
                <property name="text">
-                <string>mOrb =</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;m&lt;/span&gt;&lt;span style=&quot; font-size:11pt; vertical-align:sub;&quot;&gt;orb&lt;/span&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt; =&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1894,13 +1940,13 @@
                 </sizepolicy>
                </property>
                <property name="toolTip">
-                <string>Magnetisation angle relative to normal axis gained from calculations, assuming intensity is in proportion to cos(M. angle).</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Magnetisation angle relative to normal axis gained from calculations,&lt;/p&gt;&lt;p&gt;assuming intensity is in proportion to cos(M. angle).&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/Angles.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="toolTipDuration">
                 <number>100000</number>
                </property>
                <property name="text">
-                <string>φ2  =</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;φ&lt;/span&gt;&lt;span style=&quot; font-size:10pt; vertical-align:sub;&quot;&gt;2&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; =&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1916,7 +1962,7 @@
                 </sizepolicy>
                </property>
                <property name="toolTip">
-                <string>Magnetisation angle relative to normal axis gained from calculations, assuming intensity is in proportion to cos(M. angle).</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Magnetisation angle relative to normal axis gained from calculations,&lt;/p&gt;&lt;p&gt;assuming intensity is in proportion to cos(M. angle).&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/Angles.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="toolTipDuration">
                 <number>100000</number>
@@ -1928,6 +1974,9 @@
              </item>
              <item row="0" column="6">
               <widget class="QLabel" name="theta2Label">
+               <property name="toolTip">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Angle of beam incidence relative to normal axis.&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/Angles.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
                <property name="toolTipDuration">
                 <number>100000</number>
                </property>
@@ -1960,6 +2009,12 @@
              </item>
              <item row="1" column="6">
               <widget class="QLabel" name="relationLabel2">
+               <property name="toolTip">
+                <string>Relation of effective moments. Shoul be more reliable, tham pure moments.</string>
+               </property>
+               <property name="toolTipDuration">
+                <number>100000</number>
+               </property>
                <property name="text">
                 <string>Unknown</string>
                </property>
@@ -1974,7 +2029,7 @@
                 </sizepolicy>
                </property>
                <property name="toolTip">
-                <string>Effective spin moment value</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Effective spin moment value&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/EffMoments.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="toolTipDuration">
                 <number>100000</number>
@@ -1993,7 +2048,7 @@
                 </sizepolicy>
                </property>
                <property name="toolTip">
-                <string>Orbital moment value</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Orbital moment value&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/EffMoments.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="toolTipDuration">
                 <number>100000</number>
@@ -2005,6 +2060,12 @@
              </item>
              <item row="1" column="5">
               <widget class="QLabel" name="label_5">
+               <property name="toolTip">
+                <string>Relation of effective moments. Shoul be more reliable, tham pure moments.</string>
+               </property>
+               <property name="toolTipDuration">
+                <number>100000</number>
+               </property>
                <property name="text">
                 <string>ms/mO =</string>
                </property>
@@ -2025,36 +2086,6 @@
         <string>Summary</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_5">
-        <item row="2" column="0">
-         <widget class="QPushButton" name="exportSummaryButton">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string>export</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QPushButton" name="setExportPath2Button">
-          <property name="text">
-           <string>set Export Path</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0" colspan="3">
-         <widget class="QTableWidget" name="summaryTable">
-          <property name="minimumSize">
-           <size>
-            <width>400</width>
-            <height>0</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="2" colspan="2">
-         <widget class="QLineEdit" name="summaryPathLineEdit"/>
-        </item>
         <item row="0" column="3" rowspan="2">
          <widget class="QWidget" name="summaryChartWidget" native="true">
           <property name="sizePolicy">
@@ -2129,6 +2160,12 @@
            </item>
            <item row="1" column="0">
             <widget class="QRadioButton" name="summaryZeroButton">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="text">
               <string>i-Zero</string>
              </property>
@@ -2142,6 +2179,12 @@
            </item>
            <item row="1" column="1">
             <widget class="QRadioButton" name="summaryDiffButton">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="text">
               <string>XMCD</string>
              </property>
@@ -2153,7 +2196,104 @@
              </attribute>
             </widget>
            </item>
+           <item row="0" column="2">
+            <widget class="QLabel" name="label_4">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Max</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="3">
+            <widget class="QSlider" name="summaryNormSlider">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="maximum">
+              <number>1</number>
+             </property>
+             <property name="pageStep">
+              <number>1</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="tickPosition">
+              <enum>QSlider::NoTicks</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="4">
+            <widget class="QLabel" name="label_6">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Step</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2" colspan="3">
+            <widget class="QRadioButton" name="summaryHalfSumButton">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Half-Sum</string>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">summaryButtonGroup</string>
+             </attribute>
+            </widget>
+           </item>
           </layout>
+         </widget>
+        </item>
+        <item row="0" column="0" colspan="3">
+         <widget class="QTableWidget" name="summaryTable">
+          <property name="minimumSize">
+           <size>
+            <width>400</width>
+            <height>0</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="2" colspan="2">
+         <widget class="QLineEdit" name="summaryPathLineEdit"/>
+        </item>
+        <item row="2" column="0">
+         <widget class="QPushButton" name="exportSummaryButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>export</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QPushButton" name="setExportPath2Button">
+          <property name="text">
+           <string>set Export Path</string>
+          </property>
          </widget>
         </item>
        </layout>
@@ -2167,11 +2307,6 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="filterGroup">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
   <buttongroup name="fileGroup">
    <property name="exclusive">
     <bool>true</bool>
@@ -2179,5 +2314,10 @@
   </buttongroup>
   <buttongroup name="summaryButtonGroup"/>
   <buttongroup name="dataTypeGroup"/>
+  <buttongroup name="filterGroup">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
  </buttongroups>
 </ui>

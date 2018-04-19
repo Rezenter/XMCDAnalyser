@@ -44,6 +44,7 @@ public slots:
     void setCalculate(const bool needed, const QPointF newPhi, const QPointF newTheta, const int id);
     void setLin(const bool needed, const int file, const int id);
     void setPositiveIntegrals(const bool needed, const int file, const int id);
+    void setGround(const bool needed, const int file, const int id);
     void setRelativeCurv(const qreal a, const int file, const int id);
     void update(const int file, const int id);
     void appendCalc();//connect newCalc to enhanced signals
@@ -51,7 +52,7 @@ public slots:
 
 private:
     QList<QSharedPointer<Calculator>> calculators;
-    void establishConnections(const QSharedPointer<Calculator> sender, const int id);
+    void switchConnection(const QSharedPointer<Calculator> sender, const int id);
 };
 
 #endif // CALCWARPER_H
