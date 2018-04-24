@@ -35,16 +35,27 @@ v9
 	small gui fixes
 v10
 	pairs now shown in tableWidget
-	slots replaced with lambda-functions where possible
+	slots are replaced with lambda-functions where possible
 	revisioned stepped multiplyier value interval
 	added moments relation
 	added calcWrapper in order to support multifile comparasion
 	added logger for easier remote debug
 v10.3
-	more tetailed tooltips
+	more detailed tooltips
 	fonts fix
 	added half-sum normalisation at summary
 	added summary normalisation type switch
 	saving log after crash
 	mb fixed crash at pair creation
 	added integralGround switch
+v10.4
+	added deff/half-sum value
+	added autoscale for yOffset
+	added zero to the summaryChart
+	added summaryTable tooltips
+	fixed pair creation with no files selected
+	adding reference spectre support
+	
+v10.5, broken
+	added reference spectre suppurt
+	added lots of new bugs

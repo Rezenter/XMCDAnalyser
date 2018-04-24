@@ -27,6 +27,19 @@ FileLoader::FileLoader(QString path){
             }
         }
         ri = data.length()-1;
+    }else if(path.endsWith(".ref", Qt::CaseInsensitive)){
+        while(!stream.atEnd()) {
+            QString line = stream.readLine();
+            if(line.length() > 0){
+                QStringList args = line.split("\t");
+                if(args.length() == 3){
+                    bareData.append(QPair<qreal, QPair<qreal, qreal>>(args.at(0).toDouble(), QPair<qreal, qreal>(args.at(1).toDouble(), args.at(2).toDouble())));
+                    zero.append(QPair<qreal, QPair<qreal, qreal>>(args.at(0).toDouble(), QPair<qreal, qreal>(1.0, 1.0)));
+                    data.append(QPair<qreal, QPair<qreal, qreal>>(args.at(0).toDouble(), QPair<qreal, qreal>(args.at(1).toDouble(), args.at(2).toDouble())));
+                }
+            }
+        }
+        ri = data.length()-1;
     }
     file.close();
 }

@@ -35,16 +35,16 @@ public:
 public slots:
 
 signals:
-    void setLoader(const QString loaderPath, const int file, const int id);
+    void setLoader(const QString loaderPath, const int file, const int id, const QString refPath);
     void setLimits(const qreal left, const qreal right, const int file, const int id);
     void setEnergyShift(const qreal shift, const int file, const int id);
     void setShadowCurrent(const qreal signal, const qreal iZero, const int file, const int id);
     void setSmooth(const int count, const int file, const int id);
     void setDiff(const bool needed, const int file, const int id);
-    void setLinearIntervals(const QPointF interval, const bool needed, const int file, const int id);
-    void setNormalizationCoeff(const qreal coeff, bool needed, const int file, const int id);
+    void setLinearIntervals(const QPointF interval, const bool needed, const int file, const int id, const int ref);
+    void setNormalizationCoeff(const qreal coeff, bool needed, const int file, const int id, const int ref);
     void setStepped(const qreal coeff, const bool needed, const int file, const int id);
-    void setIntegrate(const bool needed, const int index, const int file, const int id);
+    void setIntegrate(const bool needed, const int index, const int file, const int id, const int ref);
     void setIntegrationConstants(const qreal newPc, const qreal newNh, const int id);
     void setCalculate(const bool needed, const QPointF newPhi, const QPointF newTheta, const int id);
     void setLin(const bool needed, const int file, const int id);
@@ -54,7 +54,7 @@ signals:
     void update(const int file, const int id);
     void appendCalc();
     void removeCalc(const int id);
-    void log(QVariant);
+    void log(QVariant);    
 
 private:
     QThread *calcThread;
@@ -69,11 +69,14 @@ private:
     QtCharts::QChart summaryChart;
     QtCharts::QLineSeries raw[2];
     QtCharts::QLineSeries norm[2];
+    QtCharts::QLineSeries refData[2];
     QtCharts::QLineSeries zero[2];
     QtCharts::QLineSeries xmcd;
+    QtCharts::QLineSeries refxmcd;
     QtCharts::QLineSeries xmcdZero;
     QtCharts::QScatterSeries dot;
     QtCharts::QLineSeries line[2];
+    QtCharts::QLineSeries refLine[2];
     QtCharts::QLineSeries steps;
     QtCharts::QValueAxis axisX;
     QtCharts::QValueAxis axisY;
@@ -98,10 +101,12 @@ private:
     int file = 0;
     QList<PairWidget *> pairs;
     QList<QVector<QPair<qreal, QPointF>> const *> dataPointers[2];
+    QList<QVector<QPair<qreal, QPointF>> const *> refDataPointers[2];
     QList<QVector<QPair<qreal, QPointF>> const *> rawPointers[2];
     QList<QVector<QPair<qreal, QPointF>> const *> zeroPointers[2];
     QList<QVector<QPointF> const *> stepPointers[2];
     QList<QVector<QPointF> const *> xmcdPointers[2];
+    QList<QVector<QPointF> const *> refXmcdPointers[2];
     QHash<QString, QVariant> defaults();
     void loadState(const QHash<QString, QVariant> state);
     void selectPair(const int id);
@@ -110,6 +115,9 @@ private:
     QLabel *summLabels[2];
     QLabel *dl2Labels[2];
     QLabel *dl3Labels[2];
+    QLabel *summRelLabels[2];
+    QLabel *dl2RelLabels[2];
+    QLabel *dl3RelLabels[2];
     QLabel *mSELabels[2];
     QLabel *mOLabels[2];
     QLabel *phiLabels[2];
@@ -126,11 +134,12 @@ private:
     bool debugMode = false;
     bool debugCopy = false;
     bool normalExit = false;
-    qreal rawOffsetMult = 1E-11;
-    qreal zeroOffsetMult = 1E-5;
-    qreal normOffsetMult = 1E-6;
-    qreal XMCDOffsetMult = 1E0;
+    int offsetMult = -6;
     qreal stepSize = 10.0;
+    QStringList summaryTooltips;
+    QString version = "v???";
+    QString windowTitle = "XMCD Analyser";
+    QString refCommonPath;
 
 private slots:
     void open(QString);
