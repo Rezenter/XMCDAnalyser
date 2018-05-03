@@ -17,7 +17,6 @@ public:
     ~Calculator();
 
 signals:
-    void dead();
     void processedData(const QVector<QPair<qreal, QPointF>>* points, const int file);
     void rawData(const QVector<QPair<qreal, QPointF>>* points, const int file);
     void iZero(const QVector<QPair<qreal, QPointF>>* points, const int file);
@@ -27,12 +26,12 @@ signals:
     void moments(const qreal* mOP, const qreal* mOO, const qreal* ms, const qreal* mt, const int file);
     void linCoeffs(const QPointF* left, const QPointF* right, const QPointF* x, const int file);
     void completed(const int file);
-    void log(QString out);
+    void log(QVariant out);
+    void setOffset(bool state = false);
 
 public slots:
     void setLoader(const QString loaderPath, const int file);
     void setLimits(const qreal left, const qreal right, const int file);
-    void setEnergyShift(const qreal shift, const int file);
     void setShadowCurrent(const qreal signal, const qreal iZero, const int file);
     void setSmooth(const int count, const int file);
     void setDiff(const bool needed, const int file);//unused

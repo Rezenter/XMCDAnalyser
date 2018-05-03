@@ -6,6 +6,7 @@
 #include <QObject>
 
 #include "calculator.h"
+#include "refcalculator.h"
 
 class CalcWrapper : public QObject{
 
@@ -26,9 +27,10 @@ signals:
     void integrals(const qreal* summ, const qreal* dl2, const qreal* dl3, const qreal* mSE,
                    const qreal* mO, const qreal* rel, const int id, const int file, const int ref);
     void moments(const qreal* mOP, const qreal* mOO, const qreal* ms, const qreal* mt, const int id, const int file);
-    void linCoeffs(const QPointF* left, const QPointF* right, const QPointF* x, const int id, const int file, const int ref);
+    void linCoeffs(const QPointF* left, const QPointF* right, const QPointF* x, const int id, const int file);
     void completed(const int id, const int file, const int ref);
-    void log(QString out);
+    void log(QVariant out);
+    void setOffset(bool state = false);
 
 public slots:
     void setLoader(const QString loaderPath, const int file, const int id, const QString refPath);
@@ -37,10 +39,10 @@ public slots:
     void setShadowCurrent(const qreal signal, const qreal iZero, const int file, const int id);
     void setSmooth(const int count, const int file, const int id);
     void setDiff(const bool needed, const int file, const int id);
-    void setLinearIntervals(const QPointF interval, const bool needed, const int file, const int id, const int ref);
+    void setLinearIntervals(const QPointF interval, const bool needed, const int file, const int id);
     void setNormalizationCoeff(const qreal coeff, bool needed, const int file, const int id, const int ref);
     void setStepped(const qreal coeff, const bool needed, const int file, const int id);
-    void setIntegrate(const bool needed, const int index, const int file, const int id, const int ref);
+    void setIntegrate(const bool needed, const qreal index, const int file, const int id, const int ref);
     void setIntegrationConstants(const qreal newPc, const qreal newNh, const int id);
     void setCalculate(const bool needed, const QPointF newPhi, const QPointF newTheta, const int id);
     void setLin(const bool needed, const int file, const int id);
@@ -50,10 +52,11 @@ public slots:
     void update(const int file, const int id);
     void appendCalc();
     void removeCalc(const int id);
+    void activateRef(const bool state, const int id, const int file);
 
 private:
-    QList<QSharedPointer<Calculator>> calculators[2];
-    void switchConnection(const QSharedPointer<Calculator> sender, const int id,const int ref);
+    QList<QPair<QSharedPointer<Calculator>, QSharedPointer<RefCalculator>>> calculators;
+    void switchConnection(const QPair<QSharedPointer<Calculator>, QSharedPointer<RefCalculator>> senderPair, const int newId);
     QString refCommonPath;
 };
 

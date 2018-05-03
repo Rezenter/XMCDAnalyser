@@ -18,7 +18,8 @@ SOURCES += main.cpp\
     calculator.cpp \
     pairwidget.cpp \
     calcwrapper.cpp \
-    logger.cpp
+    logger.cpp \
+    refcalculator.cpp
 
 HEADERS  += mainwindow.h \
         extfsm.h \
@@ -26,7 +27,8 @@ HEADERS  += mainwindow.h \
     calculator.h \
     pairwidget.h \
     calcwrapper.h \
-    logger.h
+    logger.h \
+    refcalculator.h
 
 FORMS    += mainwindow.ui \
     pairwidget.ui

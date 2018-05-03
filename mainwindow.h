@@ -41,10 +41,10 @@ signals:
     void setShadowCurrent(const qreal signal, const qreal iZero, const int file, const int id);
     void setSmooth(const int count, const int file, const int id);
     void setDiff(const bool needed, const int file, const int id);
-    void setLinearIntervals(const QPointF interval, const bool needed, const int file, const int id, const int ref);
+    void setLinearIntervals(const QPointF interval, const bool needed, const int file, const int id);
     void setNormalizationCoeff(const qreal coeff, bool needed, const int file, const int id, const int ref);
     void setStepped(const qreal coeff, const bool needed, const int file, const int id);
-    void setIntegrate(const bool needed, const int index, const int file, const int id, const int ref);
+    void setIntegrate(const bool needed, const qreal index, const int file, const int id, const int ref);
     void setIntegrationConstants(const qreal newPc, const qreal newNh, const int id);
     void setCalculate(const bool needed, const QPointF newPhi, const QPointF newTheta, const int id);
     void setLin(const bool needed, const int file, const int id);
@@ -54,7 +54,9 @@ signals:
     void update(const int file, const int id);
     void appendCalc();
     void removeCalc(const int id);
-    void log(QVariant);    
+    void log(QVariant data);
+    void setOffset(bool state = false);
+    void activateRef(const bool state, const int id, const int file);
 
 private:
     QThread *calcThread;
@@ -76,7 +78,6 @@ private:
     QtCharts::QLineSeries xmcdZero;
     QtCharts::QScatterSeries dot;
     QtCharts::QLineSeries line[2];
-    QtCharts::QLineSeries refLine[2];
     QtCharts::QLineSeries steps;
     QtCharts::QValueAxis axisX;
     QtCharts::QValueAxis axisY;

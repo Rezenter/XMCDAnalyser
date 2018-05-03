@@ -224,1037 +224,6 @@
         <string>Raw Data Processing</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_6">
-        <item row="0" column="0">
-         <widget class="QWidget" name="chartWidget" native="true">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>400</width>
-            <height>300</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>2000</width>
-            <height>2000</height>
-           </size>
-          </property>
-          <property name="toolTipDuration">
-           <number>100000</number>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1" rowspan="2">
-         <layout class="QGridLayout" name="gridLayout">
-          <item row="15" column="0">
-           <widget class="QCheckBox" name="calculateBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>15</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>If both files have calculated integrals, calculate resulting moments.</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="text">
-             <string>calculate result</string>
-            </property>
-           </widget>
-          </item>
-          <item row="14" column="1">
-           <widget class="QCheckBox" name="groundCheckBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pull the Integration separator to the ground.&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/AdjustGround.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="text">
-             <string>Adjust zero level</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QDoubleSpinBox" name="shadowSpinBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>15</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>Shadow current through i-zero sensor.</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="prefix">
-             <string>Shadow current = </string>
-            </property>
-            <property name="decimals">
-             <number>1</number>
-            </property>
-            <property name="minimum">
-             <double>-100.000000000000000</double>
-            </property>
-            <property name="maximum">
-             <double>100.000000000000000</double>
-            </property>
-            <property name="singleStep">
-             <double>0.100000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QRadioButton" name="normBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>15</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>Raw data normalized on beam intensity</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="text">
-             <string>normalization</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-            <property name="autoExclusive">
-             <bool>true</bool>
-            </property>
-            <attribute name="buttonGroup">
-             <string notr="true">dataTypeGroup</string>
-            </attribute>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <widget class="QRadioButton" name="rawBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>15</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>Bare data strait from a beamline.</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="statusTip">
-             <string/>
-            </property>
-            <property name="text">
-             <string>raw data</string>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-            <property name="autoExclusive">
-             <bool>true</bool>
-            </property>
-            <attribute name="buttonGroup">
-             <string notr="true">dataTypeGroup</string>
-            </attribute>
-           </widget>
-          </item>
-          <item row="9" column="0" colspan="2">
-           <widget class="QDoubleSpinBox" name="filletSpinBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>15</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>Argument factor in stepped background.</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="prefix">
-             <string>Steps localization coeff. </string>
-            </property>
-            <property name="decimals">
-             <number>2</number>
-            </property>
-            <property name="minimum">
-             <double>0.100000000000000</double>
-            </property>
-            <property name="maximum">
-             <double>5.000000000000000</double>
-            </property>
-            <property name="singleStep">
-             <double>0.020000000000000</double>
-            </property>
-            <property name="value">
-             <double>1.000000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="14" column="0">
-           <widget class="QCheckBox" name="positiveCheckBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Take into account only same sign contribution to the integral.&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/PositiveOnly.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="text">
-             <string>Positive only</string>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="1">
-           <widget class="QDoubleSpinBox" name="particularCurvatureSpinBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="toolTip">
-             <string>Curvature of relative multiplier.</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="prefix">
-             <string>Relative curv.</string>
-            </property>
-            <property name="suffix">
-             <string>1E-4</string>
-            </property>
-            <property name="minimum">
-             <double>-100.000000000000000</double>
-            </property>
-            <property name="singleStep">
-             <double>0.010000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="8" column="0">
-           <widget class="QLabel" name="lkLabel">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>15</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>Slope of the left-edge linearisation line.</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="text">
-             <string>Unknown</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignHCenter|Qt::AlignTop</set>
-            </property>
-           </widget>
-          </item>
-          <item row="8" column="1">
-           <widget class="QLabel" name="rkLabel">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>15</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>Slope of the right-edge linearisation line.</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="text">
-             <string>Unknown</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignHCenter|Qt::AlignTop</set>
-            </property>
-           </widget>
-          </item>
-          <item row="7" column="1">
-           <widget class="QDoubleSpinBox" name="rlSpinBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>15</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>Use this number of right points in linearization.</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="prefix">
-             <string>Right </string>
-            </property>
-            <property name="suffix">
-             <string> points</string>
-            </property>
-            <property name="decimals">
-             <number>1</number>
-            </property>
-            <property name="minimum">
-             <double>1.100000000000000</double>
-            </property>
-            <property name="maximum">
-             <double>20.000000000000000</double>
-            </property>
-            <property name="singleStep">
-             <double>0.100000000000000</double>
-            </property>
-            <property name="value">
-             <double>2.000000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="7" column="0">
-           <widget class="QDoubleSpinBox" name="llSpinBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>15</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>Use this number of left points in linearization.</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="prefix">
-             <string>Left </string>
-            </property>
-            <property name="suffix">
-             <string> points</string>
-            </property>
-            <property name="decimals">
-             <number>1</number>
-            </property>
-            <property name="minimum">
-             <double>1.100000000000000</double>
-            </property>
-            <property name="maximum">
-             <double>20.000000000000000</double>
-            </property>
-            <property name="singleStep">
-             <double>0.100000000000000</double>
-            </property>
-            <property name="value">
-             <double>2.000000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="6" column="0">
-           <widget class="QCheckBox" name="linearBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>15</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>Show linearization of preedges.</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="text">
-             <string>show linearization</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="1">
-           <widget class="QDoubleSpinBox" name="mulCoeffSpinBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="toolTip">
-             <string>Curvature of common multiplier.</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="prefix">
-             <string>Common curv. </string>
-            </property>
-            <property name="suffix">
-             <string> 1E-4</string>
-            </property>
-            <property name="minimum">
-             <double>-100.000000000000000</double>
-            </property>
-            <property name="singleStep">
-             <double>0.010000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="13" column="0">
-           <widget class="QSpinBox" name="integrationLimitSpinBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="toolTip">
-             <string>Divider between L3 and L2 integrals.</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="suffix">
-             <string> points</string>
-            </property>
-            <property name="prefix">
-             <string>separate </string>
-            </property>
-           </widget>
-          </item>
-          <item row="13" column="1">
-           <widget class="QCheckBox" name="integrateBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>15</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>Calculate integrals based on the XMSD signal. Show them in the next tab.</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="text">
-             <string>integrate this file</string>
-            </property>
-           </widget>
-          </item>
-          <item row="18" column="0">
-           <widget class="QPushButton" name="setExportPathButton">
-            <property name="toolTip">
-             <string>Export path selection dialog.</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="text">
-             <string>set Export Path</string>
-            </property>
-           </widget>
-          </item>
-          <item row="12" column="0">
-           <widget class="QCheckBox" name="diffBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>15</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>Show XMSD signal in the next tab.</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="text">
-             <string>show XMCD</string>
-            </property>
-            <property name="checked">
-             <bool>false</bool>
-            </property>
-            <property name="autoExclusive">
-             <bool>false</bool>
-            </property>
-            <property name="tristate">
-             <bool>false</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="10" column="1">
-           <widget class="QCheckBox" name="steppedBackgroundBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>15</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>Substract stepped background.</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="text">
-             <string>stepped substraction</string>
-            </property>
-            <property name="checked">
-             <bool>false</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="10" column="0">
-           <widget class="QCheckBox" name="linearBackgroundBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>15</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>Substract linear background.</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="text">
-             <string>linear substraction</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QDoubleSpinBox" name="zeroShadowSpinBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>15</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>Shadow current through XAS sensor.</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="prefix">
-             <string>Shadow i-zero  = </string>
-            </property>
-            <property name="decimals">
-             <number>1</number>
-            </property>
-            <property name="minimum">
-             <double>-100.000000000000000</double>
-            </property>
-            <property name="maximum">
-             <double>100.000000000000000</double>
-            </property>
-            <property name="singleStep">
-             <double>0.100000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QSpinBox" name="smoothSpinBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>15</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>Avaraging this number of points.</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="prefix">
-             <string>Smooth points count = </string>
-            </property>
-            <property name="minimum">
-             <number>1</number>
-            </property>
-            <property name="maximum">
-             <number>10</number>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QRadioButton" name="zeroBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>15</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>Beam intensity.</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="statusTip">
-             <string>Normalisation signal from beamline.</string>
-            </property>
-            <property name="text">
-             <string>i. zero</string>
-            </property>
-            <property name="autoExclusive">
-             <bool>true</bool>
-            </property>
-            <attribute name="buttonGroup">
-             <string notr="true">dataTypeGroup</string>
-            </attribute>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QSpinBox" name="tSpinBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>15</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>Crop this number of right points.</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="suffix">
-             <string> points</string>
-            </property>
-            <property name="prefix">
-             <string>Right </string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QSpinBox" name="bSpinBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>15</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>Crop this number of left points.</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="suffix">
-             <string> points</string>
-            </property>
-            <property name="prefix">
-             <string>Left </string>
-            </property>
-           </widget>
-          </item>
-          <item row="18" column="1">
-           <widget class="QLineEdit" name="exportLine">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>15</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>Export path</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-           </widget>
-          </item>
-          <item row="17" column="1">
-           <widget class="QPushButton" name="exportButton">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>15</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>Save chart data</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="text">
-             <string>export all visible data</string>
-            </property>
-           </widget>
-          </item>
-          <item row="17" column="0">
-           <widget class="QPushButton" name="swapButton">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>15</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>Change current selected file.</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="text">
-             <string>swap file</string>
-            </property>
-           </widget>
-          </item>
-          <item row="11" column="0" colspan="2">
-           <widget class="QGroupBox" name="refGroupBox">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="title">
-             <string>Reference fit</string>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_8">
-             <item row="0" column="0">
-              <widget class="QCheckBox" name="refCheckBox">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="text">
-                <string>Use reference fit</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QDoubleSpinBox" name="refEnergyShiftSpinBox">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="prefix">
-                <string>E. shift </string>
-               </property>
-               <property name="suffix">
-                <string> eV</string>
-               </property>
-               <property name="decimals">
-                <number>3</number>
-               </property>
-               <property name="minimum">
-                <double>-10.000000000000000</double>
-               </property>
-               <property name="maximum">
-                <double>10.000000000000000</double>
-               </property>
-               <property name="singleStep">
-                <double>0.005000000000000</double>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QDoubleSpinBox" name="refCurvSpinBox">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="prefix">
-                <string>Curv. </string>
-               </property>
-               <property name="suffix">
-                <string>  1E-4</string>
-               </property>
-               <property name="minimum">
-                <double>-100.000000000000000</double>
-               </property>
-               <property name="singleStep">
-                <double>0.010000000000000</double>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QDoubleSpinBox" name="refllSpinBox">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>15</height>
-                </size>
-               </property>
-               <property name="toolTip">
-                <string>Use this number of left points in linearization.</string>
-               </property>
-               <property name="toolTipDuration">
-                <number>100000</number>
-               </property>
-               <property name="prefix">
-                <string>Left </string>
-               </property>
-               <property name="suffix">
-                <string> points</string>
-               </property>
-               <property name="decimals">
-                <number>1</number>
-               </property>
-               <property name="minimum">
-                <double>1.100000000000000</double>
-               </property>
-               <property name="maximum">
-                <double>20.000000000000000</double>
-               </property>
-               <property name="singleStep">
-                <double>0.100000000000000</double>
-               </property>
-               <property name="value">
-                <double>2.000000000000000</double>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="1">
-              <widget class="QDoubleSpinBox" name="refrlSpinBox">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>15</height>
-                </size>
-               </property>
-               <property name="toolTip">
-                <string>Use this number of right points in linearization.</string>
-               </property>
-               <property name="toolTipDuration">
-                <number>100000</number>
-               </property>
-               <property name="prefix">
-                <string>Right </string>
-               </property>
-               <property name="suffix">
-                <string> points</string>
-               </property>
-               <property name="decimals">
-                <number>1</number>
-               </property>
-               <property name="minimum">
-                <double>1.100000000000000</double>
-               </property>
-               <property name="maximum">
-                <double>20.000000000000000</double>
-               </property>
-               <property name="singleStep">
-                <double>0.100000000000000</double>
-               </property>
-               <property name="value">
-                <double>2.000000000000000</double>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="0">
-              <widget class="QLabel" name="reflkLabel">
-               <property name="enabled">
-                <bool>true</bool>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>15</height>
-                </size>
-               </property>
-               <property name="toolTip">
-                <string>Slope of the left-edge linearisation line.</string>
-               </property>
-               <property name="toolTipDuration">
-                <number>100000</number>
-               </property>
-               <property name="text">
-                <string>Unknown</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignHCenter|Qt::AlignTop</set>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="1">
-              <widget class="QLabel" name="refrkLabel">
-               <property name="enabled">
-                <bool>true</bool>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>15</height>
-                </size>
-               </property>
-               <property name="toolTip">
-                <string>Slope of the right-edge linearisation line.</string>
-               </property>
-               <property name="toolTipDuration">
-                <number>100000</number>
-               </property>
-               <property name="text">
-                <string>Unknown</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignHCenter|Qt::AlignTop</set>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item row="4" column="0" rowspan="2">
-           <widget class="QCheckBox" name="mulBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>15</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>Multiply right polarization signal in orger to equalize left edge.</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="text">
-             <string>*</string>
-            </property>
-            <property name="checked">
-             <bool>false</bool>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
         <item row="1" column="0">
          <layout class="QGridLayout" name="gridLayout_4">
           <item row="0" column="0">
@@ -1621,6 +590,9 @@
              </item>
              <item row="0" column="2">
               <widget class="QLabel" name="summ1AreaRelLabel">
+               <property name="toolTip">
+                <string>Area related to the corresponding reference area.</string>
+               </property>
                <property name="text">
                 <string>Unknown</string>
                </property>
@@ -1995,6 +967,9 @@
              </item>
              <item row="0" column="2">
               <widget class="QLabel" name="summ2AreaRelLabel">
+               <property name="toolTip">
+                <string>Area related to the corresponding reference area.</string>
+               </property>
                <property name="text">
                 <string>Unknown</string>
                </property>
@@ -2337,6 +1312,920 @@
           </item>
          </layout>
         </item>
+        <item row="0" column="1" rowspan="2">
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="2">
+           <widget class="QDoubleSpinBox" name="shadowSpinBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Shadow current through i-zero sensor.</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="prefix">
+             <string>Shadow current = </string>
+            </property>
+            <property name="decimals">
+             <number>1</number>
+            </property>
+            <property name="minimum">
+             <double>-100.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>100.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.100000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QRadioButton" name="normBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Raw data normalized on beam intensity</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="text">
+             <string>normalization</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
+            </property>
+            <attribute name="buttonGroup">
+             <string notr="true">dataTypeGroup</string>
+            </attribute>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QRadioButton" name="rawBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Bare data strait from a beamline.</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="statusTip">
+             <string/>
+            </property>
+            <property name="text">
+             <string>raw data</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
+            </property>
+            <attribute name="buttonGroup">
+             <string notr="true">dataTypeGroup</string>
+            </attribute>
+           </widget>
+          </item>
+          <item row="9" column="1" colspan="2">
+           <widget class="QDoubleSpinBox" name="filletSpinBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Argument factor in stepped background.</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="prefix">
+             <string>Steps localization coeff. </string>
+            </property>
+            <property name="decimals">
+             <number>2</number>
+            </property>
+            <property name="minimum">
+             <double>0.100000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>5.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.020000000000000</double>
+            </property>
+            <property name="value">
+             <double>1.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="14" column="1">
+           <widget class="QCheckBox" name="positiveCheckBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Take into account only same sign contribution to the integral.&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/PositiveOnly.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="text">
+             <string>Positive only</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="2">
+           <widget class="QDoubleSpinBox" name="particularCurvatureSpinBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="toolTip">
+             <string>Curvature of relative multiplier.</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="prefix">
+             <string>Relative curv.</string>
+            </property>
+            <property name="suffix">
+             <string> 1E-4</string>
+            </property>
+            <property name="minimum">
+             <double>-100.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.010000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="1">
+           <widget class="QLabel" name="lkLabel">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Slope of the left-edge linearisation line.</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="text">
+             <string>Unknown</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignHCenter|Qt::AlignTop</set>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="2">
+           <widget class="QLabel" name="rkLabel">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Slope of the right-edge linearisation line.</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="text">
+             <string>Unknown</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignHCenter|Qt::AlignTop</set>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="2">
+           <widget class="QDoubleSpinBox" name="rlSpinBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Use this number of right points in linearization.</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="prefix">
+             <string>Right </string>
+            </property>
+            <property name="suffix">
+             <string> points</string>
+            </property>
+            <property name="decimals">
+             <number>1</number>
+            </property>
+            <property name="minimum">
+             <double>1.100000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>20.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.100000000000000</double>
+            </property>
+            <property name="value">
+             <double>2.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="1">
+           <widget class="QDoubleSpinBox" name="llSpinBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Use this number of left points in linearization.</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="prefix">
+             <string>Left </string>
+            </property>
+            <property name="suffix">
+             <string> points</string>
+            </property>
+            <property name="decimals">
+             <number>1</number>
+            </property>
+            <property name="minimum">
+             <double>1.100000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>20.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.100000000000000</double>
+            </property>
+            <property name="value">
+             <double>2.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="2">
+           <widget class="QDoubleSpinBox" name="mulCoeffSpinBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="toolTip">
+             <string>Curvature of common multiplier.</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="prefix">
+             <string>Common curv. </string>
+            </property>
+            <property name="suffix">
+             <string> 1E-4</string>
+            </property>
+            <property name="minimum">
+             <double>-100.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.010000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="13" column="1">
+           <widget class="QSpinBox" name="integrationLimitSpinBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="toolTip">
+             <string>Divider between L3 and L2 integrals.</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="suffix">
+             <string> points</string>
+            </property>
+            <property name="prefix">
+             <string>separate </string>
+            </property>
+           </widget>
+          </item>
+          <item row="13" column="2">
+           <widget class="QCheckBox" name="integrateBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Calculate integrals based on the XMSD signal. Show them in the next tab.</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="text">
+             <string>integrate this file</string>
+            </property>
+           </widget>
+          </item>
+          <item row="18" column="1">
+           <widget class="QPushButton" name="setExportPathButton">
+            <property name="toolTip">
+             <string>Export path selection dialog.</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="text">
+             <string>set Export Path</string>
+            </property>
+           </widget>
+          </item>
+          <item row="10" column="2">
+           <widget class="QCheckBox" name="steppedBackgroundBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Substract stepped background.</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="text">
+             <string>stepped substraction</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="10" column="1">
+           <widget class="QCheckBox" name="linearBackgroundBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Substract linear background.</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="text">
+             <string>linear substraction</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QDoubleSpinBox" name="zeroShadowSpinBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Shadow current through XAS sensor.</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="prefix">
+             <string>Shadow i-zero  = </string>
+            </property>
+            <property name="decimals">
+             <number>1</number>
+            </property>
+            <property name="minimum">
+             <double>-100.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>100.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.100000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="2">
+           <widget class="QSpinBox" name="smoothSpinBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Avaraging this number of points.</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="prefix">
+             <string>Smooth points count = </string>
+            </property>
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>10</number>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QRadioButton" name="zeroBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Beam intensity.</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="statusTip">
+             <string>Normalisation signal from beamline.</string>
+            </property>
+            <property name="text">
+             <string>i. zero</string>
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
+            </property>
+            <attribute name="buttonGroup">
+             <string notr="true">dataTypeGroup</string>
+            </attribute>
+           </widget>
+          </item>
+          <item row="3" column="2">
+           <widget class="QSpinBox" name="tSpinBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Crop this number of right points.</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="suffix">
+             <string> points</string>
+            </property>
+            <property name="prefix">
+             <string>Right </string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QSpinBox" name="bSpinBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Crop this number of left points.</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="suffix">
+             <string> points</string>
+            </property>
+            <property name="prefix">
+             <string>Left </string>
+            </property>
+           </widget>
+          </item>
+          <item row="15" column="2">
+           <widget class="QCheckBox" name="calculateBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>If both files have calculated integrals, calculate resulting moments.</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="text">
+             <string>calculate result</string>
+            </property>
+           </widget>
+          </item>
+          <item row="15" column="1">
+           <widget class="QCheckBox" name="useRefCheckBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use referense A&lt;span style=&quot; vertical-align:sub;&quot;&gt;L2 &lt;/span&gt;+ A&lt;span style=&quot; vertical-align:sub;&quot;&gt;l3 &lt;/span&gt;area instead of real.&lt;/p&gt;&lt;p&gt;May improve results for non-metal peaks.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string>Use reference area</string>
+            </property>
+           </widget>
+          </item>
+          <item row="11" column="1" colspan="2">
+           <widget class="QGroupBox" name="refGroupBox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="title">
+             <string>Reference fit</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_8">
+             <item row="1" column="0">
+              <widget class="QDoubleSpinBox" name="refEnergyShiftSpinBox">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="prefix">
+                <string>E. shift </string>
+               </property>
+               <property name="suffix">
+                <string> eV</string>
+               </property>
+               <property name="decimals">
+                <number>3</number>
+               </property>
+               <property name="minimum">
+                <double>-10.000000000000000</double>
+               </property>
+               <property name="maximum">
+                <double>10.000000000000000</double>
+               </property>
+               <property name="singleStep">
+                <double>0.005000000000000</double>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QDoubleSpinBox" name="refCurvSpinBox">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="prefix">
+                <string>Curv. </string>
+               </property>
+               <property name="suffix">
+                <string>  1E-4</string>
+               </property>
+               <property name="minimum">
+                <double>-100.000000000000000</double>
+               </property>
+               <property name="singleStep">
+                <double>0.010000000000000</double>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0" colspan="2">
+              <widget class="QCheckBox" name="refCheckBox">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="text">
+                <string>Use reference fit</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="4" column="1" rowspan="2">
+           <widget class="QCheckBox" name="mulBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Multiply right polarization signal in orger to equalize left edge.</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="text">
+             <string>*</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1" colspan="2">
+           <widget class="QCheckBox" name="linearBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Show linearization of preedges.</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="text">
+             <string>show linearization</string>
+            </property>
+           </widget>
+          </item>
+          <item row="14" column="2">
+           <widget class="QCheckBox" name="groundCheckBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pull the Integration separator to the ground.&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/images/res/AdjustGround.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="text">
+             <string>Adjust zero level</string>
+            </property>
+           </widget>
+          </item>
+          <item row="12" column="1" colspan="2">
+           <widget class="QCheckBox" name="diffBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Show XMSD signal in the next tab.</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="text">
+             <string>show XMCD</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>false</bool>
+            </property>
+            <property name="tristate">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="19" column="1" colspan="2">
+           <widget class="QLineEdit" name="exportLine">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Export path</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+           </widget>
+          </item>
+          <item row="18" column="2">
+           <widget class="QPushButton" name="exportButton">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Save chart data</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="text">
+             <string>export all visible data</string>
+            </property>
+           </widget>
+          </item>
+          <item row="17" column="1" colspan="2">
+           <widget class="QPushButton" name="swapButton">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Change current selected file.</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="text">
+             <string>swap files in pair</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="0" column="0">
+         <widget class="QWidget" name="chartWidget" native="true">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>400</width>
+            <height>300</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>2000</width>
+            <height>2000</height>
+           </size>
+          </property>
+          <property name="toolTipDuration">
+           <number>100000</number>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
       <widget class="QWidget" name="tab_3">
@@ -2570,12 +2459,12 @@
     <bool>true</bool>
    </property>
   </buttongroup>
-  <buttongroup name="dataTypeGroup"/>
+  <buttongroup name="summaryButtonGroup"/>
   <buttongroup name="filterGroup">
    <property name="exclusive">
     <bool>false</bool>
    </property>
   </buttongroup>
-  <buttongroup name="summaryButtonGroup"/>
+  <buttongroup name="dataTypeGroup"/>
  </buttongroups>
 </ui>
