@@ -13,8 +13,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     /*To-do list:
      *
-     * stepped line colour
-        * prevent crash
+     *fix summary after pair deleting
+     *
         * save/load session
         * add sample filter
         * update charts only when they have changes
@@ -81,17 +81,19 @@ MainWindow::MainWindow(QWidget *parent) :
     axisY.setGridLineColor(QColor(150, 250 , 150));
     axisY.setLinePenColor(QColor(0, 150 , 0));
     axisY.setLabelFormat("%2.2e");
+    axisY.setMinorGridLineVisible(false);
     axisY2.setGridLineColor(QColor(150, 150 , 250));
     axisY2.setLinePenColor(QColor(0, 0 , 150));
     axisY2.setLabelFormat("%2.2e");
+    axisY2.setMinorGridLineVisible(false);
     axisX.setMinorGridLineVisible(true);
     axisX.setMinorTickCount(4);
     axisX.setTickCount(20);
     axisX.setTitleText("primary photons energy, eV");
-    axisY.setMinorTickCount(2);
+    axisY.setMinorTickCount(1);
     axisY.setTickCount(10);
     axisY.setTitleText("Intensity XAS, arb.u.");
-    axisY2.setMinorTickCount(2);
+    axisY2.setMinorTickCount(1);
     axisY2.setTickCount(11);
     axisY2.setTitleText("Intensity XMCD, arb.u.");
     chartView.setRenderHint(QPainter::Antialiasing);
@@ -120,7 +122,7 @@ MainWindow::MainWindow(QWidget *parent) :
         zero[file].attachAxis(&axisX);
         zero[file].attachAxis(&axisY);
         zero[file].setVisible(false);
-        refData[file].setName("Ref.");
+        refData[file].setName("Ref." + QString::number(file));
         chart.addSeries(&refData[file]);
         refData[file].attachAxis(&axisX);
         refData[file].attachAxis(&axisY);
@@ -163,9 +165,10 @@ MainWindow::MainWindow(QWidget *parent) :
     summaryAxisX.setMinorTickCount(4);
     summaryAxisX.setTickCount(10);
     summaryAxisX.setTitleText("primary photons energy, eV");
-    summaryAxisY.setMinorTickCount(2);
+    summaryAxisY.setMinorTickCount(1);
     summaryAxisY.setTickCount(11);
     summaryAxisY.setTitleText("Intensity, arb.u.");
+    summaryAxisY.setMinorGridLineVisible(false);
     ui->summaryChartWidget->setLayout(new QGridLayout(ui->summaryChartWidget));
     ui->summaryChartWidget->layout()->addWidget(&summaryChartView);
     summaryChartView.setRenderHint(QPainter::Antialiasing);
@@ -204,6 +207,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(this, &MainWindow::setGround, wrapper, &CalcWrapper::setGround, Qt::QueuedConnection);
     QObject::connect(this, &MainWindow::setRelativeCurv, wrapper, &CalcWrapper::setRelativeCurv, Qt::QueuedConnection);
     QObject::connect(this, &MainWindow::activateRef, wrapper, &CalcWrapper::activateRef, Qt::QueuedConnection);
+    QObject::connect(this, &MainWindow::setArea, wrapper, &CalcWrapper::setArea, Qt::QueuedConnection);
 
     //wrapper to this
     QObject::connect(wrapper, &CalcWrapper::log, this, [=](QVariant out){
@@ -257,7 +261,7 @@ MainWindow::MainWindow(QWidget *parent) :
                 refData[0].append(points->at(i).first, points->at(i).second.x()*mult);
                 refData[1].append(points->at(i).first, points->at(i).second.y()*mult);
             }
-            refDataPointers[file].replace(id, points); //-------------------------------------------------------------------------------
+            refDataPointers[file].replace(id, points);
             refData[0].blockSignals(false);
             refData[1].blockSignals(false);
             refData[0].pointsReplaced();
@@ -283,10 +287,13 @@ MainWindow::MainWindow(QWidget *parent) :
         rawPointers[file].replace(id, points);
         raw[0].blockSignals(false);
         raw[1].blockSignals(false);
-        ui->smoothSpinBox->setMaximum(raw[this->file].pointsVector().size());
-        ui->llSpinBox->setMaximum(raw[this->file].pointsVector().size());
-        ui->rlSpinBox->setMaximum(raw[this->file].pointsVector().size());
-        ui->integrationLimitSpinBox->setMaximum(raw[this->file].pointsVector().size() - 2);
+        if(id == this->id && this->file == file){
+            ui->smoothSpinBox->setMaximum(points->size());
+            ui->llSpinBox->setMaximum(points->size());
+            ui->rlSpinBox->setMaximum(points->size());
+            ui->integrationLimitSpinBox->setMaximum(points->size() - 2);
+            ui->integrationLimitSpinBox->setValue(qFloor(points->size()/2));
+        }
         raw[0].pointsReplaced();
         raw[1].pointsReplaced();
         setOffset();
@@ -409,6 +416,7 @@ MainWindow::MainWindow(QWidget *parent) :
         log(QString(this->metaObject()->className()) + "<- integrals:: id = "  + QString::number(id) +
             ". file = " + QString::number(file) + ". ref = " + QString::number(ref));
         setOffset(true);
+        log(*dl3);
         if(ref == 0){
             pairs.at(id)->state[file].insert("summArea", *summ);
             pairs.at(id)->state[file].insert("l2Area", *dl2);
@@ -422,6 +430,7 @@ MainWindow::MainWindow(QWidget *parent) :
             ui->summaryTable->item(2*id + file, 2)->setText(relationLabels[file]->text());
         }else if(ref == 1){
             pairs.at(id)->state[file].insert("refSummArea", *summ);
+            emit setArea(ui->useRefCheckBox->isChecked(), *summ, file, id);
             pairs.at(id)->state[file].insert("refl2Area", *dl2);
             pairs.at(id)->state[file].insert("refl3Area", *dl3);
         }else{
@@ -537,9 +546,11 @@ MainWindow::MainWindow(QWidget *parent) :
         setOffset(true);
         int file = 1;
         if(fileCheckBox[0]->isChecked()){
+            log("inside");
             file = 0;
             sample = table->data(table->index(index.row(), 1), Qt::DisplayRole).toString();
             geom = table->data(table->index(index.row(), 2), Qt::DisplayRole).toString();
+            log("creating file");
             QFile currentFile(filePath[file] + "/" + table->data(table->index(index.row(), 0), Qt::DisplayRole).toString());
             currentFile.open(QIODevice::ReadOnly);
             QTextStream stream(&currentFile);
@@ -699,12 +710,12 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->steppedBackgroundBox->setEnabled(state);
         line[0].setVisible(!state);
         line[1].setVisible(!state);
+        steps.setVisible(state);
         if(state){
             buttons.append(ui->linearBackgroundBox);
         }else{
             buttons.takeLast()->setChecked(false);
         }
-        steps.setVisible(state);
         rescale();
         setOffset();
     });
@@ -720,12 +731,13 @@ MainWindow::MainWindow(QWidget *parent) :
         setStepped(ui->filletSpinBox->value(), state, file, id);
         ui->refCheckBox->setEnabled(state);
         ui->diffBox->setEnabled(state);
+        steps.setVisible(!state);
         if(state){
             buttons.append(ui->steppedBackgroundBox);
         }else{
+            ui->refCheckBox->setChecked(false);
             buttons.takeLast()->setChecked(false);
         }
-        steps.setVisible(!state);//check
         setOffset();
     });
     QObject::connect(ui->refCheckBox, &QCheckBox::toggled, this, [=](bool state){
@@ -733,18 +745,16 @@ MainWindow::MainWindow(QWidget *parent) :
         setOffset(true);
         ui->refEnergyShiftSpinBox->setEnabled(state);
         ui->refCurvSpinBox->setEnabled(state);
-        if(state){
-            setNormalizationCoeff(ui->refCurvSpinBox->value(), true, file, id, 1);
-            buttons.append(ui->refCheckBox);
-        }else{
-            ui->refCheckBox->setChecked(false);
-            ui->useRefCheckBox->setEnabled(false);
-            buttons.removeAll(ui->refCheckBox);
-        }
+        ui->useRefCheckBox->setEnabled(state && (ui->integrateBox->isChecked()));
         activateRef(state, id, file);
         refData[0].setVisible(state);
         refData[1].setVisible(state);
         refxmcd.setVisible(ui->diffBox->isChecked() && state);
+        if(state){
+            setNormalizationCoeff(ui->refCurvSpinBox->value(), true, file, id, 1);
+        }else{
+            ui->useRefCheckBox->setChecked(false);
+        }
         setOffset();
     });
     QObject::connect(ui->refEnergyShiftSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, [=](double val){
@@ -781,36 +791,22 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->integrationLimitSpinBox->setEnabled(state);
         ui->positiveCheckBox->setEnabled(state);
         ui->groundCheckBox->setEnabled(state);
+        ui->useRefCheckBox->setEnabled(state && ui->refCheckBox->isChecked());
         dot.setVisible(state);
         setIntegrate(state, ui->integrationLimitSpinBox->value(), file, id, 0);
-        if(ui->refCheckBox->isChecked()){
-            int separator = 0;
-            for(int i = 0; i < refDataPointers[file].at(id)->size(); ++i){
-                if(refDataPointers[file].at(id)->at(i).first <=
-                        dataPointers[file].at(id)->at(ui->integrationLimitSpinBox->value()).first){
-                    separator = i;
-                }
-            }
-            setIntegrate(ui->integrateBox->isChecked(), dataPointers[file].at(id)->at(separator).first, file, id, 1);
-            ui->useRefCheckBox->setEnabled(true);
-        }
         integrated[file] = state;
-        if(integrated[0] && integrated[1]){
-            ui->calculateBox->setEnabled(state);
-        }else{
-            ui->calculateBox->setEnabled(false);
-        }
+        ui->calculateBox->setEnabled(state && (integrated[0] && integrated[1]));
         if(state){
             dot.replace(0, xmcd.at(ui->integrationLimitSpinBox->value()));
             buttons.append(ui->integrateBox);
         }else{
+            ui->useRefCheckBox->setChecked(false);
             summLabels[file]->setText("");
             dl2Labels[file]->setText("");
             dl3Labels[file]->setText("");
             mSELabels[file]->setText("");
             mOLabels[file]->setText("");
             relationLabels[file]->setText("");
-            ui->useRefCheckBox->setEnabled(false);
             buttons.takeLast()->setChecked(false);
         }
         setOffset();
@@ -840,7 +836,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->useRefCheckBox, &QCheckBox::toggled, this, [=](bool state){
         log(QString(this->metaObject()->className()) + "<- useRefBox::toggled. state = "  + QString::number(state));
         setOffset(true);
-        //create new signal to calc, passing refArea.
+        emit setArea(state, pairs.at(id)->state[file].value("refSummArea", 1.0).toDouble(), file, id);
         setOffset();
     });
     QObject::connect(ui->calculateBox, &QCheckBox::toggled, this, [=](bool state){
@@ -1012,11 +1008,31 @@ MainWindow::MainWindow(QWidget *parent) :
             });
             QObject::connect(pairs.last(), &PairWidget::deletePressed, this, [=]{
                 int id = pairs.indexOf(dynamic_cast<PairWidget *>(sender()));
-                log(QString(this->metaObject()->className()) + "<- pair::deletePressed. id = " + id);
+                log(QString(this->metaObject()->className()) + "<- pair::deletePressed. id = " + QString::number(id));
                 PairWidget *curr = pairs.at(id);
                 ui->pairTable->removeRow(id);
+
+                pairs.removeAt(id);
+                log("removed");
+                if(id == this->id){
+                    file = 0;
+                    if(pairs.size() > 0){
+                        if(id == pairs.size()){
+                            id --;
+                        }
+                        log("selecting pair");
+                        selectPair(id);
+                        log("selected pair");
+                    }else{
+                        this->id = -1;
+                        log("loading defaults");
+                        loadState(defaults());
+                        log("loaded defaults");
+                    }
+                }
+
+                /*
                 if(pairs.size() > 1){
-                    pairs.removeAt(id);
                     if(id == this->id){
                         if(id != 0){
                             selectPair(id - 1);
@@ -1025,28 +1041,33 @@ MainWindow::MainWindow(QWidget *parent) :
                         }
                     }
                 }else{
-                    ui->swapButton->setEnabled(false);
-                    ui->rawBox->setEnabled(false);
-                    ui->zeroBox->setEnabled(false);
-                    ui->normBox->setEnabled(false);
+                    loadState(defaults());
                     pairs.removeAt(id);
                     this->id = -1;
                     file = 0;
-                    loadState(defaults());
                 }
-                ui->summaryTable->removeRow(id);
+                */
+
                 ui->summaryTable->removeRow(id + 1);
+                ui->summaryTable->removeRow(id);
                 wrapper->removeCalc(id);
                 updateSummary();
-                delete curr;
+                delete curr;//?
             });
             QObject::connect(pairs.last(), &PairWidget::fileSelected, this, [=](int file){
                 log(QString(this->metaObject()->className()) + "<- pair::fileSelected. file = " + QString::number(file));
                 this->file = file;
                 loadState(pairs.at(id)->state[file]);
-                chart.setTitle(pairs.last()->state[file].value("sample", "null").toString() + " " +
-                        pairs.last()->state[file].value("energy", "null").toString() + " " +
-                        QString::number(pairs.last()->state[file].value("theta", -1.0).toDouble()));
+                chart.setTitle(pairs.at(id)->state[file].value("sample", "null").toString() + " " +
+                        pairs.at(id)->state[file].value("energy", "null").toString() + " " +
+                        QString::number(pairs.at(id)->state[file].value("theta", -1.0).toDouble()));
+                if(file == 0){
+                    ui->file1GroupBox->setStyleSheet("background-color: rgb(200, 200, 0);");
+                    ui->file2GroupBox->setStyleSheet("background-color: rgb(212, 208, 200);");
+                }else{
+                    ui->file2GroupBox->setStyleSheet("background-color: rgb(200, 200, 0);");
+                    ui->file1GroupBox->setStyleSheet("background-color: rgb(212, 208, 200);");
+                }
                 update(file, id);
             });
             integrated[0] = false;
@@ -1155,7 +1176,7 @@ MainWindow::MainWindow(QWidget *parent) :
         log(QString(this->metaObject()->className()) + "<- summaryButtonGroup::toggled. buttonId = " + QString::number(buttonId) +
             ". state = " + state);
         setOffset(true);
-        if(state){//wtf?
+        if(state){
             updateSummary();
         }
         setOffset();
@@ -1177,7 +1198,7 @@ MainWindow::MainWindow(QWidget *parent) :
     if(!normalExit){
         log("crash detected");
     }
-    loadState(defaults());//debug
+    loadState(defaults());
     ui->unitBox->setEnabled(false); //disabled in current version
 }
 
@@ -1220,7 +1241,6 @@ void MainWindow::selectPair(const int id){
                 pairs.at(i)->setStyleSheet("background-color: rgb(200, 200, 220);");
             }
         }
-        log("inside select pair. id = " + QString::number(id) + ". this->id = " + QString::number(this->id));
         this->id = id;
         if(pairs.at(id)->ui.file1Button->isChecked()){
             file = 0;
@@ -1298,6 +1318,31 @@ void MainWindow::loadSettings(){
         windowTitle = settings.value("windowTitle", "XMCDAnalyzer(corrupted .ini)").toString();
         setWindowTitle(windowTitle + " " + version);
         dataDir = settings.value("lastDir", "").toString();
+        int lineCount = settings.beginReadArray("lines");
+        for(int i = 0; i < lineCount; ++i){
+            settings.setArrayIndex(i);
+            QString name = settings.value("name", "Unknown").toString();
+            int r = settings.value("r", 0).toInt();
+            int g = settings.value("g", 0).toInt();
+            int b = settings.value("b", 0).toInt();
+            lineColours.insert(name, QColor(r, g, b));
+        }
+        settings.endArray();
+        raw[0].setColor(lineColours.value("raw0", QColor(0, 0, 0)));
+        raw[1].setColor(lineColours.value("raw1", QColor(0, 0, 0)));
+        norm[0].setColor(lineColours.value("norm0", QColor(0, 0, 0)));
+        norm[1].setColor(lineColours.value("norm1", QColor(0, 0, 0)));
+        refData[0].setColor(lineColours.value("refData0", QColor(0, 0, 0)));
+        refData[1].setColor(lineColours.value("refData1", QColor(0, 0, 0)));
+        zero[0].setColor(lineColours.value("zero0", QColor(0, 0, 0)));
+        zero[1].setColor(lineColours.value("zero1", QColor(0, 0, 0)));
+        xmcd.setColor(lineColours.value("xmcd", QColor(0, 0, 0)));
+        refxmcd.setColor(lineColours.value("refXmcd", QColor(0, 0, 0)));
+        xmcdZero.setColor(lineColours.value("xmcdZero", QColor(0, 0, 0)));
+        dot.setColor(lineColours.value("dot", QColor(0, 0, 0)));
+        steps.setColor(lineColours.value("steps", QColor(0, 0, 0)));
+        line[0].setColor(lineColours.value("line0", QColor(0, 0, 0)));
+        line[1].setColor(lineColours.value("line1", QColor(0, 0, 0)));
         settings.beginGroup("fileTable");
             int columnCount = settings.beginReadArray("columns");
             for(int i = 0; i < columnCount; ++i){
@@ -1367,6 +1412,98 @@ void MainWindow::saveSettings(){
         settings.setValue("windowPosition", this->pos());
         settings.setValue("windowTitle", windowTitle);
         settings.setValue("lastDir", dataDir);
+        settings.beginWriteArray("lines");
+            int i = 0;
+            settings.setArrayIndex(i);
+            settings.setValue("name", "raw0");
+            settings.setValue("r", raw[0].color().red());
+            settings.setValue("g", raw[0].color().green());
+            settings.setValue("b", raw[0].color().blue());
+            ++i;
+            settings.setArrayIndex(i);
+            settings.setValue("name", "raw1");
+            settings.setValue("r", raw[1].color().red());
+            settings.setValue("g", raw[1].color().green());
+            settings.setValue("b", raw[1].color().blue());
+            ++i;
+            settings.setArrayIndex(i);
+            settings.setValue("name", "norm0");
+            settings.setValue("r", norm[0].color().red());
+            settings.setValue("g", norm[0].color().green());
+            settings.setValue("b", norm[0].color().blue());
+            ++i;
+            settings.setArrayIndex(i);
+            settings.setValue("name", "norm1");
+            settings.setValue("r", norm[1].color().red());
+            settings.setValue("g", norm[1].color().green());
+            settings.setValue("b", norm[1].color().blue());
+            ++i;
+            settings.setArrayIndex(i);
+            settings.setValue("name", "refData0");
+            settings.setValue("r", refData[0].color().red());
+            settings.setValue("g", refData[0].color().green());
+            settings.setValue("b", refData[0].color().blue());
+            ++i;
+            settings.setArrayIndex(i);
+            settings.setValue("name", "refData1");
+            settings.setValue("r", refData[1].color().red());
+            settings.setValue("g", refData[1].color().green());
+            settings.setValue("b", refData[1].color().blue());
+            ++i;
+            settings.setArrayIndex(i);
+            settings.setValue("name", "zero0");
+            settings.setValue("r", zero[0].color().red());
+            settings.setValue("g", zero[0].color().green());
+            settings.setValue("b", zero[0].color().blue());
+            ++i;
+            settings.setArrayIndex(i);
+            settings.setValue("name", "zero1");
+            settings.setValue("r", zero[1].color().red());
+            settings.setValue("g", zero[1].color().green());
+            settings.setValue("b", zero[1].color().blue());
+            ++i;
+            settings.setArrayIndex(i);
+            settings.setValue("name", "xmcd");
+            settings.setValue("r", xmcd.color().red());
+            settings.setValue("g", xmcd.color().green());
+            settings.setValue("b", xmcd.color().blue());
+            ++i;
+            settings.setArrayIndex(i);
+            settings.setValue("name", "refXmcd");
+            settings.setValue("r", refxmcd.color().red());
+            settings.setValue("g", refxmcd.color().green());
+            settings.setValue("b", refxmcd.color().blue());
+            ++i;
+            settings.setArrayIndex(i);
+            settings.setValue("name", "xmcdZero");
+            settings.setValue("r", xmcdZero.color().red());
+            settings.setValue("g", xmcdZero.color().green());
+            settings.setValue("b", xmcdZero.color().blue());
+            ++i;
+            settings.setArrayIndex(i);
+            settings.setValue("name", "dot");
+            settings.setValue("r", dot.color().red());
+            settings.setValue("g", dot.color().green());
+            settings.setValue("b", dot.color().blue());
+            ++i;
+            settings.setArrayIndex(i);
+            settings.setValue("name", "steps");
+            settings.setValue("r", steps.color().red());
+            settings.setValue("g", steps.color().green());
+            settings.setValue("b", steps.color().blue());
+            ++i;
+            settings.setArrayIndex(i);
+            settings.setValue("name", "line0");
+            settings.setValue("r", line[0].color().red());
+            settings.setValue("g", line[0].color().green());
+            settings.setValue("b", line[0].color().blue());
+            ++i;
+            settings.setArrayIndex(i);
+            settings.setValue("name", "line1");
+            settings.setValue("r", line[1].color().red());
+            settings.setValue("g", line[1].color().green());
+            settings.setValue("b", line[1].color().blue());
+        settings.endArray();
         settings.beginGroup("fileTable");
             settings.beginWriteArray("columns");
             for(int i = 0; i < table->columnCount(QModelIndex()); ++i){
@@ -1733,7 +1870,7 @@ void MainWindow::updateSummary(){ //make it faster, parsing id of the changed ro
     if(badNormalization){
         ui->summaryNormButton->setStyleSheet("background-color: red;");
     }else{
-        ui->summaryNormButton->setStyleSheet("background-color: white;"); //fix white box
+        ui->summaryNormButton->setStyleSheet("background-color: rgb(212, 208, 200);");
     }
     log("reloaded curves");
     if(xMin != std::numeric_limits<double>::max()){

@@ -44,6 +44,7 @@ public slots:
     void setIntegrationConstants(const qreal newPc, const qreal newNh);
     void setIntegratePositiveOnly(const bool needed, const int file);
     void setIntegrateGround(const bool needed, const int file);
+    void setArea(const bool needed, const qreal area, const int file);
     void setCalculate(const bool needed, const QPointF newPhi, const QPointF newTheta);
     void update(const int file);
 
@@ -87,13 +88,15 @@ private:
     bool tmpIntegratePositiveOnly[2] = {false, false};
     bool integrateGround[2] = {false, false};
     bool tmpIntegrateGround[2] = {false, false};
+    bool refNeeded[2] = {false, false};
+    bool tmpRefNeeded[2] = {false, false};
     bool stepFitNeeded[2] = {false, false};//currently constantly false
     bool ready = true;
     bool constantsChanged = false;
     bool calculateNeeded = false;
     bool calculateChanged = false;
     bool tmpCalculateNeeded = false;
-    QPointF linearCoeff[2][2]; //[file][left, right](a, b)
+    QPointF linearCoeff[2][2]; //[file][left, right](a, b): a*x + b
     QPointF limits[2] = {QPointF(0, 0), QPointF(0.0 , 0.0)};
     QPointF tmpLimits[2] = {QPointF(0, 0), QPointF(0.0 , 0.0)};
     QPointF shadow[2] = {QPointF(0.0, 0.0), QPointF(0.0 , 0.0)};
@@ -108,10 +111,12 @@ private:
     QPointF xPoint[2] = {QPointF(0, 0), QPointF(0.0 , 0.0)};
     qreal energyShift[2] = {0.0, 0.0};
     qreal tmpEnergyShift[2] = {0.0, 0.0};
-    qreal normalizationCoeff[2][3]; //[file][a, b, c]
+    qreal normalizationCoeff[2][3]; //[file][a, b, c]: (a^2)*x + b*x + c
     qreal tmpNormalizationCoeff[2][3];
     qreal relativeCurv[2];
     qreal tmpRelativeCurv[2];
+    qreal refArea[2];
+    qreal tmpRefArea[2];
     qreal steppedCoeff[2] = {1.0, 1.0};
     qreal tmpSteppedCoeff[2] = {1.0, 1.0};
     qreal summInt[2] = {0.0, 0.0};

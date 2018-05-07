@@ -62,3 +62,9 @@ v10.5, broken
 
 v10.6
 	fixed reference support
+	
+v10.7, still fails at pair deleting
+	various gui fixes
+	added Fe and Ni reference files
+	fixed reference integration
+	

@@ -4,10 +4,6 @@ Calculator::Calculator(QObject *parent) : QObject(parent){
 
 }
 
-/*to-do:
-
-*/
-
 Calculator::~Calculator(){
     loader[0].~FileLoader();
     loader[1].~FileLoader();
@@ -561,6 +557,30 @@ void Calculator::setIntegrateGround(const bool needed, const int file){
     setOffset();
 }
 
+void Calculator::setArea(const bool needed, const qreal area, const int file){
+    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". needed = " + QString::number(needed) +
+        ". file = " + QString::number(file));
+    setOffset(true);
+    if(file == 0 || file == 1){
+        bool flag = false;
+        if(needed != tmpRefNeeded[file]){
+            tmpRefNeeded[file] = needed;
+            flag = true;
+        }
+        if(needed && (tmpRefArea[file] != area)){
+            tmpRefArea[file] = area;
+            flag = true;
+        }
+        if(flag){
+            integrationChanged[file] = true;
+            reset();
+        }
+    }else{
+        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". Variable file = " + QString::number(file));
+    }
+    setOffset();
+}
+
 void Calculator::integrate(const int file){
     log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". file = " + QString::number(file));
     setOffset(true);
@@ -568,10 +588,14 @@ void Calculator::integrate(const int file){
         if(steppedNeeded[file]){
             if(diffNeeded[file]){
                 summInt[file] = 0.0;
-                for(int i = 0; i < finalData[file].size() - 1; i++){
-                    summInt[file] += (finalData[file][i + 1].first - finalData[file][i].first)*
-                            (finalData[file][i + 1].second.x() + finalData[file][i].second.x() +
-                             finalData[file][i + 1].second.y() + finalData[file][i].second.y())/2.0;
+                if(!refNeeded[file]){
+                    for(int i = 0; i < finalData[file].size() - 1; i++){
+                        summInt[file] += (finalData[file][i + 1].first - finalData[file][i].first)*
+                                (finalData[file][i + 1].second.x() + finalData[file][i].second.x() +
+                                 finalData[file][i + 1].second.y() + finalData[file][i].second.y())/2.0;
+                    }
+                }else{
+                    summInt[file] = refArea[file];
                 }
                 qreal a = (finalDiff[file][0].y() - finalDiff[file][separator[file]].y())/
                         (finalDiff[file][0].x() - finalDiff[file][separator[file]].x());
@@ -741,6 +765,8 @@ void Calculator::reset(){
                     integrateNeeded[file] = tmpIntegrateNeeded[file];
                     integratePositiveOnly[file] = tmpIntegratePositiveOnly[file];
                     integrateGround[file] = tmpIntegrateGround[file];
+                    refArea[file] = tmpRefArea[file];
+                    refNeeded[file] = tmpRefNeeded[file];
                     if(integrateNeeded[file]){
                         integrate(file);
                     }

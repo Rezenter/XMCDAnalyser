@@ -50,6 +50,7 @@ signals:
     void setLin(const bool needed, const int file, const int id);
     void setPositiveIntegrals(const bool needed, const int file, const int id);
     void setGround(const bool needed, const int file, const int id);
+    void setArea(const bool needed, const qreal area, const int file, const int id);
     void setRelativeCurv(const qreal a, const int file, const int id);
     void update(const int file, const int id);
     void appendCalc();
@@ -141,6 +142,7 @@ private:
     QString version = "v???";
     QString windowTitle = "XMCD Analyser";
     QString refCommonPath;
+    QHash<QString, QColor> lineColours;
 
 private slots:
     void open(QString);

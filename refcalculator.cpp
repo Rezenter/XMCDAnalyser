@@ -4,9 +4,6 @@ RefCalculator::RefCalculator(QObject *parent) : QObject(parent){
 
 }
 
-/*to-do:
-*/
-
 RefCalculator::~RefCalculator(){
     loader[0].~FileLoader();
     loader[1].~FileLoader();
@@ -24,7 +21,8 @@ void RefCalculator::setLoader(const QString loaderPath, const int file){
 }
 
 void RefCalculator::setEnergyShift(const qreal shift, const int file){
-    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". file = " + QString::number(file) + ". shift = " + QString::number(shift));
+    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". file = " + QString::number(file) + ". shift = " +
+        QString::number(shift));
     setOffset(true);
     if(shift != tmpEnergyShift[file]){
         tmpEnergyShift[file] = shift;
@@ -55,7 +53,8 @@ void RefCalculator::load(const int file){
 }
 
 void RefCalculator::setNormalizationCoeff(const qreal coeff, const int file){
-    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". file = " + QString::number(file) + ". coeff = " + QString::number(coeff));
+    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". file = " + QString::number(file) + ". coeff = " +
+        QString::number(coeff));
     setOffset(true);
     if(tmpNormalizationCoeff[file][0] != coeff){
         tmpNormalizationCoeff[file][0] = coeff;
@@ -98,7 +97,8 @@ void RefCalculator::normalize(const int file){
 }
 
 void RefCalculator::setStepped(const qreal coeff, const int file){
-    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". file = " + QString::number(file) + ". coeff = " + QString::number(coeff));
+    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". file = " + QString::number(file) + ". coeff = " +
+        QString::number(coeff));
     setOffset(true);
     if(tmpSteppedCoeff[file] != coeff){
         tmpSteppedCoeff[file] = coeff;
@@ -118,7 +118,8 @@ void RefCalculator::stepped(const int file){
         qreal step = (normData[file][0].second.x() + normData[file][0].second.y())/2.0 +
                             m * (M_PI_2 + qAtan(steppedCoeff[file]*(normData[file][i].first - normData[file][lEdges[file]].first))) * 2 +
                             m * (M_PI_2 + qAtan(steppedCoeff[file]*(normData[file][i].first - normData[file][rEdges[file]].first)));
-        finalData[file][i] = QPair<qreal, QPointF>(normData[file][i].first, QPointF(normData[file][i].second.x() - step, normData[file][i].second.y() - step));
+        finalData[file][i] = QPair<qreal, QPointF>(normData[file][i].first,
+                                                   QPointF(normData[file][i].second.x() - step, normData[file][i].second.y() - step));
     }
     emit processedData(&finalData[file], file);
     integrate(file);
@@ -126,20 +127,23 @@ void RefCalculator::stepped(const int file){
 }
 
 void RefCalculator::setIntegrate(const qreal index, const int file){
-    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". file = " + QString::number(file) + ". index = " + QString::number(index));
+    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". file = " + QString::number(file) + ". index = " +
+        QString::number(index));
     setOffset(true);
-    if(index > lEdges[file] && index < rEdges[file] && tmpSeparator[file] != index){
+    if(tmpSeparator[file] != index){
         tmpSeparator[file] = index;
         integrationChanged[file] = true;
         reset();
     }else{
-        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". file = " + QString::number(file)  + ". index = " + QString::number(index));
+        log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". file = " + QString::number(file)  + ". index = " +
+            QString::number(index));
     }
     setOffset();
 }
 
 void RefCalculator::setIntegratePositiveOnly(const bool needed, const int file){
-    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". file = " + QString::number(file) + ". needed = " + QString::number(needed));
+    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". file = " + QString::number(file) + ". needed = " +
+        QString::number(needed));
     setOffset(true);
     if(needed != tmpIntegratePositiveOnly[file]){
         tmpIntegratePositiveOnly[file] = needed;
@@ -150,7 +154,8 @@ void RefCalculator::setIntegratePositiveOnly(const bool needed, const int file){
 }
 
 void RefCalculator::setIntegrateGround(const bool needed, const int file){
-    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". file = " + QString::number(file) + ". needed = " + QString::number(needed));
+    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". file = " + QString::number(file) + ". needed = " +
+        QString::number(needed));
     setOffset(true);
     if(needed != tmpIntegrateGround[file]){
         tmpIntegrateGround[file] = needed;
@@ -175,14 +180,16 @@ void RefCalculator::integrate(const int file){
         this->separator[file] = diff[file][qFloor(diff[file].size()/2)].x();
     }
     int separator = 0;
+    int shift = 0;
     for(int i = 0; i < diff[file].size(); ++i){
-        finalDiff[i] = diff[file][i];
-        if(i < (diff[file].size() - 1) && diff[file][i].x() <= this->separator[file] && diff[file][i + 1].x() > this->separator[file]){
+        finalDiff[i + shift] = diff[file][i];
+        if((i < (diff[file].size() - 1)) && (diff[file][i].x() <= this->separator[file]) && (diff[file][i + 1].x() > this->separator[file])){
             separator = i;
             if(diff[file][i].x() != this->separator[file]){
-                finalDiff.resize(diff[file].size() + 1);
-                finalDiff.append(QPointF(diff[file][i].x(), diff[file][i].y() + (diff[file][i + 1].y() - diff[file][i].y())
-                                 *(this->separator[file] - diff[file][i].x()))/((diff[file][i + 1].x() - diff[file][i].x())));
+                separator++;
+                shift = 1;
+                finalDiff.insert(shift + i, QPointF(this->separator[file], diff[file][i].y() + (diff[file][i + 1].y() - diff[file][i].y())
+                                 *(this->separator[file] - diff[file][i].x())/(diff[file][i + 1].x() - diff[file][i].x())));
             }
         }
     }
@@ -267,7 +274,8 @@ void RefCalculator::update(const int file){
 }
 
 void RefCalculator::activateRef(const bool state, const int file){
-    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". file = " + QString::number(file) + ". state = " + QString::number(state));
+    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". file = " + QString::number(file) + ". state = " +
+        QString::number(state));
     setOffset(true);
     if(state != active[file]){
         active[file] = state;

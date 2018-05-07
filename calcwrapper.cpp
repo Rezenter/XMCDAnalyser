@@ -71,7 +71,6 @@ void CalcWrapper::switchConnection(const QPair<QSharedPointer<Calculator>, QShar
     QObject::connect(senderPair.first.data(), &Calculator::setOffset, this, [=](bool state){
         emit setOffset(state);
     });
-
     QObject::connect(senderPair.second.data(), &RefCalculator::processedData, this, [=](const QVector<QPair<qreal, QPointF>>* points,
                      const int file){
         emit processedData(points, newId, file, 1);
@@ -229,7 +228,7 @@ void CalcWrapper::setIntegrate(const bool needed, const qreal index, const int f
         if(ref == 0){
             calculators.at(id).first.data()->setIntegrate(needed, (int)index, file);
         }else if(ref == 1 && needed){
-            calculators.at(id).second.data()->setIntegrate(index, file);//fix index to val -------------------------------------------------
+            calculators.at(id).second.data()->setIntegrate(index, file);
         }
     }else{
         log("Error: " + QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". id = " + QString::number(id));
@@ -288,6 +287,17 @@ void CalcWrapper::setGround(const bool needed, const int file, const int id){
     if(id >= 0 && id < calculators.size()){
         calculators.at(id).first.data()->setIntegrateGround(needed, file);
         calculators.at(id).second.data()->setIntegrateGround(needed, file);
+    }else{
+        log("Error: " + QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". id = " + QString::number(id));
+    }
+    setOffset();
+}
+
+void CalcWrapper::setArea(const bool needed, const qreal area, const int file, const int id){
+    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ".  called");
+    setOffset(true);
+    if(id >= 0 && id < calculators.size()){
+        calculators.at(id).first.data()->setArea(needed, area, file);
     }else{
         log("Error: " + QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". id = " + QString::number(id));
     }

@@ -32,5 +32,10 @@ void PairWidget::mousePressEvent(QMouseEvent *event)
 {
     Q_UNUSED(event);
     log(QString(this->metaObject()->className()) + ":: mousePressEvent");
-    emit selected();
+    selected();
+    int i = 0;
+    if(ui.file2Button->isChecked()){
+        i = 1;
+    }
+    fileSelected(i);
 }

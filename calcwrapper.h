@@ -48,6 +48,7 @@ public slots:
     void setLin(const bool needed, const int file, const int id);
     void setPositiveIntegrals(const bool needed, const int file, const int id);
     void setGround(const bool needed, const int file, const int id);
+    void setArea(const bool needed, const qreal area, const int file, const int id);
     void setRelativeCurv(const qreal a, const int file, const int id);
     void update(const int file, const int id);
     void appendCalc();

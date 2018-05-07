@@ -227,7 +227,7 @@
         <item row="1" column="0">
          <layout class="QGridLayout" name="gridLayout_4">
           <item row="0" column="0">
-           <widget class="QGroupBox" name="groupBox_5">
+           <widget class="QGroupBox" name="file1GroupBox">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
               <horstretch>0</horstretch>
@@ -616,7 +616,7 @@
            </widget>
           </item>
           <item row="1" column="0">
-           <widget class="QGroupBox" name="groupBox_6">
+           <widget class="QGroupBox" name="file2GroupBox">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
               <horstretch>0</horstretch>
@@ -2454,17 +2454,17 @@
  <resources/>
  <connections/>
  <buttongroups>
+  <buttongroup name="dataTypeGroup"/>
   <buttongroup name="fileGroup">
    <property name="exclusive">
     <bool>true</bool>
    </property>
   </buttongroup>
-  <buttongroup name="summaryButtonGroup"/>
   <buttongroup name="filterGroup">
    <property name="exclusive">
     <bool>false</bool>
    </property>
   </buttongroup>
-  <buttongroup name="dataTypeGroup"/>
+  <buttongroup name="summaryButtonGroup"/>
  </buttongroups>
 </ui>
