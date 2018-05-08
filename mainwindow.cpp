@@ -13,7 +13,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     /*To-do list:
      *
-     *fix summary after pair deleting
+     *XMCD does not fit chart
+     * crash at swap with calculateBox checked
      *
         * save/load session
         * add sample filter
@@ -416,7 +417,6 @@ MainWindow::MainWindow(QWidget *parent) :
         log(QString(this->metaObject()->className()) + "<- integrals:: id = "  + QString::number(id) +
             ". file = " + QString::number(file) + ". ref = " + QString::number(ref));
         setOffset(true);
-        log(*dl3);
         if(ref == 0){
             pairs.at(id)->state[file].insert("summArea", *summ);
             pairs.at(id)->state[file].insert("l2Area", *dl2);
@@ -436,12 +436,18 @@ MainWindow::MainWindow(QWidget *parent) :
         }else{
             log("Error: " + QString(this->metaObject()->className()) + "<- integrals:: ref = " + QString::number(ref));
         }
-        summRelLabels[file]->setText(QString::number(pairs.at(id)->state[file].value("summArea", 1.0).toDouble()/
-                                                     pairs.at(id)->state[file].value("refSummArea", 1.0).toDouble()));
-        dl2RelLabels[file]->setText(QString::number(pairs.at(id)->state[file].value("l2Area", 1.0).toDouble()/
-                                                     pairs.at(id)->state[file].value("refl2Area", 1.0).toDouble()));
-        dl3RelLabels[file]->setText(QString::number(pairs.at(id)->state[file].value("l3Area", 1.0).toDouble()/
-                                                     pairs.at(id)->state[file].value("refl3Area", 1.0).toDouble()));
+        if(ui->refCheckBox->isChecked()){
+            summRelLabels[file]->setText(QString::number(pairs.at(id)->state[file].value("summArea", 1.0).toDouble()/
+                                                         pairs.at(id)->state[file].value("refSummArea", 1.0).toDouble()));
+            dl2RelLabels[file]->setText(QString::number(pairs.at(id)->state[file].value("l2Area", 1.0).toDouble()/
+                                                         pairs.at(id)->state[file].value("refl2Area", 1.0).toDouble()));
+            dl3RelLabels[file]->setText(QString::number(pairs.at(id)->state[file].value("l3Area", 1.0).toDouble()/
+                                                         pairs.at(id)->state[file].value("refl3Area", 1.0).toDouble()));
+        }else{
+            summRelLabels[file]->setText("");
+            dl2RelLabels[file]->setText("");
+            dl3RelLabels[file]->setText("");
+        }
         setOffset();
     });
     QObject::connect(wrapper, &CalcWrapper::moments, this, [=](const qreal* mOP, const qreal* mOO,
@@ -546,11 +552,9 @@ MainWindow::MainWindow(QWidget *parent) :
         setOffset(true);
         int file = 1;
         if(fileCheckBox[0]->isChecked()){
-            log("inside");
             file = 0;
             sample = table->data(table->index(index.row(), 1), Qt::DisplayRole).toString();
             geom = table->data(table->index(index.row(), 2), Qt::DisplayRole).toString();
-            log("creating file");
             QFile currentFile(filePath[file] + "/" + table->data(table->index(index.row(), 0), Qt::DisplayRole).toString());
             currentFile.open(QIODevice::ReadOnly);
             QTextStream stream(&currentFile);
@@ -612,8 +616,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->normBox, &QRadioButton::toggled, this, [=](bool state){
         log(QString(this->metaObject()->className()) + "<- normBox::toggled. state = "  + QString::number(state));
         setOffset(true);
-        norm[0].setVisible(state);
-        norm[1].setVisible(state);
+        norm[0].setVisible(state && id >= 0);
+        norm[1].setVisible(state && id >= 0);
         ui->shadowSpinBox->setEnabled(state);
         ui->zeroShadowSpinBox->setEnabled(state);
         ui->smoothSpinBox->setEnabled(state);
@@ -674,8 +678,8 @@ MainWindow::MainWindow(QWidget *parent) :
         setOffset();
     });
     QObject::connect(ui->linearBox, &QCheckBox::toggled, this, [=](bool state){
-        setOffset(true);
         log(QString(this->metaObject()->className()) + "<- linearBox::toggled. state = "  + QString::number(state));
+        setOffset(true);
         ui->llSpinBox->setEnabled(state);
         ui->rlSpinBox->setEnabled(state);
         ui->linearBackgroundBox->setEnabled(state);
@@ -1004,58 +1008,48 @@ MainWindow::MainWindow(QWidget *parent) :
             ui->file1Button->setChecked(true);
             QObject::connect(pairs.last(), &PairWidget::selected, this, [=]{
                 log(QString(this->metaObject()->className()) + "<- pair::selected");
+                setOffset(true);
                 selectPair(pairs.indexOf(dynamic_cast<PairWidget *>(sender())));
+                setOffset();
             });
             QObject::connect(pairs.last(), &PairWidget::deletePressed, this, [=]{
-                int id = pairs.indexOf(dynamic_cast<PairWidget *>(sender()));
                 log(QString(this->metaObject()->className()) + "<- pair::deletePressed. id = " + QString::number(id));
+                setOffset(true);
+                int id = pairs.indexOf(dynamic_cast<PairWidget *>(sender()));
                 PairWidget *curr = pairs.at(id);
                 ui->pairTable->removeRow(id);
-
                 pairs.removeAt(id);
-                log("removed");
+                ui->summaryTable->removeRow(2*id + 1);
+                ui->summaryTable->removeRow(2*id);
+                for(int i = 0; i < 2; ++i){
+                    dataPointers[i].removeAt(id);
+                    rawPointers[i].removeAt(id);
+                    zeroPointers[i].removeAt(id);
+                    stepPointers[i].removeAt(id);
+                    xmcdPointers[i].removeAt(id);
+                    refDataPointers[i].removeAt(id);
+                    refXmcdPointers[i].removeAt(id);
+                }
+                wrapper->removeCalc(id);
                 if(id == this->id){
                     file = 0;
                     if(pairs.size() > 0){
                         if(id == pairs.size()){
                             id --;
                         }
-                        log("selecting pair");
                         selectPair(id);
-                        log("selected pair");
                     }else{
                         this->id = -1;
-                        log("loading defaults");
                         loadState(defaults());
-                        log("loaded defaults");
                     }
                 }
-
-                /*
-                if(pairs.size() > 1){
-                    if(id == this->id){
-                        if(id != 0){
-                            selectPair(id - 1);
-                        }else{
-                            selectPair(0);
-                        }
-                    }
-                }else{
-                    loadState(defaults());
-                    pairs.removeAt(id);
-                    this->id = -1;
-                    file = 0;
-                }
-                */
-
-                ui->summaryTable->removeRow(id + 1);
-                ui->summaryTable->removeRow(id);
-                wrapper->removeCalc(id);
                 updateSummary();
-                delete curr;//?
+                delete curr;
+                setOffset();
             });
             QObject::connect(pairs.last(), &PairWidget::fileSelected, this, [=](int file){
                 log(QString(this->metaObject()->className()) + "<- pair::fileSelected. file = " + QString::number(file));
+                setOffset(true);
                 this->file = file;
                 loadState(pairs.at(id)->state[file]);
                 chart.setTitle(pairs.at(id)->state[file].value("sample", "null").toString() + " " +
@@ -1069,6 +1063,7 @@ MainWindow::MainWindow(QWidget *parent) :
                     ui->file1GroupBox->setStyleSheet("background-color: rgb(212, 208, 200);");
                 }
                 update(file, id);
+                setOffset();
             });
             integrated[0] = false;
             integrated[1] = false;
@@ -1124,33 +1119,39 @@ MainWindow::MainWindow(QWidget *parent) :
             ui->summaryTable->setItem(did, 8, new QTableWidgetItem("mOrb"));
             ui->summaryTable->item(did, 8)->setToolTip(summaryTooltips.at(8));
             ui->summaryTable->setSpan(did, 8, 2, 1);
-            x1Offset->setMinimum(-10.0);
-            x1Offset->setMaximum(10.0);
+            x1Offset->setMinimum(-200.0);
+            x1Offset->setMaximum(200.0);
             x1Offset->setSingleStep(0.1);
             x1Offset->connect(x1Offset, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
                               this, [=](double val){
                 log(QString(this->metaObject()->className()) + "<- x1Offset::valueChanged. val = "  + QString::number(val));
+                setOffset(true);
                 updateSummary();
+                setOffset();
             });
             ui->summaryTable->setCellWidget(did, 9, x1Offset);
             x1Offset->setToolTip(summaryTooltips.at(9));
-            x2Offset->setMinimum(-10.0);
-            x2Offset->setMaximum(10.0);
+            x2Offset->setMinimum(-200.0);
+            x2Offset->setMaximum(200.0);
             x2Offset->setSingleStep(0.1);
             x2Offset->connect(x2Offset, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
                               this, [=](double val){
                 log(QString(this->metaObject()->className()) + "<- x2Offset::valueChanged. val = "  + QString::number(val));
+                setOffset(true);
                 updateSummary();
+                setOffset();
             });
             ui->summaryTable->setCellWidget(did + 1, 9, x2Offset);
             x2Offset->setToolTip(summaryTooltips.at(9));
-            yOffset->setMinimum(-10.0);
-            yOffset->setMaximum(10.0);
+            yOffset->setMinimum(-15.0);
+            yOffset->setMaximum(15.0);
             yOffset->setSingleStep(0.1);
             yOffset->connect(yOffset, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
                              this, [=](double val){
                 log(QString(this->metaObject()->className()) + "<- yOffset::valueChanged. val = "  + QString::number(val));
+                setOffset(true);
                 updateSummary();
+                setOffset();
             });
             ui->summaryTable->setCellWidget(did, 10, yOffset);
             yOffset->setToolTip(summaryTooltips.at(10));
@@ -1162,7 +1163,9 @@ MainWindow::MainWindow(QWidget *parent) :
             yOffsetMult->setPrefix("10^");
             yOffsetMult->connect(yOffsetMult, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, [=](int val){
                 log(QString(this->metaObject()->className()) + "<- yOffsetMult::valueChanged. val = "  + QString::number(val));
+                setOffset(true);
                 updateSummary();
+                setOffset();
             });
             ui->summaryTable->setCellWidget(did, 11, yOffsetMult);
             yOffsetMult->setToolTip(summaryTooltips.at(11));
@@ -1625,6 +1628,19 @@ void MainWindow::loadState(const QHash<QString, QVariant> state){
         ui->rawBox->setEnabled(true);
         ui->zeroBox->setEnabled(true);
         ui->normBox->setEnabled(true);
+    }else{
+        for(int i = 0; i < 2 ; ++i){
+            zero[i].setVisible(false);
+            raw[i].setVisible(false);
+            norm[i].setVisible(false);
+            refData[i].setVisible(false);
+            line[i].setVisible(false);
+        }
+        steps.setVisible(false);
+        xmcd.setVisible(false);
+        refxmcd.setVisible(false);
+        dot.setVisible(false);
+        chart.setTitle("");
     }
     ui->bSpinBox->setEnabled(loaded);
     ui->tSpinBox->setEnabled(loaded);

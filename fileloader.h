@@ -28,7 +28,7 @@ private:
     double r = 0;
     int li = 0;
     int ri = 0;
-    QVector<QPair<qreal, QPair<qreal, qreal>>> data; //QVec<QPair<freq, QPair<leftPolarisation, rightPolar>>>
+    QVector<QPair<qreal, QPair<qreal, qreal>>> data; //QVec<QPair<Energy, QPair<leftPolarisation, rightPolar>>>
     QVector<QPair<qreal, QPair<qreal, qreal>>> bareData;
     QVector<QPair<qreal, QPair<qreal, qreal>>> zero;
 

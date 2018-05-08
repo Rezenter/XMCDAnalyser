@@ -5,8 +5,11 @@ RefCalculator::RefCalculator(QObject *parent) : QObject(parent){
 }
 
 RefCalculator::~RefCalculator(){
+    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__);
+    setOffset(true);
     loader[0].~FileLoader();
     loader[1].~FileLoader();
+    setOffset();
 }
 
 void RefCalculator::setLoader(const QString loaderPath, const int file){

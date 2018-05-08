@@ -56,8 +56,8 @@ public slots:
     void activateRef(const bool state, const int id, const int file);
 
 private:
-    QList<QPair<QSharedPointer<Calculator>, QSharedPointer<RefCalculator>>> calculators;
-    void switchConnection(const QPair<QSharedPointer<Calculator>, QSharedPointer<RefCalculator>> senderPair, const int newId);
+    QList<QPair<Calculator*, RefCalculator*>> calculators;
+    void switchConnection(const QPair<Calculator*, RefCalculator*> senderPair, const int newId);
     QString refCommonPath;
 };
 

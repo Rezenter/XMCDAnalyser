@@ -15,7 +15,6 @@ FileLoader::FileLoader(QString path){
                     bareData.append(QPair<qreal, QPair<qreal, qreal>>(args.at(2).toDouble(), QPair<qreal, qreal>(args.at(3).toDouble(), args.at(3).toDouble())));
                     data.append(QPair<qreal, QPair<qreal, qreal>>(args.at(2).toDouble(), QPair<qreal, qreal>(args.at(6).toDouble(), args.at(6).toDouble())));
                 }else{
-
                     zero.append(QPair<qreal, QPair<qreal, qreal>>(args.at(2).toDouble(), QPair<qreal, qreal>(args.at(4).toDouble(), args.at(8).toDouble())));
                     bareData.append(QPair<qreal, QPair<qreal, qreal>>(args.at(2).toDouble(), QPair<qreal, qreal>(args.at(3).toDouble(), args.at(7).toDouble())));
                     data.append(QPair<qreal, QPair<qreal, qreal>>(args.at(2).toDouble(), QPair<qreal, qreal>(args.at(6).toDouble(), args.at(10).toDouble())));
@@ -33,8 +32,6 @@ FileLoader::FileLoader(QString path){
             if(line.length() > 0){
                 QStringList args = line.split("\t");
                 if(args.length() == 3){
-                    bareData.append(QPair<qreal, QPair<qreal, qreal>>(args.at(0).toDouble(), QPair<qreal, qreal>(args.at(1).toDouble(), args.at(2).toDouble())));
-                    zero.append(QPair<qreal, QPair<qreal, qreal>>(args.at(0).toDouble(), QPair<qreal, qreal>(1.0, 1.0)));
                     data.append(QPair<qreal, QPair<qreal, qreal>>(args.at(0).toDouble(), QPair<qreal, qreal>(args.at(1).toDouble(), args.at(2).toDouble())));
                 }
             }

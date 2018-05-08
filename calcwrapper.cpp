@@ -22,86 +22,88 @@ void CalcWrapper::setRefPaths(QString commonPath){
 void CalcWrapper::appendCalc(){
     log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ".");
     setOffset(true);
-    QSharedPointer<Calculator> c (new Calculator());
-    QSharedPointer<RefCalculator> r (new RefCalculator());
-    QPair<QSharedPointer<Calculator>, QSharedPointer<RefCalculator>> pair(c, r);
+    QPair<Calculator*, RefCalculator*> pair(new Calculator(), new RefCalculator());
     calculators.append(pair);
     switchConnection(pair, calculators.size() - 1);
     setOffset();
 }
 
-void CalcWrapper::switchConnection(const QPair<QSharedPointer<Calculator>, QSharedPointer<RefCalculator>> senderPair, const int newId){
+void CalcWrapper::switchConnection(const QPair<Calculator*, RefCalculator*> senderPair, const int newId){
     log(QString(this->metaObject()->className()) + "::" + __FUNCTION__ + ". id = " + QString::number(newId));
     setOffset(true);
-    QObject::connect(senderPair.first.data(), &Calculator::rawData, this,
+    QObject::connect(senderPair.first, &Calculator::rawData, this,
                      [=](const QVector<QPair<qreal, QPointF>>* points, const int file){
         emit rawData(points, newId, file);
     });
-    QObject::connect(senderPair.first.data(), &Calculator::iZero, this, [=](const QVector<QPair<qreal, QPointF>>* points, const int file){
+    QObject::connect(senderPair.first, &Calculator::iZero, this, [=](const QVector<QPair<qreal, QPointF>>* points, const int file){
         emit iZero(points, newId, file);
     });
-    QObject::connect(senderPair.first.data(), &Calculator::stepData, this, [=](const QVector<QPointF>* points, const int file){
+    QObject::connect(senderPair.first, &Calculator::stepData, this, [=](const QVector<QPointF>* points, const int file){
         emit stepData(points, newId, file);
     });
-    QObject::connect(senderPair.first.data(), &Calculator::moments, this, [=](const qreal* mOP, const qreal* mOO,
+    QObject::connect(senderPair.first, &Calculator::moments, this, [=](const qreal* mOP, const qreal* mOO,
                      const qreal* ms, const qreal* mt, const int file){
         emit moments(mOP, mOO, ms, mt, newId, file);
     });
-    QObject::connect(senderPair.first.data(), &Calculator::processedData, this,
+    QObject::connect(senderPair.first, &Calculator::processedData, this,
                      [=](const QVector<QPair<qreal, QPointF>>* points, const int file){
         emit processedData(points, newId, file, 0);
     });
-    QObject::connect(senderPair.first.data(), &Calculator::XMCD, this, [=](const QVector<QPointF>* points, const int file){
+    QObject::connect(senderPair.first, &Calculator::XMCD, this, [=](const QVector<QPointF>* points, const int file){
         emit XMCD(points, newId, file, 0);
     });
-    QObject::connect(senderPair.first.data(), &Calculator::integrals, this, [=](const qreal* summ, const qreal* dl2, const qreal* dl3,
+    QObject::connect(senderPair.first, &Calculator::integrals, this, [=](const qreal* summ, const qreal* dl2, const qreal* dl3,
                      const qreal* mSE, const qreal* mO, const qreal* rel, const int file){
         emit integrals(summ, dl2, dl3, mSE,  mO, rel, newId, file, 0);
     });
-    QObject::connect(senderPair.first.data(), &Calculator::linCoeffs, this, [=](const QPointF* left, const QPointF* right,
+    QObject::connect(senderPair.first, &Calculator::linCoeffs, this, [=](const QPointF* left, const QPointF* right,
                      const QPointF* x, const int file){
         emit linCoeffs(left, right, x, newId, file);
     });
-    QObject::connect(senderPair.first.data(), &Calculator::completed, this, [=](const int file){
+    QObject::connect(senderPair.first, &Calculator::completed, this, [=](const int file){
         emit completed(newId, file, 0);
     });
-    QObject::connect(senderPair.first.data(), &Calculator::log, this, [=](QVariant out){
+    QObject::connect(senderPair.first, &Calculator::log, this, [=](QVariant out){
         emit log("id = " + QString::number(newId) + ". ref = " + QString::number(0) + " :: " + out.toString());
     });
-    QObject::connect(senderPair.first.data(), &Calculator::setOffset, this, [=](bool state){
+    QObject::connect(senderPair.first, &Calculator::setOffset, this, [=](bool state){
         emit setOffset(state);
     });
-    QObject::connect(senderPair.second.data(), &RefCalculator::processedData, this, [=](const QVector<QPair<qreal, QPointF>>* points,
+    QObject::connect(senderPair.second, &RefCalculator::processedData, this, [=](const QVector<QPair<qreal, QPointF>>* points,
                      const int file){
         emit processedData(points, newId, file, 1);
     });
-    QObject::connect(senderPair.second.data(), &RefCalculator::XMCD, this, [=](const QVector<QPointF>* points, const int file){
+    QObject::connect(senderPair.second, &RefCalculator::XMCD, this, [=](const QVector<QPointF>* points, const int file){
         emit XMCD(points, newId, file, 1);
     });
-    QObject::connect(senderPair.second.data(), &RefCalculator::integrals, this, [=](const qreal* summ, const qreal* dl2, const qreal* dl3,
+    QObject::connect(senderPair.second, &RefCalculator::integrals, this, [=](const qreal* summ, const qreal* dl2, const qreal* dl3,
                      const int file){
         emit integrals(summ, dl2, dl3, nullptr,  nullptr, nullptr, newId, file, 1);
     });
-    QObject::connect(senderPair.second.data(), &RefCalculator::completed, this, [=](const int file){
+    QObject::connect(senderPair.second, &RefCalculator::completed, this, [=](const int file){
         emit completed(newId, file, 1);
     });
-    QObject::connect(senderPair.second.data(), &RefCalculator::log, this, [=](QVariant out){
+    QObject::connect(senderPair.second, &RefCalculator::log, this, [=](QVariant out){
         emit log("id = " + QString::number(newId) + ". ref = " + QString::number(1) + " :: " + out.toString());
     });
-    QObject::connect(senderPair.second.data(), &RefCalculator::setOffset, this, [=](bool state){
+    QObject::connect(senderPair.second, &RefCalculator::setOffset, this, [=](bool state){
         emit setOffset(state);
     });
     setOffset();
 }
 
 void CalcWrapper::removeCalc(const int id){
-    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ".  called");
+    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". id = " + QString::number(id));
     setOffset(true);
     if(id >= 0 && id < calculators.size()){
+        calculators.at(id).first->disconnect();
+        calculators.at(id).second->disconnect();
         calculators.removeAt(id);
+        log(calculators.size());
         for(int i = id; i < calculators.size(); ++i){
-            calculators.at(i).first.data()->disconnect();
-            calculators.at(i).second.data()->disconnect();
+            log(i);
+            calculators.at(i).first->disconnect();
+            calculators.at(i).second->disconnect();
             switchConnection(calculators.at(i), i);
         }
     }else{
@@ -114,9 +116,12 @@ void CalcWrapper::setLoader(const QString loaderPath, const int file, const int 
     log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ".  called");
     setOffset(true);
     if(id >= 0 && id < calculators.size()){
-        calculators.at(id).first.data()->setLoader(loaderPath, file);
+        calculators.at(id).first->setLoader(loaderPath, file);
+        log("calculator alive");
         if(refPath.size() > 0 && refCommonPath.size() > 0){
-            calculators.at(id).second.data()->setLoader(refCommonPath + refPath + "/ref.ref", file);
+            log("loading reference");
+            calculators.at(id).second->setLoader(refCommonPath + refPath + "/ref.ref", file);
+            log("reference alive");
         }else{
             log("Error: " + QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". refPath = " + refPath);
         }
@@ -130,7 +135,7 @@ void CalcWrapper::setLimits(const qreal left, const qreal right, const int file,
     log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ".  called");
     setOffset(true);
     if(id >= 0 && id < calculators.size()){
-        calculators.at(id).first.data()->setLimits(left, right, file);
+        calculators.at(id).first->setLimits(left, right, file);
     }else{
         log("Error: " + QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". id = " + QString::number(id));
     }
@@ -141,7 +146,7 @@ void CalcWrapper::setEnergyShift(const qreal shift, const int file, const int id
     log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ".  called");
     setOffset(true);
     if(id >= 0 && id < calculators.size()){
-        calculators.at(id).second.data()->setEnergyShift(shift, file);
+        calculators.at(id).second->setEnergyShift(shift, file);
     }else{
         log("Error: " + QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". id = " + QString::number(id));
     }
@@ -152,7 +157,7 @@ void CalcWrapper::setShadowCurrent(const qreal signal, const qreal iZero, const 
     log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ".  called");
     setOffset(true);
     if(id >= 0 && id < calculators.size()){
-        calculators.at(id).first.data()->setShadowCurrent(signal, iZero, file);
+        calculators.at(id).first->setShadowCurrent(signal, iZero, file);
     }else{
         log("Error: " + QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". id = " + QString::number(id));
     }
@@ -163,7 +168,7 @@ void CalcWrapper::setSmooth(const int count, const int file, const int id){
     log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ".  called");
     setOffset(true);
     if(id >= 0 && id < calculators.size()){
-        calculators.at(id).first.data()->setSmooth(count, file);
+        calculators.at(id).first->setSmooth(count, file);
     }else{
         log("Error: " + QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". id = " + QString::number(id));
     }
@@ -174,7 +179,7 @@ void CalcWrapper::setDiff(const bool needed, const int file, const int id){
     log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ".  called");
     setOffset(true);
     if(id >= 0 && id < calculators.size()){
-        calculators.at(id).first.data()->setDiff(needed, file);
+        calculators.at(id).first->setDiff(needed, file);
     }else{
         log("Error: " + QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". id = " + QString::number(id));
     }
@@ -185,7 +190,7 @@ void CalcWrapper::setLinearIntervals(const QPointF interval, const bool needed, 
     log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ".  called");
     setOffset(true);
     if(id >= 0 && id < calculators.size()){
-        calculators.at(id).first.data()->setLinearIntervals(interval, needed, file);
+        calculators.at(id).first->setLinearIntervals(interval, needed, file);
     }else{
         log("Error: " + QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". id = " + QString::number(id));
     }
@@ -197,9 +202,9 @@ void CalcWrapper::setNormalizationCoeff(const qreal coeff, bool needed, const in
     setOffset(true);
     if(id >= 0 && id < calculators.size()){
         if(ref == 0){
-            calculators.at(id).first.data()->setNormalizationCoeff(coeff, needed, file);
+            calculators.at(id).first->setNormalizationCoeff(coeff, needed, file);
         }else if(ref == 1){
-            calculators.at(id).second.data()->setNormalizationCoeff(coeff, file);
+            calculators.at(id).second->setNormalizationCoeff(coeff, file);
         }
     }else{
         log("Error: " + QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". id = " + QString::number(id));
@@ -211,9 +216,9 @@ void CalcWrapper::setStepped(const qreal coeff, const bool needed, const int fil
     log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ".  called");
     setOffset(true);
     if(id >= 0 && id < calculators.size()){
-        calculators.at(id).first.data()->setStepped(coeff, needed, file);
+        calculators.at(id).first->setStepped(coeff, needed, file);
         if(needed){
-            calculators.at(id).second.data()->setStepped(coeff, file);
+            calculators.at(id).second->setStepped(coeff, file);
         }
     }else{
         log("Error: " + QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". id = " + QString::number(id));
@@ -226,9 +231,9 @@ void CalcWrapper::setIntegrate(const bool needed, const qreal index, const int f
     setOffset(true);
     if(id >= 0 && id < calculators.size()){
         if(ref == 0){
-            calculators.at(id).first.data()->setIntegrate(needed, (int)index, file);
+            calculators.at(id).first->setIntegrate(needed, (int)index, file);
         }else if(ref == 1 && needed){
-            calculators.at(id).second.data()->setIntegrate(index, file);
+            calculators.at(id).second->setIntegrate(index, file);
         }
     }else{
         log("Error: " + QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". id = " + QString::number(id));
@@ -240,7 +245,7 @@ void CalcWrapper::setIntegrationConstants(const qreal newPc, const qreal newNh, 
     log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ".  called");
     setOffset(true);
     if(id >= 0 && id < calculators.size()){
-            calculators.at(id).first.data()->setIntegrationConstants(newPc, newNh);
+            calculators.at(id).first->setIntegrationConstants(newPc, newNh);
     }else{
         log("Error: " + QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". id = " + QString::number(id));
     }
@@ -251,7 +256,7 @@ void CalcWrapper::setCalculate(const bool needed, const QPointF newPhi, const QP
     log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ".  called");
     setOffset(true);
     if(id >= 0 && id < calculators.size()){
-        calculators.at(id).first.data()->setCalculate(needed, newPhi, newTheta);
+        calculators.at(id).first->setCalculate(needed, newPhi, newTheta);
     }else{
         log("Error: " + QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". id = " + QString::number(id));
     }
@@ -262,7 +267,7 @@ void CalcWrapper::setLin(const bool needed, const int file, const int id){
     log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ".  called");
     setOffset(true);
     if(id >= 0 && id < calculators.size()){
-        calculators.at(id).first.data()->setLin(needed, file);
+        calculators.at(id).first->setLin(needed, file);
     }else{
         log("Error: " + QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". id = " + QString::number(id));
     }
@@ -273,8 +278,8 @@ void CalcWrapper::setPositiveIntegrals(const bool needed, const int file, const 
     log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ".  called");
     setOffset(true);
     if(id >= 0 && id < calculators.size()){
-        calculators.at(id).first.data()->setIntegratePositiveOnly(needed, file);
-        calculators.at(id).second.data()->setIntegratePositiveOnly(needed, file);
+        calculators.at(id).first->setIntegratePositiveOnly(needed, file);
+        calculators.at(id).second->setIntegratePositiveOnly(needed, file);
     }else{
         log("Error: " + QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". id = " + QString::number(id));
     }
@@ -285,8 +290,8 @@ void CalcWrapper::setGround(const bool needed, const int file, const int id){
     log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ".  called");
     setOffset(true);
     if(id >= 0 && id < calculators.size()){
-        calculators.at(id).first.data()->setIntegrateGround(needed, file);
-        calculators.at(id).second.data()->setIntegrateGround(needed, file);
+        calculators.at(id).first->setIntegrateGround(needed, file);
+        calculators.at(id).second->setIntegrateGround(needed, file);
     }else{
         log("Error: " + QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". id = " + QString::number(id));
     }
@@ -297,7 +302,7 @@ void CalcWrapper::setArea(const bool needed, const qreal area, const int file, c
     log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ".  called");
     setOffset(true);
     if(id >= 0 && id < calculators.size()){
-        calculators.at(id).first.data()->setArea(needed, area, file);
+        calculators.at(id).first->setArea(needed, area, file);
     }else{
         log("Error: " + QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". id = " + QString::number(id));
     }
@@ -308,7 +313,7 @@ void CalcWrapper::setRelativeCurv(const qreal a, const int file, const int id){
     log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ".  called");
     setOffset(true);
     if(id >= 0 && id < calculators.size()){
-        calculators.at(id).first.data()->setRelativeCurv(a, file);
+        calculators.at(id).first->setRelativeCurv(a, file);
     }else{
         log("Error: " + QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". id = " + QString::number(id));
     }
@@ -319,8 +324,8 @@ void CalcWrapper::update(const int file, const int id){
     log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ".  called");
     setOffset(true);
     if(id >= 0 && id < calculators.size()){
-            calculators.at(id).first.data()->update(file);
-            calculators.at(id).second.data()->update(file);
+            calculators.at(id).first->update(file);
+            calculators.at(id).second->update(file);
     }else{
         log("Error: " + QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". id = " + QString::number(id));
     }
@@ -331,7 +336,7 @@ void CalcWrapper::activateRef(const bool state, const int id, const int file){
     log(QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ".  called");
     setOffset(true);
     if(id >= 0 && id < calculators.size()){
-            calculators.at(id).second.data()->activateRef(state, file);
+            calculators.at(id).second->activateRef(state, file);
     }else{
         log("Error: " + QString(this->metaObject()->className()) + "::" + __FUNCTION__  + ". id = " + QString::number(id));
     }

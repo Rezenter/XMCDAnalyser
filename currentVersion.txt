@@ -67,4 +67,7 @@ v10.7, still fails at pair deleting
 	various gui fixes
 	added Fe and Ni reference files
 	fixed reference integration
-	
+
+v10.8
+	fixed pair deleting
+	addind russian detailed help

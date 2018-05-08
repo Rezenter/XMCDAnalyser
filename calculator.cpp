@@ -5,8 +5,11 @@ Calculator::Calculator(QObject *parent) : QObject(parent){
 }
 
 Calculator::~Calculator(){
+    log(QString(this->metaObject()->className()) + "::" + __FUNCTION__);
+    setOffset(true);
     loader[0].~FileLoader();
     loader[1].~FileLoader();
+    setOffset();
 }
 
 void Calculator::setLoader(const QString loaderPath, const int file){

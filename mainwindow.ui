@@ -1003,7 +1003,7 @@
             <property name="minimumSize">
              <size>
               <width>0</width>
-              <height>200</height>
+              <height>220</height>
              </size>
             </property>
             <property name="toolTip">
@@ -1333,6 +1333,9 @@
             </property>
             <property name="prefix">
              <string>Shadow current = </string>
+            </property>
+            <property name="suffix">
+             <string> 1E-12</string>
             </property>
             <property name="decimals">
              <number>1</number>
@@ -1699,7 +1702,7 @@
             </property>
            </widget>
           </item>
-          <item row="18" column="1">
+          <item row="19" column="1">
            <widget class="QPushButton" name="setExportPathButton">
             <property name="toolTip">
              <string>Export path selection dialog.</string>
@@ -1730,13 +1733,13 @@
              </size>
             </property>
             <property name="toolTip">
-             <string>Substract stepped background.</string>
+             <string>Subtract stepped background.</string>
             </property>
             <property name="toolTipDuration">
              <number>100000</number>
             </property>
             <property name="text">
-             <string>stepped substraction</string>
+             <string>stepped subtraction</string>
             </property>
             <property name="checked">
              <bool>false</bool>
@@ -1761,13 +1764,13 @@
              </size>
             </property>
             <property name="toolTip">
-             <string>Substract linear background.</string>
+             <string>Subtract linear background.</string>
             </property>
             <property name="toolTipDuration">
              <number>100000</number>
             </property>
             <property name="text">
-             <string>linear substraction</string>
+             <string>linear subtraction</string>
             </property>
            </widget>
           </item>
@@ -1790,6 +1793,9 @@
             </property>
             <property name="prefix">
              <string>Shadow i-zero  = </string>
+            </property>
+            <property name="suffix">
+             <string> 1E-6</string>
             </property>
             <property name="decimals">
              <number>1</number>
@@ -1917,34 +1923,6 @@
             </property>
             <property name="prefix">
              <string>Left </string>
-            </property>
-           </widget>
-          </item>
-          <item row="15" column="2">
-           <widget class="QCheckBox" name="calculateBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>15</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>If both files have calculated integrals, calculate resulting moments.</string>
-            </property>
-            <property name="toolTipDuration">
-             <number>100000</number>
-            </property>
-            <property name="text">
-             <string>calculate result</string>
             </property>
            </widget>
           </item>
@@ -2130,7 +2108,7 @@
             </property>
            </widget>
           </item>
-          <item row="19" column="1" colspan="2">
+          <item row="20" column="1" colspan="2">
            <widget class="QLineEdit" name="exportLine">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -2152,7 +2130,7 @@
             </property>
            </widget>
           </item>
-          <item row="18" column="2">
+          <item row="19" column="2">
            <widget class="QPushButton" name="exportButton">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -2177,7 +2155,7 @@
             </property>
            </widget>
           </item>
-          <item row="17" column="1" colspan="2">
+          <item row="18" column="1" colspan="2">
            <widget class="QPushButton" name="swapButton">
             <property name="enabled">
              <bool>false</bool>
@@ -2196,6 +2174,34 @@
             </property>
             <property name="text">
              <string>swap files in pair</string>
+            </property>
+           </widget>
+          </item>
+          <item row="17" column="1">
+           <widget class="QCheckBox" name="calculateBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>If both files have calculated integrals, calculate resulting moments.</string>
+            </property>
+            <property name="toolTipDuration">
+             <number>100000</number>
+            </property>
+            <property name="text">
+             <string>calculate result</string>
             </property>
            </widget>
           </item>
@@ -2454,17 +2460,17 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="dataTypeGroup"/>
   <buttongroup name="fileGroup">
    <property name="exclusive">
     <bool>true</bool>
    </property>
   </buttongroup>
+  <buttongroup name="summaryButtonGroup"/>
+  <buttongroup name="dataTypeGroup"/>
   <buttongroup name="filterGroup">
    <property name="exclusive">
     <bool>false</bool>
    </property>
   </buttongroup>
-  <buttongroup name="summaryButtonGroup"/>
  </buttongroups>
 </ui>
