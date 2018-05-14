@@ -140,6 +140,9 @@
         </item>
         <item row="5" column="1">
          <widget class="QCheckBox" name="holder2Box">
+          <property name="toolTip">
+           <string>Treat geometry value as holder number for this file.</string>
+          </property>
           <property name="text">
            <string>holder</string>
           </property>
@@ -147,15 +150,11 @@
         </item>
         <item row="3" column="1">
          <widget class="QCheckBox" name="holder1Box">
+          <property name="toolTip">
+           <string>Treat geometry value as holder number for this file.</string>
+          </property>
           <property name="text">
            <string>holder</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="4">
-         <widget class="QPushButton" name="selectPathButton">
-          <property name="text">
-           <string>select Path</string>
           </property>
          </widget>
         </item>
@@ -180,6 +179,9 @@
         </item>
         <item row="5" column="0">
          <widget class="QRadioButton" name="file2Button">
+          <property name="toolTip">
+           <string>Select second file in new pair.</string>
+          </property>
           <property name="text">
            <string>file 2</string>
           </property>
@@ -190,6 +192,9 @@
         </item>
         <item row="3" column="0">
          <widget class="QRadioButton" name="file1Button">
+          <property name="toolTip">
+           <string>Select first file in new pair.</string>
+          </property>
           <property name="text">
            <string>file 1</string>
           </property>
@@ -206,8 +211,21 @@
         </item>
         <item row="6" column="0" colspan="5">
          <widget class="QPushButton" name="pairButton">
+          <property name="toolTip">
+           <string>Create a new pair using this two files.</string>
+          </property>
           <property name="text">
            <string>new pair</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0" colspan="5">
+         <widget class="QPushButton" name="selectPathButton">
+          <property name="toolTip">
+           <string>Call path selection dialog in order to set folder to display.</string>
+          </property>
+          <property name="text">
+           <string>select Path</string>
           </property>
          </widget>
         </item>
@@ -600,6 +618,9 @@
              </item>
              <item row="1" column="2">
               <widget class="QLabel" name="l31AreaRelLabel">
+               <property name="toolTip">
+                <string>Area related to the corresponding reference area.</string>
+               </property>
                <property name="text">
                 <string>Unknown</string>
                </property>
@@ -607,6 +628,9 @@
              </item>
              <item row="2" column="2">
               <widget class="QLabel" name="l21AreaRelLabel">
+               <property name="toolTip">
+                <string>Area related to the corresponding reference area.</string>
+               </property>
                <property name="text">
                 <string>Unknown</string>
                </property>
@@ -977,6 +1001,9 @@
              </item>
              <item row="1" column="2">
               <widget class="QLabel" name="l32AreaRelLabel">
+               <property name="toolTip">
+                <string>Area related to the corresponding reference area.</string>
+               </property>
                <property name="text">
                 <string>Unknown</string>
                </property>
@@ -984,6 +1011,9 @@
              </item>
              <item row="3" column="2">
               <widget class="QLabel" name="l22AreaRelLabel">
+               <property name="toolTip">
+                <string>Area related to the corresponding reference area.</string>
+               </property>
                <property name="text">
                 <string>Unknown</string>
                </property>
@@ -1956,6 +1986,12 @@
                <property name="enabled">
                 <bool>false</bool>
                </property>
+               <property name="toolTip">
+                <string>Move reference spectra along energy axis.</string>
+               </property>
+               <property name="toolTipDuration">
+                <number>100000</number>
+               </property>
                <property name="prefix">
                 <string>E. shift </string>
                </property>
@@ -1981,6 +2017,12 @@
                <property name="enabled">
                 <bool>false</bool>
                </property>
+               <property name="toolTip">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set common curvature multiplier for reference spectra. &lt;/p&gt;&lt;p&gt;It is better to fit current file to the reference, rather than use this option.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
+               <property name="toolTipDuration">
+                <number>100000</number>
+               </property>
                <property name="prefix">
                 <string>Curv. </string>
                </property>
@@ -1999,6 +2041,12 @@
               <widget class="QCheckBox" name="refCheckBox">
                <property name="enabled">
                 <bool>false</bool>
+               </property>
+               <property name="toolTip">
+                <string>Draw reference spectra for this element.</string>
+               </property>
+               <property name="toolTipDuration">
+                <number>100000</number>
                </property>
                <property name="text">
                 <string>Use reference fit</string>
@@ -2281,6 +2329,12 @@
           <layout class="QGridLayout" name="gridLayout_7">
            <item row="0" column="0">
             <widget class="QRadioButton" name="summaryRawButton">
+             <property name="toolTip">
+              <string>Compare raw signal.</string>
+             </property>
+             <property name="toolTipDuration">
+              <number>100000</number>
+             </property>
              <property name="text">
               <string>Raw</string>
              </property>
@@ -2297,6 +2351,12 @@
            </item>
            <item row="0" column="1">
             <widget class="QRadioButton" name="summaryNormButton">
+             <property name="toolTip">
+              <string>Compare processed data.</string>
+             </property>
+             <property name="toolTipDuration">
+              <number>100000</number>
+             </property>
              <property name="text">
               <string>Normalized</string>
              </property>
@@ -2319,6 +2379,12 @@
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
+             <property name="toolTip">
+              <string>Compare beam intensity.</string>
+             </property>
+             <property name="toolTipDuration">
+              <number>100000</number>
+             </property>
              <property name="text">
               <string>i-Zero</string>
              </property>
@@ -2337,6 +2403,12 @@
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
+             </property>
+             <property name="toolTip">
+              <string>Compare dichroism data.</string>
+             </property>
+             <property name="toolTipDuration">
+              <number>100000</number>
              </property>
              <property name="text">
               <string>XMCD</string>
@@ -2357,6 +2429,12 @@
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
+             <property name="toolTip">
+              <string>Normalize all files on XAS maximum.</string>
+             </property>
+             <property name="toolTipDuration">
+              <number>100000</number>
+             </property>
              <property name="text">
               <string>Max</string>
              </property>
@@ -2372,6 +2450,12 @@
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
+             </property>
+             <property name="toolTip">
+              <string>Select normalization behaviour.</string>
+             </property>
+             <property name="toolTipDuration">
+              <number>100000</number>
              </property>
              <property name="maximum">
               <number>1</number>
@@ -2395,6 +2479,12 @@
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
+             <property name="toolTip">
+              <string>Normalize all files on shoulder step.</string>
+             </property>
+             <property name="toolTipDuration">
+              <number>100000</number>
+             </property>
              <property name="text">
               <string>Step</string>
              </property>
@@ -2407,6 +2497,12 @@
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
+             </property>
+             <property name="toolTip">
+              <string>Compara XAS signal.</string>
+             </property>
+             <property name="toolTipDuration">
+              <number>100000</number>
              </property>
              <property name="text">
               <string>Half-Sum</string>
@@ -2430,12 +2526,25 @@
          </widget>
         </item>
         <item row="2" column="2" colspan="2">
-         <widget class="QLineEdit" name="summaryPathLineEdit"/>
+         <widget class="QLineEdit" name="summaryPathLineEdit">
+          <property name="toolTip">
+           <string>Export path line.</string>
+          </property>
+          <property name="toolTipDuration">
+           <number>100000</number>
+          </property>
+         </widget>
         </item>
         <item row="2" column="0">
          <widget class="QPushButton" name="exportSummaryButton">
           <property name="enabled">
            <bool>false</bool>
+          </property>
+          <property name="toolTip">
+           <string>Export all visible series.</string>
+          </property>
+          <property name="toolTipDuration">
+           <number>100000</number>
           </property>
           <property name="text">
            <string>export</string>
@@ -2444,6 +2553,12 @@
         </item>
         <item row="2" column="1">
          <widget class="QPushButton" name="setExportPath2Button">
+          <property name="toolTip">
+           <string>Call export path selection dialog.</string>
+          </property>
+          <property name="toolTipDuration">
+           <number>100000</number>
+          </property>
           <property name="text">
            <string>set Export Path</string>
           </property>
@@ -2460,6 +2575,11 @@
  <resources/>
  <connections/>
  <buttongroups>
+  <buttongroup name="filterGroup">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
   <buttongroup name="fileGroup">
    <property name="exclusive">
     <bool>true</bool>
@@ -2467,10 +2587,5 @@
   </buttongroup>
   <buttongroup name="summaryButtonGroup"/>
   <buttongroup name="dataTypeGroup"/>
-  <buttongroup name="filterGroup">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
  </buttongroups>
 </ui>
