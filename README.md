@@ -1,7 +1,5 @@
 # XMCDAnalyser
-small programm aimed to analyse X-ray Magnetic Circular Dichroism data
-
-!Unfinished!
+programm is aimed to analyse X-ray Magnetic Circular Dichroism data from HiSOR BL9
 
 example data attached
 
